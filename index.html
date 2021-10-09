@@ -1,0 +1,82 @@
+<!DOCTYPE html> 
+<html lang="en"> 
+<head> 
+	<meta charset="UTF-8">
+	<title>DDM HTML5 Fangame</title>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js"></script>
+    <script src="tsh.ddm.js"></script>
+	<script src="tsh.ddm.logic.js"></script>
+	<script src="tsh.ddm.view.h5.js"></script>
+	<script src="tsh.ddm.debug.js"></script>
+	<link rel="stylesheet" href="style-h5.css" />
+</head> 
+<body>
+	
+	<div id="gameSection">
+		<div id="board"></div>
+	</div>	
+	<div id="devSection">
+		<div>
+			<span id="toggleLink" class="link" onclick="$('#devTools').slideToggle()">[Toggle Developer Tools]</span>
+		</div>
+		<div id="devTools">
+			<ul id="devActions">
+				<div class="action">
+					<span><button class="button" onclick="Tsh.Ddm.Debug.CreateLandView()"> Create Land View </button></span>
+					<span><label for="landColId">Col:</label><input type="number" id="landColId" class = "coord_input" name="landColId"></span>
+					<span><label for="landRowId">Row:</label><input type="number" id="landRowId" class = "coord_input" name="landRowId"></span>
+				</div>
+				<div class="action">
+					<button class="button" onclick="Tsh.Ddm.Debug.CreatePieceView()">Create Piece View</button>
+					<span><label for="pieceColId">Col:</label><input type="number" id="pieceColId" class = "coord_input" name="pieceColId"></span>
+					<span><label for="pieceRowId">Row:</label><input type="number" id="pieceRowId" class = "coord_input" name="pieceRowId"></span>
+				</div>
+				<div class="action">
+					<div>Piece View Changing</div>
+					<button id = "selPieceBtn" class="button" onclick="Tsh.Ddm.Debug.btnSelectPieceClicked()">Select Piece</button><br>
+					<label for="selPieceInfo">Piece:</label><div id = "selPieceInfo">None</div><br><br>
+					<div id="selectedPieceController">
+					    <div>
+							<span id="toggleLink" class="link" onclick="$('#devPiecePropertyTools').slideToggle()">[Toggle Property Tools]</span>
+						</div>
+						<div id="devPiecePropertyTools">
+							<ul id="devPiecePropertyAction">
+								<div class="action">
+									<label>Highlight:</label><input type="checkbox" id="pieceHighlight" onclick="Tsh.Ddm.Debug.onSelectedPieceHighlightChanged()">
+								</div>		
+								<div class="action">
+									<div class="action">
+										<label>Focus:</label><input type="checkbox" id="pieceFocus" onclick="Tsh.Ddm.Debug.onSelectedPieceFocusChanged()">
+									</div>			
+								</div>			
+								<div class="action">
+									<div class="action">
+										<label>Visible:</label><input type="checkbox"  onclick="Tsh.Ddm.Debug.onSelectedPieceVisibleChanged()" id="pieceVisible" >
+									</div>			
+								</div>			
+								<div class="action">
+									<div class="action">
+										<label>Position:</label>
+										<span><label for="moveToCol">Col:</label><input type="number" id="moveToCol" class = "coord_input"></span>
+										<span><label for="moveToRow">Row:</label><input type="number" id="moveToRow" class = "coord_input"></span>					
+										<button class="button" onclick="Tsh.Ddm.Debug.onSelectedPiecePositionChanged()" >Change</button>
+									</div>			
+								</div>			
+								<div class="action">
+									<div class="action">
+										<label>Destroy</label>
+										<button class="button" onclick="Tsh.Ddm.Debug.onSelectedPieceDestroyChanged()">Destory Object</button>
+									</div>			
+								</div>			
+	
+							</ul>
+						</div>	 
+					</div>
+			
+				</div>
+			</ul>
+			<div id="gameState"></div>
+		</div>
+	</div>
+</body> 
+</html> 
