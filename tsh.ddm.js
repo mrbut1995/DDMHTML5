@@ -1,6 +1,11 @@
 
 //DOM Object
 var DOMBoard = document.getElementById("board")
+var DOMDiceOne
+var DOMDiceTwo
+var DOMDiceThree
+
+let start, previousTimeStamp;
 
 window.onload = function(){
     getDOMObject()
@@ -8,16 +13,35 @@ window.onload = function(){
     Tsh.Ddm.View.init()
     Tsh.Ddm.Debug.init()
 
-    gameLoop()
+    
+    // gameLoop()
+    window.requestAnimationFrame(step);
 }
 
-function gameLoop(){
-    Tsh.Ddm.View.update({delta:100})
-    window.requestAnimationFrame(gameLoop);
+function run(){
+
 }
+function step(timestamp) {
+    if (start === undefined)
+      start = timestamp;
+    const elapsed = timestamp - start;
+  
+    var delta =  timestamp - previousTimeStamp;
+
+    if (previousTimeStamp !== timestamp) {
+      Tsh.Ddm.View.update({delta:delta})
+    }
+  
+    previousTimeStamp = timestamp
+    window.requestAnimationFrame(step);
+}
+
 
 function getDOMObject(){
-    DOMBoard =  document.getElementById("board")
+    DOMBoard        =  document.getElementById("board")
+    DOMDiceOne      = document.getElementById("dice1")
+    DOMDiceTwo      = document.getElementById("dice2")
+    DOMDiceThree    = document.getElementById("dice3")
 }
 var gGameState;
 
@@ -211,3 +235,22 @@ function throttle (f, interval, scope) {
       return r.toString(16)
     })
   }
+
+//Dice Rolling
+function rollTo(DOMObject,result){
+    console.log("result = ",result)
+    for (var i = 1; i <= 6; i++) {
+        DOMObject.classList.remove('show-' + i);
+        if (result === i) {
+            console.log("roll to ",'show-' + i)
+            DOMObject.classList.add('show-' + i);
+        }
+      }    
+}
+
+function roll(){
+    console.log("roll ")
+    rollTo(DOMDiceOne,Math.floor(Math.random() * 6))
+    rollTo(DOMDiceTwo,Math.floor(Math.random() * 6))
+    rollTo(DOMDiceThree,Math.floor(Math.random() * 6))
+}
