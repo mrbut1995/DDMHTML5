@@ -254,3 +254,7 @@ function roll(){
     rollTo(DOMDiceTwo,Math.floor(Math.random() * 6))
     rollTo(DOMDiceThree,Math.floor(Math.random() * 6))
 }
+
+function prototypeName(obj){
+    return obj.constructor.name
+}

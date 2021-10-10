@@ -21,6 +21,7 @@ var BaseView  = function(opts,item){
     
 
     var defOpts = {
+        uuid                        : uuid(),
         rect                        : new Rect(0,0,0,0) ,
         visible                     : true,
         enable                      : true,
@@ -38,21 +39,23 @@ var BaseView  = function(opts,item){
         onUpdate                    : null ,
         onPropertyChanged           : null ,
         onFoucsed                   : null ,
+        onMove                      : null ,
 
         //Event
-        itemClicked                 : new CustomEvent("itemclicked",     {detail:{source:null}}),
-        itemPressed                 : new CustomEvent("itempressed",     {detail:{source:null}}),
-        itemReleased                : new CustomEvent("itemreleased",    {detail:{source:null}}),
-        itemPressAndHold            : new CustomEvent("itempressandhold",{detail:{source:null}}),
-        properyChanged              : new CustomEvent("propertychanged"  ,{detail:{source:null}}),
-        objectCreated               : new CustomEvent("objectcreated"    ,{detail:{source:null}}),
-        objectDetroyed              : new CustomEvent("objectdetroyed"   ,{detail:{source:null}}),
-        viewFocused                 : new CustomEvent("viewfocused"      ,{detail:{source:null}}),
+        itemClicked                 : new CustomEvent("itemclicked",      {detail:{source:null,uuid:""}}),
+        itemPressed                 : new CustomEvent("itempressed",      {detail:{source:null,uuid:""}}),
+        itemReleased                : new CustomEvent("itemreleased",     {detail:{source:null,uuid:""}}),
+        itemPressAndHold            : new CustomEvent("itempressandhold" ,{detail:{source:null,uuid:""}}),
+        properyChanged              : new CustomEvent("propertychanged"  ,{detail:{source:null,uuid:""}}),
+        objectCreated               : new CustomEvent("objectcreated"    ,{detail:{source:null,uuid:""}}),
+        objectDetroyed              : new CustomEvent("objectdetroyed"   ,{detail:{source:null,uuid:""}}),
+        viewFocused                 : new CustomEvent("viewfocused"      ,{detail:{source:null,uuid:""}}),
+        itemMove                    : new CustomEvent("itemmove"         ,{detail:{source:null,uuid:""}}),
 
     }
     opts = $.extend(defOpts,opts)
     $.extend(true,this,opts)
-    
+
     this.sendMessage = function(opts){
         var defOpts = {
             msg:"unknwon",
@@ -80,16 +83,20 @@ var BaseView  = function(opts,item){
             event =this.properyChanged
         }else  if(opts.msg == "objectcreated"){
             event =this.objectCreated
-        }else  if(opts.msg == "objectdetroyed"){
+        }else  if(opts.msg == "objectdestroyed"){
             event =this.objectDetroyed
         }else  if(opts.msg == "focusing"){
             if(isFunction(this.onFoucsed))                this.onFoucsed(defParam)
             event =this.viewFocused
+        }else if(opts.msg == "itemmove"){
+            if(isFunction(this.onMove))                this.onMove(defParam)
+            event =this.itemMove
         }else{
             console.log("CANNOT FIND MESSAGE HANDLE",opts.msg)
         }
         if(event != null){
             event.detail.source = this
+            event.detail.uuid  = this.uuid
             DOMBoard.dispatchEvent(event)
         }
     }
@@ -104,8 +111,12 @@ var BaseView  = function(opts,item){
             return false
         console.log("property[",name,"]=(",this[name],"=>",value,")")
         this[name] = value
-        if(isFunction(this.onPropertyChanged))       this.onPropertyChanged(defParam)
-        DOMBoard.dispatchEvent(this.properyChanged)
+        this.sendMessage({msg:"propertychanged"})
+    }
+    this.move         = function(coord){
+        var r = new Rect(coord,this.rect.w,this.rect.h)
+        this.setProperty("rect",r)
+        this.sendMessage({msg:"itemmove"})
     }
     this.inArray    = function(a){
         for(var i= 0 ; i < a.length;i++){
@@ -114,11 +125,19 @@ var BaseView  = function(opts,item){
         }
         return false
     }
+    this.removeInArray = function(a){
+        for(var i= 0 ; i < a.length;i++){
+            if(a[i] == this){
+                console.log("FOUND IN ARRAY i = ",i," => REMOVED")
+                a.splice(i,1)
+            }
+        }
+    }
     this.destroy = function(){
 
     }
     this.toString = function(){
-        return this.type + "("+this.rect.x+","+this.rect.y+")"
+        return this.type+"("+this.uuid+")" + "("+this.rect.x+","+this.rect.y+")"
     }
     this.draw    = null
     this.update  = null
@@ -135,7 +154,10 @@ var PieceView = function(opts,item){
     //Implement
     this.draw         = function(context,mainView){
         context.save()
-        if(this.focused){
+        if(!this.visible){
+            context.fillStyle =  "rgba(255, 255, 255, 0.5)";
+        }
+        else if(this.focused){
             context.fillStyle = "green"
         }else{
             context.fillStyle = this.color
@@ -172,6 +194,7 @@ var TileView = function(opts,item){
 
     opts = $.extend(new BaseView(),opts)
     $.extend(true,this,opts)
+    console.log("rect = ",this.rect)
 
     this.draw         = function(context,mainView){
         context.save()
@@ -405,6 +428,11 @@ var Animation = function(opts){
             name:'piece',
             list:[]
         }
+
+        this.layerViews.push(layerTile)
+        this.layerViews.push(layerLand)
+        this.layerViews.push(layerPiece)
+
         for(var i = 0 ; i < ViewConstants.nRow;i++){
             for(var j = 0 ; j < ViewConstants.nCol;j++){
                 var pTile = new Point(j,i)
@@ -413,46 +441,9 @@ var Animation = function(opts){
                     rect:rTile,
                     color:ViewConstants.cTile,
                 }
-                var vTile = new TileView(opts,pTile)
-                layerTile.list.push(vTile)
-                this.allViews.push(vTile)
+                this.createView(TileView,opts,null,v => {mainView.addView(v,"tile")})
             }
         }
-        for(var i = 0 ; i < ViewConstants.nRow;i++){
-            for(var j = 0 ; j < ViewConstants.nCol;j++){
-                if(i % 2 == 0 || j % 2 == 0){
-                    var pLand = new Point(j,i)
-                    var rLand = new Rect(pointToCoord(pLand),ViewConstants.wCell,ViewConstants.hCell)
-                    var opts = {
-                        rect:rLand,
-                        color:ViewConstants.cLand,
-                    }    
-                    var vLand = new LandView(opts,pLand)
-                    layerLand.list.push(vLand)    
-                    this.allViews.push(vLand)
-                }
-            }
-        }
-        for(var i = 0 ; i < ViewConstants.nRow;i++){
-            for(var j = 0 ; j < ViewConstants.nCol;j++){
-                if(i % 5 == 0 && j % 5 == 0){
-                    var pPiece = new Point(j,i)
-                    var rPiece = new Rect(pointToCoord(pPiece),ViewConstants.wCell,ViewConstants.hCell)
-                    var opts = {
-                        rect:rPiece,
-                        color:ViewConstants.cPiece,
-                        // onMouseClicked:function(opts){mainView.forceActiveFocus(opts.source)},
-                    }    
-                    var vPiece = new PieceView(opts,pPiece)
-                    layerLand.list.push(vPiece)    
-                    this.allViews.push(vPiece)
-                }
-            }
-        }
-
-        this.layerViews.push(layerTile)
-        this.layerViews.push(layerLand)
-        this.layerViews.push(layerPiece)
     }
     this. drawViewItem = function(){
         for(var i = 0 ; i < this.layerViews.length;i++){
@@ -533,7 +524,7 @@ var Animation = function(opts){
     }
 
     this.redraw = function(canvasElement){
-        console.log("redrawing","check if Dirty ",this.dirty)
+        // console.log("redrawing","check if Dirty ",this.dirty)
         if(!canvasElement){
             initCanvas()
         }
@@ -544,7 +535,100 @@ var Animation = function(opts){
     }
 
 
-    this.forceActiveFocus = function(item){
+    this.createView = function(prototype,opts,item,callback){
+        var view = new prototype(opts,item)
+        view.sendMessage({msg:'objectcreated'})
+        callback(view)
+        return view
+    }
+
+    this.addView   = function(view,layer){
+        if(view == null){
+            console.log("VIEW == NULL")
+            return;
+        }
+        console.log("add view ",view,"into layer ",layer)
+        if(layer == ""){
+            console.log("Does not addeded into layer")
+        }
+        for(var i in this.layerViews){
+            if(this.layerViews[i].name == layer){
+                console.log("Add to layer ",this.layerViews[i].name)
+                this.layerViews[i].list.push(view)
+                break;
+            }
+        }
+        this.allViews.push(view)
+
+        //Request to redraw
+        this.dirty = this.dirty || true
+    }
+    this.destroyView = function(view){
+        if(view.inArray(this.allViews)){
+            //Remove View in All View List
+            view.removeInArray(this.allViews)
+
+            //Remove View in Layer List
+            for(var i in this.layerViews){
+                view.removeInArray(this.layerViews[i].list)
+            }
+        }
+        view.sendMessage({msg:'objectdestroyed'})
+
+        //Request to Redraw
+        this.dirty = this.dirty || true
+    }
+    this.moveView = function(view,coord){    
+        if(view.inArray(this.allViews)){
+            //Move View Coord
+            view.move(coord)
+        }
+        //Request to Redraw
+        this.dirty = this.dirty || true
+    }
+    this.changeViewProperty = function(view,property,value){
+        if(view != null){
+            view.setProperty(property,value)
+        }
+        //Request to Redraw
+        this.dirty = this.dirty || true
+    }
+
+    this.getView     = function(uuid){
+        for(var i in this.allViews){
+            if(this.allViews[i].uuid == uuid){
+                console.log("FOUND ",uuid," = ",this.allViews[i])
+                return this.allViews[i]
+            }
+        }
+        console.log("CANNOT FOUND ",uuid)
+        return null
+    }
+
+    //////////////////////////////////////// SPECIFY 
+    this.CreatePieceView = function(point,opts,item,callback){
+        var rect = new Rect(pointToCoord(point),ViewConstants.wCell,ViewConstants.hCell)
+        var opts = {
+            rect:rect,
+            color:ViewConstants.cPiece,
+        }
+        var view = this.createView(PieceView,opts,item,callback)
+        this.addView(view,"piece") 
+    }
+    this.CreateLandView = function(point,opts,item,callback){
+        var rect = new Rect(pointToCoord(point),ViewConstants.wCell,ViewConstants.hCell)
+        var opts = {
+            rect:rect,
+            color:ViewConstants.cLand,
+        }
+        var view = this.createView(LandView,opts,item,callback)   
+        this.addView(view,"land")
+    }
+    this.DestroyView = function(uuid){
+        var view = this.getView(uuid);
+        this.destroyView(view)
+    }
+    this.ForceActiveFocus = function(item){
         if(item != null && item.inArray(this.allViews)){
             if(this.focusedItem != null){
                 this.focusedItem.setProperty("focused",false)
@@ -556,8 +640,32 @@ var Animation = function(opts){
             }
         }
     }
+    this.GetViewProperty = function(uuid,property){
+        var view = this.getView(uuid);
+        if(view != null){
+            return view.property(property)
+        }
+        return null
+    }
+    this.SetViewProperty = function(uuid,property,value){
+        var view = this.getView(uuid);
+        if(view != null){
+            this.changeViewProperty(view,property,value)
+            // view.setProperty(property,value)
+        }
+    }
+    this.MoveViewProperty = function(uuid,point){
+        var view = this.getView(uuid);
 
+        if(view != null){
+            var coord = pointToCoord(point)
+            this.moveView(this.getView(uuid),coord)
+        }
+    }
     //////////////////////////////////////// ANIMATION
+    this.constructingAnimation = function(){
+    }
+
     this.updatingAnimations = function(delta){
         var isAnimationAlive = false
         for(var i in this.animations){
@@ -569,8 +677,6 @@ var Animation = function(opts){
         }else{
             this.dirty = this.dirty || false
         }
-    }
-    this.constructingAnimation = function(){
     }
     //Initializing View
     this.init = function(){
@@ -594,6 +700,7 @@ var Animation = function(opts){
         for(var i in views){
             if(views[i].mouseReceived == false)
                 continue;
+            console.log("view = ",views[i].constructor.name)
             views[i].sendMessage({
                 msg:"itemclicked"
             });
@@ -666,6 +773,7 @@ var Animation = function(opts){
     //Canvas event Listener
     var onMouseClicked = function(e){
         var canvasCoord = getCanvasCoord(e)
+        console.log("clicked" ,canvasCoord)
         mouseClickedHandle($.extend({},canvasCoord))
         
     }
