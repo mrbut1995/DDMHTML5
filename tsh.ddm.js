@@ -7,6 +7,12 @@ var DOMDiceThree
 
 let start, previousTimeStamp;
 
+
+let Config = {
+    boardCol : 13,
+    boardRow : 19
+}
+
 window.onload = function(){
     getDOMObject()
 
@@ -51,9 +57,12 @@ var Constants = new function(){
     this.GameStatus = {
         ACTIVE: "active",
         IDLE : "idle",
+        WAITING: "waiting",
         ENDED : "ended"
     }
-
+    this.GameState = {
+        INITIALIZED : "initialized"
+    }
     this.direction = {
         NORTH :"north",
         EAST:"east",
@@ -141,6 +150,10 @@ function Land(id,point,owner){
     this.isInArray = function(array){
         return this.getInArray(array) != -1
     }
+
+    this.isAt = function(point){
+        return this.point.equals(point)
+    }
 }
 
 function Piece(id,point,owner){
@@ -157,6 +170,10 @@ function Piece(id,point,owner){
     
     this.isInArray = function(array){
         return this.getInArray(array) != -1
+    }
+
+    this.isAt = function(point){
+        return this.point.equals(point)
     }
 
 }
