@@ -132,6 +132,7 @@ Tsh.Ddm.Debug = new function(){
     }
 
     var onItemClicked = function(opts){
+        console.log("debug onItemClicked = ",opts)
         if(main.isSelectingPiece){
             // var uuid = opts.uuid
             // var type = Tsh.Ddm.View.GetViewProperty()

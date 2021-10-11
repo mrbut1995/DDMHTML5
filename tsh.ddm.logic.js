@@ -4,7 +4,7 @@ Tsh.Ddm = Tsh.Ddm || {}
 let BoardModel = function(){
     this.pieces = []
     this.lands  = []
-
+    
     this.GetLandAt = function(point){}
     this.GetPieceAt = function(point){}
     this.SetLandAt  = function(point,item){}

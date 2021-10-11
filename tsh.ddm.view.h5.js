@@ -40,18 +40,8 @@ var BaseView  = function(opts,item){
         onPropertyChanged           : null ,
         onFoucsed                   : null ,
         onMove                      : null ,
-
-        //Event
-        itemClicked                 : new CustomEvent("itemclicked",      {detail:{source:null,uuid:""}}),
-        itemPressed                 : new CustomEvent("itempressed",      {detail:{source:null,uuid:""}}),
-        itemReleased                : new CustomEvent("itemreleased",     {detail:{source:null,uuid:""}}),
-        itemPressAndHold            : new CustomEvent("itempressandhold" ,{detail:{source:null,uuid:""}}),
-        properyChanged              : new CustomEvent("propertychanged"  ,{detail:{source:null,uuid:""}}),
-        objectCreated               : new CustomEvent("objectcreated"    ,{detail:{source:null,uuid:""}}),
-        objectDetroyed              : new CustomEvent("objectdetroyed"   ,{detail:{source:null,uuid:""}}),
-        viewFocused                 : new CustomEvent("viewfocused"      ,{detail:{source:null,uuid:""}}),
-        itemMove                    : new CustomEvent("itemmove"         ,{detail:{source:null,uuid:""}}),
-
+        onCreated                   : null ,
+        onDestroyed                 : null
     }
     opts = $.extend(defOpts,opts)
     $.extend(true,this,opts)
@@ -66,38 +56,33 @@ var BaseView  = function(opts,item){
         }
         console.log("msg = ",opts.msg)
         var event = null
-        if(opts.msg == "itemclicked"){
+        if(opts.msg == "onMouseClicked"){
             if(isFunction(this.onMouseClicked))          this.onMouseClicked(defParam)
            event = this.itemClicked
-        }else  if(opts.msg == "itempressed"){
+        }else  if(opts.msg == "onMousePressed"){
             if(isFunction(this.onMousePressed))          this.onMousePressed(defParam)
             event =this.itemPressed
-        }else  if(opts.msg == "itemreleased"){
+        }else  if(opts.msg == "onMouseReleased"){
             if(isFunction(this.onMouseReleased))         this.onMouseReleased(defParam)
             event =this.itemReleased
-        }else  if(opts.msg == "itempressandhold"){
+        }else  if(opts.msg == "onMousePressAndHold"){
             if(isFunction(this.onMousePressAndHold))     this.onMousePressAndHold(defParam)
             event =this.itemPressAndHold
-        }else  if(opts.msg == "propertychanged"){
+        }else  if(opts.msg == "onPropertyChanged"){
             if(isFunction(this.onPropertyChanged))       this.onPropertyChanged(defParam)
             event =this.properyChanged
-        }else  if(opts.msg == "objectcreated"){
+        }else  if(opts.msg == "onCreated"){
             event =this.objectCreated
-        }else  if(opts.msg == "objectdestroyed"){
+        }else  if(opts.msg == "onDestroyed"){
             event =this.objectDetroyed
-        }else  if(opts.msg == "focusing"){
-            if(isFunction(this.onFoucsed))                this.onFoucsed(defParam)
+        }else  if(opts.msg == "onFoucsed"){
+            if(isFunction(this.onFoucsed))               this.onFoucsed(defParam)
             event =this.viewFocused
-        }else if(opts.msg == "itemmove"){
-            if(isFunction(this.onMove))                this.onMove(defParam)
+        }else if(opts.msg == "onMove"){
+            if(isFunction(this.onMove))                  this.onMove(defParam)
             event =this.itemMove
         }else{
             console.log("CANNOT FIND MESSAGE HANDLE",opts.msg)
-        }
-        if(event != null){
-            event.detail.source = this
-            event.detail.uuid  = this.uuid
-            DOMBoard.dispatchEvent(event)
         }
     }
     this.contain      = function(coord){
@@ -111,12 +96,12 @@ var BaseView  = function(opts,item){
             return false
         console.log("property[",name,"]=(",this[name],"=>",value,")")
         this[name] = value
-        this.sendMessage({msg:"propertychanged"})
+        this.sendMessage({msg:"onPropertyChanged"})
     }
     this.move         = function(coord){
         var r = new Rect(coord,this.rect.w,this.rect.h)
         this.setProperty("rect",r)
-        this.sendMessage({msg:"itemmove"})
+        this.sendMessage({msg:"onMove"})
     }
     this.inArray    = function(a){
         for(var i= 0 ; i < a.length;i++){
@@ -296,8 +281,12 @@ var Animation = function(opts){
     }
 }
 
-//Main View
-  Tsh.Ddm.View = new function(){
+let UIView = function(){
+    
+}
+
+//Board Canvas View
+Tsh.Ddm.View = new function(){
     var boardHTML;
     var canvas;
     var context;
@@ -320,16 +309,18 @@ var Animation = function(opts){
     this.isDragging   = false
 
     //Event 
-    var eMousePiece   = new CustomEvent('mousepiece',);
-    var eCreatePiece  = new CustomEvent('createpiece');
-    var eDestroyPiece = new CustomEvent('destroypiece');
-    var eMovePiece    = new CustomEvent('movepiece');
+    this.events = {
+        itemclicked                 : "itemclicked"      ,
+        itempressed                 : "itempressed"      ,
+        itemreleased                : "itemreleased"     ,
+        itempressandhold            : "itempressandhold" ,
+        itempropertychanged         : "itempropertychanged"  ,
+        itemcreated                 : "itemcreated"    ,
+        itemdetroyed                : "itemdetroyed"   ,
+        itemfocused                 : "itemfocused"      ,
+        itemmove                    : "itemmove"         ,
+    }
     
-    var eMouseLand   = new CustomEvent("mouseland");
-    var eCreateLand  = new CustomEvent('createland');
-    var eDestroyLand = new CustomEvent('destroyland');
-    var eMoveLand    = new CustomEvent('moveland');
-
     var ViewConstants = new function(){
         this.canvasWidth = 633;
         this.canvasHeight = 923
@@ -414,6 +405,11 @@ var Animation = function(opts){
 
     }
     
+    var emitEvent = function(event,detail){
+        console.log("emit event ",event)
+        var e = new CustomEvent(event,{detail:detail});
+        DOMBoard.dispatchEvent(e);
+    }
 
     this. constructingViewItem = function(){
         var layerTile = {
@@ -537,7 +533,8 @@ var Animation = function(opts){
 
     this.createView = function(prototype,opts,item,callback){
         var view = new prototype(opts,item)
-        view.sendMessage({msg:'objectcreated'})
+        view.sendMessage({msg:'onCreated'})
+        emitEvent(this.events.objectcreated,{source : view,uuid:view.uuid})
         callback(view)
         return view
     }
@@ -573,7 +570,8 @@ var Animation = function(opts){
                 view.removeInArray(this.layerViews[i].list)
             }
         }
-        view.sendMessage({msg:'objectdestroyed'})
+        view.sendMessage({msg:'onDestroyed'})
+        emitEvent(this.events.itemdestroyed,{source : view,uuid:view.uuid})
 
         //Request to Redraw
         this.dirty = this.dirty || true
@@ -701,9 +699,9 @@ var Animation = function(opts){
             if(views[i].mouseReceived == false)
                 continue;
             console.log("view = ",views[i].constructor.name)
-            views[i].sendMessage({
-                msg:"itemclicked"
-            });
+            views[i].sendMessage({msg:"onMouseClicked"});
+            emitEvent(mainView.events.itemclicked,{source : views[i],uuid:views[i].uuid})
+
             break;
         }
 
@@ -719,9 +717,9 @@ var Animation = function(opts){
         for(var i in views){
             if(views[i].mouseReceived == false )
                 continue;
-            views[i].sendMessage({
-                msg:"itempressed"
-            });
+            views[i].sendMessage({msg:"onMousePressed"});
+            emitEvent(mainView.events.itempressed,{source : views[i],uuid:views[i].uuid})
+
             break;
         }
     }
@@ -736,9 +734,9 @@ var Animation = function(opts){
         for(var i in views){
             if(views[i].mouseReceived == false)
                 continue;
-            views[i].sendMessage({
-                msg:"itempressandhold"
-            });
+            views[i].sendMessage({msg:"onMousePressAndHold"});
+            emitEvent(mainView.events.itempressandhold,{source : views[i],uuid:views[i].uuid})
+
             break;
         }
     }
@@ -752,9 +750,9 @@ var Animation = function(opts){
         for(var i in views){
             if(views[i].mouseReceived == false)
                 continue;
-            views[i].sendMessage({
-                msg:"itemreleased"
-            });
+            views[i].sendMessage({msg:"onMouseReleased"});
+            emitEvent(mainView.events.itemreleased,{source : views[i],uuid:views[i].uuid})
+
             break;
         }
     }
@@ -800,7 +798,6 @@ var Animation = function(opts){
     }
 
     var onViewItemPropertyChanged = function(opts){
-        console.log('view property changed')
         var defOpts = {
             source : null,
             old_value : "",
@@ -808,5 +805,7 @@ var Animation = function(opts){
         }
         opts = $.extend(defOpts,opts.detail)
         mainView.dirty = mainView.dirty || true
+        emitEvent(mainView.events.itempropertychanged,{source:defOpts})
     }
 }
+

@@ -104,6 +104,27 @@ html {
 .coord_input  {
     width: 30px; height: 10px; padding: 1px
 }
+/*User UI CSS*/
+.player-ui {
+  width: 330px;
+  border-top: 2px solid #ddd;
+  padding: 10px;
+  margin-top: 10px;
+  background-color: #eee;
+}
+.ui{
+
+}
+.player1{
+  position: absolute;
+  bottom: 0%;
+  right: 0%;
+}
+.player2{
+  position: absolute;
+  top: 0%;
+  left: 0%;
+}
 
 /* Dice CSS*/
 .dices{
