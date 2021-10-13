@@ -265,11 +265,18 @@ function rollTo(DOMObject,result){
       }    
 }
 
+
 function roll(){
     console.log("roll ")
+
+    var dices = document.getElementById("dicesId");
+    dices.classList.toggle("show")
     rollTo(DOMDiceOne,Math.floor(Math.random() * 6))
     rollTo(DOMDiceTwo,Math.floor(Math.random() * 6))
     rollTo(DOMDiceThree,Math.floor(Math.random() * 6))
+
+    //Hiding Dice When Done
+    setTimeout(()=>{dices.classList.toggle("show")},1300)
 }
 
 function prototypeName(obj){

@@ -287,12 +287,12 @@ let UIView = function(){
 
 //Board Canvas View
 Tsh.Ddm.View = new function(){
-    var boardHTML;
+
+    $.extend(true,this,new UIView())
+
     var canvas;
     var context;
     var mainView = this
-    var frames = 0;
-   
 
     /////Property
     //Main View

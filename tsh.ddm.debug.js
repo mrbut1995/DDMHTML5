@@ -62,6 +62,9 @@ Tsh.Ddm.Debug = new function(){
 
         Tsh.Ddm.View.MoveViewProperty(this.debugPieceSelected.uuid,new Point(mCol,mRow))
     }
+    this.btnDisplayActionPopup = function(){
+
+    }
     this.StartSelectingPiece = function(){
         console.log("started selecting")
         this.isSelectingPiece = true
@@ -84,13 +87,12 @@ Tsh.Ddm.Debug = new function(){
         }
         this.UpdateSelectingPieceDebugMenu()
     }
+
     this.UpdateSelectingPieceDebugMenu = function(){
         var html = ''
         if(this.debugPieceSelected != null){
-            // document.getElementById("selectedPieceController").innerHTML = html
         }
         else{
-            // document.getElementById("selectedPieceController").innerHTML = ""
         }
     }
     this.onSelectedPieceVisibleChanged = function(){

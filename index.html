@@ -14,12 +14,16 @@
 	
 	<div id="gameSection">
 		<div id="board"></div>
-		<div class="player-ui ui player1" id= "player1-ui"><span>Player 1</span></div>
-		<div class="player-ui ui player2" id= "player2-ui"><span>Player 2</span></div>
+		<div class="player-ui ui player1" id= "player1-ui">
+			<span>Player 1</span>
+		</div>
+		<div class="player-ui ui player2" id= "player2-ui">
+			<span>Player 2</span>
+		</div>
 	</div>	
 	 <!--For Dice Rolling-->
-	 <div class="dices">
-		<div class="dice_container">
+	 <div class="dices" id="dicesId">
+		<div class="dicecontainer">
 			<div id='dice1' class="dice dice-one">
 		  		<div id="dice-one-side-one" class='side one'>
 					<img src = "/img/dice_face_1.png">
@@ -41,7 +45,7 @@
 				</div>
 			</div>
 		</div>
-		<div class="dice_container">
+		<div class="dicecontainer">
 			<div id='dice2' class="dice dice-two">
 		  		<div id="dice-two-side-one" class='side one'>
 					<img src = "/img/dice_face_1.png">
@@ -63,7 +67,7 @@
 				</div>
 			</div>
 		</div>
-		<div class="dice_container">
+		<div class="dicecontainer">
 			<div id='dice3' class="dice dice-three">
 		  		<div id="dice-three-side-one" class='side one'>
 					<img src = "/img/dice_face_1.png">
@@ -85,9 +89,22 @@
 				</div>
 			</div>
 		</div>
+	</div>
+	<div id="pieceactionmenu">
+		<div class="btnaction"><div class = "btnactioncontent"></div></div>
+		<div class="btnaction"><div class = "btnactioncontent"></div></div>
+		<div class="btnaction"><div class = "btnactioncontent"></div></div>
+	</div>
+	<div id="piecedescription">
+	</div>
+	<div id="logsection">
+		<div class="log">Action 1 Resolve</div>
+		<div class="log">Action 2 Resolve</div>
+		<div class="log">Action 3 Resolve</div>
+		<div class="log">Action 4 Resolve</div>
+		<div class="log">Action 5 Resolve</div>
 
 	</div>
-
 	<!--For Debugging-->
 	<div id="devSection">
 		<div>
@@ -140,6 +157,12 @@
 									<div class="action">
 										<label>Destroy</label>
 										<button class="button" onclick="Tsh.Ddm.Debug.btnDestroySelectedPiece()">Destory Object</button>
+									</div>			
+								</div>			
+								<div class="action">
+									<div class="action">
+										<label>Display Action Popup</label>
+										<button class="button" onclick="Tsh.Ddm.Debug.btnDisplayActionPopup()">Display</button>
 									</div>			
 								</div>			
 
