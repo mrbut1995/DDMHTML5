@@ -136,41 +136,39 @@ html {
   
 }
 #pieceactionmenu .btnaction{
+  /*Sorting Order*/
   display: inline-block; 
-  margin-left: 40px;
   vertical-align: top;
-  width: 60px;
-  height:  60px;
-  background-color: rgba(221, 221, 221, 0.4);
-  border: none;
-  color: white;
-  padding: 20px;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  font-size: 16px;
-  vertical-align: middle;
+  margin-left: 30px;
+  margin-right: 30px;
+  width: 100px;
+  height:  100px;
+  background-color:#f7f7f7ab;
   border-radius: 45%;
-
-  border: 2px solid #f7f7f7;
-	box-shadow: 0px 5px 10px rgb(146, 104, 104);
-
-  transform: translate(-50%, -50%);
-  text-align: center;
+  background-clip: padding-box;
+	box-shadow: 0px 0px 10px rgb(173, 192, 233);
+  border: 10px solid rgba(221, 221, 221, 0.4);
 
 }
-#pieceactionmenu .btnaction::before{
+
+#pieceactionmenu .btnaction * {
+  position: relative;
+  top:20%;
+  left: 0%;
+  /* transform: translate(-50%, -50%); */
+}
+#pieceactionmenu .btnaction img {
+  opacity: 0.6;
+}
+
+#pieceactionmenu .btnaction:active{
+  box-shadow: 0px 0px 20px rgb(173, 192, 233);
+  background-color:#f7f7f7c9;
 
 }
-#pieceactionmenu .btnaction .btnactioncontent{
 
-  /* transform: translate(0%, 0%); */
-  background-color:#f7f7f7;
-  width:130%;
-  height:130%;
-  border-radius: 45%;
-  transform-origin: center;
-
+#pieceactionmenu .btnaction:active img {
+  opacity: 0.9;
 }
 
 /* Logging CSS*/

@@ -7,9 +7,11 @@ Tsh.Ddm.Debug = new function(){
 
     this.debugPieceSelected = null
     this.isSelectingPiece   = false
+    this.debugHighlightOnMove = false
 
     this.init = function(){
         DOMBoard.addEventListener("itemclicked" ,onItemClicked,false)
+        DOMBoard.addEventListener("boardmousemove" ,onBoardMouseMove,false)
 
     }
     this.CreatePieceView = function(){
@@ -60,10 +62,23 @@ Tsh.Ddm.Debug = new function(){
         mRow = Math.min(Math.max(mRow,0),18)
 
 
-        Tsh.Ddm.View.MoveViewProperty(this.debugPieceSelected.uuid,new Point(mCol,mRow))
+        Tsh.Ddm.View.MoveView(this.debugPieceSelected.uuid,new Point(mCol,mRow))
     }
     this.btnDisplayActionPopup = function(){
 
+    }
+    this.btnRoll = function(){
+        roll()
+    }
+    this.checkBoxHighlight = function(){
+        var val = document.getElementById("higlightchecked").checked
+        if(val){
+            this.debugHighlightOnMove = true
+            Tsh.Ddm.View.StartHighlight();
+        }else{
+            this.debugHighlightOnMove = false
+            Tsh.Ddm.View.StopHighlight();
+        }
     }
     this.StartSelectingPiece = function(){
         console.log("started selecting")
@@ -146,4 +161,11 @@ Tsh.Ddm.Debug = new function(){
             main.StopSelectingPiece()
         }
     }
+    var onBoardMouseMove = function(opts){
+        if(main.debugHighlightOnMove){
+            var point = Tsh.Ddm.View.GetCanvasMousePoint()
+            Tsh.Ddm.View.Highlight([point])
+        }
+    }
+
 }

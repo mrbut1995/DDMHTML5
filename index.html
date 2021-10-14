@@ -91,7 +91,7 @@
 		</div>
 	</div>
 	<div id="pieceactionmenu">
-		<div class="btnaction"><div class = "btnactioncontent"></div></div>
+		<div class="btnaction"><img src="./img/AttackDeclarationIcon1.png" class = "btnactioncontent"></div>
 		<div class="btnaction"><div class = "btnactioncontent"></div></div>
 		<div class="btnaction"><div class = "btnactioncontent"></div></div>
 	</div>
@@ -172,7 +172,10 @@
 			
 				</div>
 				<div class="action">
-					<button class="button" onclick="roll()">Roll Dice</button>
+					<button class="button" onclick="Tsh.Ddm.Debug.btnRoll()">Roll Dice</button>
+				</div>
+				<div class="action">
+					<input id= "higlightchecked" type="checkbox" onclick="Tsh.Ddm.Debug.checkBoxHighlight()">Highlight on Move</button>
 				</div>
 			</ul>
 			<div id="gameState"></div>

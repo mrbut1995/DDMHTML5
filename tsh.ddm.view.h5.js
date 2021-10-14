@@ -17,19 +17,23 @@ var Rect = function(coord,width,height){
     }
 }
 
-var BaseView  = function(opts,item){
-    
+var BaseView  = function(opts){
 
     var defOpts = {
+        parent                      : null,
+        childs                      : [],
+
         uuid                        : uuid(),
         rect                        : new Rect(0,0,0,0) ,
-        visible                     : true,
-        enable                      : true,
         color                       : "#000000",
-        highlight                   : false,
         focused                     : false,
         mouseReceived               : false,
         type                        : "view",
+
+        //Parent Inheritance Value
+        visible                     : true,
+        enable                      : true,
+        isHighlight                 : false,
 
         //Message Handle Method
         onMouseClicked              : null ,
@@ -46,6 +50,28 @@ var BaseView  = function(opts,item){
     opts = $.extend(defOpts,opts)
     $.extend(true,this,opts)
 
+    this.draw    = null
+    this.update  = null
+
+
+    var isParentInheritanceValue = function(name){
+        return name == "visible" || name == "enable" || name == "isHighlight";
+    } 
+
+    this.childOf   = function(parent){
+        if(this.parent != null){
+            //Remove item from the current parent's child list
+            this.removeInArray(this.parent.childs)
+        }
+        this.parent = parent
+
+        if(parent == null){
+            console.log("Set parent = null => Doint nothing")
+        }else{
+            console.log("Set parent = ",parent.toString()," => add into parent's child")
+            this.parent.childs.push(this)
+        }
+    }
     this.sendMessage = function(opts){
         var defOpts = {
             msg:"unknwon",
@@ -54,36 +80,13 @@ var BaseView  = function(opts,item){
         var defParam = {
             source:this
         }
-        console.log("msg = ",opts.msg)
         var event = null
-        if(opts.msg == "onMouseClicked"){
-            if(isFunction(this.onMouseClicked))          this.onMouseClicked(defParam)
-           event = this.itemClicked
-        }else  if(opts.msg == "onMousePressed"){
-            if(isFunction(this.onMousePressed))          this.onMousePressed(defParam)
-            event =this.itemPressed
-        }else  if(opts.msg == "onMouseReleased"){
-            if(isFunction(this.onMouseReleased))         this.onMouseReleased(defParam)
-            event =this.itemReleased
-        }else  if(opts.msg == "onMousePressAndHold"){
-            if(isFunction(this.onMousePressAndHold))     this.onMousePressAndHold(defParam)
-            event =this.itemPressAndHold
-        }else  if(opts.msg == "onPropertyChanged"){
-            if(isFunction(this.onPropertyChanged))       this.onPropertyChanged(defParam)
-            event =this.properyChanged
-        }else  if(opts.msg == "onCreated"){
-            event =this.objectCreated
-        }else  if(opts.msg == "onDestroyed"){
-            event =this.objectDetroyed
-        }else  if(opts.msg == "onFoucsed"){
-            if(isFunction(this.onFoucsed))               this.onFoucsed(defParam)
-            event =this.viewFocused
-        }else if(opts.msg == "onMove"){
-            if(isFunction(this.onMove))                  this.onMove(defParam)
-            event =this.itemMove
-        }else{
-            console.log("CANNOT FIND MESSAGE HANDLE",opts.msg)
+        console.log("Call ",opts.mgs)
+        if(!this.hasOwnProperty(opts.mgs) || !isFunction(this[opts.mgs])){
+            console.log("[ERROR] DOES NOT CAONTAIN SLOT METHOD");
+            return;
         }
+        this[opts.mgs](defParam);
     }
     this.contain      = function(coord){
         return this.rect.contain(coord)
@@ -96,8 +99,19 @@ var BaseView  = function(opts,item){
             return false
         console.log("property[",name,"]=(",this[name],"=>",value,")")
         this[name] = value
+        if(isParentInheritanceValue(name)){
+            //Set Child's property to the same value as parent
+            for(var i in this.childs){
+                this.childs[i].setProperty(name,value)
+            }
+        }
         this.sendMessage({msg:"onPropertyChanged"})
     }
+    
+    this.highlight = function(value){
+        this.setProperty("isHighlight",value);
+    }
+
     this.move         = function(coord){
         var r = new Rect(coord,this.rect.w,this.rect.h)
         this.setProperty("rect",r)
@@ -122,19 +136,16 @@ var BaseView  = function(opts,item){
 
     }
     this.toString = function(){
-        return this.type+"("+this.uuid+")" + "("+this.rect.x+","+this.rect.y+")"
+        return this.type+"("+this.uuid+")"
     }
-    this.draw    = null
-    this.update  = null
 }
-var PieceView = function(opts,item){
+var PieceView = function(opts){
     //Inheritance from Base View
     opts = $.extend(new BaseView(),opts)
     $.extend(true,this,opts)
 
     //Initializing Property
     this.mouseReceived       = true
-    this.item = item
     this.type = "piece"
     //Implement
     this.draw         = function(context,mainView){
@@ -152,38 +163,42 @@ var PieceView = function(opts,item){
         context.restore()
     }
 }
-var LandView = function(opts,item){
-
-    this.item = item
-
-    opts = $.extend(new BaseView(),opts)
-    $.extend(true,this,opts)
+var LandView = function(opts){
 
     this.mouseReceived= true
     this.type = "land"
 
+    opts = $.extend(new BaseView(),opts)
+    $.extend(true,this,opts)
+
     this.draw         = function(context,mainView){
 
         context.save()
-        context.fillStyle = this.color
+        if(this.isHighlight){
+            context.fillStyle = "rgb(255, 100, 55, 0.5)"
+        }else{
+            context.fillStyle = this.color
+        }
         let drawingRect = this.rect
         context.fillRect(drawingRect.x,drawingRect.y,drawingRect.w,drawingRect.h)
         context.restore()
 
     }
 }
-var TileView = function(opts,item){
+var TileView = function(opts){
 
-    this.item = item
-    this.type = "piece"
+    this.type = "tile"
 
     opts = $.extend(new BaseView(),opts)
     $.extend(true,this,opts)
-    console.log("rect = ",this.rect)
 
     this.draw         = function(context,mainView){
         context.save()
-        context.fillStyle = this.color
+        if(this.isHighlight){
+            context.fillStyle = "rgb(255, 100, 55, 0.5)"
+        }else{
+            context.fillStyle = this.color
+        }
         let drawingRect = this.rect
         context.fillRect(drawingRect.x,drawingRect.y,drawingRect.w,drawingRect.h)
         context.restore()
@@ -300,6 +315,10 @@ Tsh.Ddm.View = new function(){
     this.allViews   = []
     this.dirty     = true
     this.focusedItem = null
+    
+    //Highlight
+    this.isHighlight     = false
+    this.hightlights     = []
 
     //Animation
     this.animations = []
@@ -307,6 +326,9 @@ Tsh.Ddm.View = new function(){
     //Dragging
     this.draggingItem = null
     this.isDragging   = false
+
+    //Mouse
+    this.mouseCoord = null
 
     //Event 
     this.events = {
@@ -319,6 +341,10 @@ Tsh.Ddm.View = new function(){
         itemdetroyed                : "itemdetroyed"   ,
         itemfocused                 : "itemfocused"      ,
         itemmove                    : "itemmove"         ,
+
+        boardmousemove              : "boardmousemove"  ,
+        boardmouseclicked           : "boardmouseclicked",
+        
     }
     
     var ViewConstants = new function(){
@@ -532,7 +558,7 @@ Tsh.Ddm.View = new function(){
 
 
     this.createView = function(prototype,opts,item,callback){
-        var view = new prototype(opts,item)
+        var view = new prototype(opts)
         view.sendMessage({msg:'onCreated'})
         emitEvent(this.events.objectcreated,{source : view,uuid:view.uuid})
         callback(view)
@@ -588,8 +614,6 @@ Tsh.Ddm.View = new function(){
         if(view != null){
             view.setProperty(property,value)
         }
-        //Request to Redraw
-        this.dirty = this.dirty || true
     }
 
     this.getView     = function(uuid){
@@ -612,6 +636,7 @@ Tsh.Ddm.View = new function(){
         }
         var view = this.createView(PieceView,opts,item,callback)
         this.addView(view,"piece") 
+        this.dirty = this.dirty || true
     }
     this.CreateLandView = function(point,opts,item,callback){
         var rect = new Rect(pointToCoord(point),ViewConstants.wCell,ViewConstants.hCell)
@@ -621,10 +646,16 @@ Tsh.Ddm.View = new function(){
         }
         var view = this.createView(LandView,opts,item,callback)   
         this.addView(view,"land")
+
+        //Request to Redraw
+        this.dirty = this.dirty || true
     }
     this.DestroyView = function(uuid){
         var view = this.getView(uuid);
         this.destroyView(view)
+
+        //Request to Redraw
+        this.dirty = this.dirty || true
     }
     this.ForceActiveFocus = function(item){
         if(item != null && item.inArray(this.allViews)){
@@ -637,6 +668,9 @@ Tsh.Ddm.View = new function(){
                 item.setProperty("focused",true)
             }
         }
+
+        //Request to Redraw
+        this.dirty = this.dirty || true
     }
     this.GetViewProperty = function(uuid,property){
         var view = this.getView(uuid);
@@ -649,16 +683,82 @@ Tsh.Ddm.View = new function(){
         var view = this.getView(uuid);
         if(view != null){
             this.changeViewProperty(view,property,value)
-            // view.setProperty(property,value)
         }
+
+        //Request to Redraw
+        this.dirty = this.dirty || true
     }
-    this.MoveViewProperty = function(uuid,point){
+    this.MoveView = function(uuid,point){
         var view = this.getView(uuid);
 
         if(view != null){
             var coord = pointToCoord(point)
             this.moveView(this.getView(uuid),coord)
         }
+
+        //Request to Redraw
+        this.dirty = this.dirty || true
+    }
+    this.StartHighlight = function(){
+        this.isHighlight     = true
+        this.ClearHighlight()
+        this.dirty = this.dirty || true
+    }
+    this.StopHighlight = function(){
+        this.isHighlight     = false
+        this.ClearHighlight()
+        this.dirty = this.dirty || true
+    }
+
+
+    this.Highlight  = function(list){
+        if(!this.isHighlight){
+            console.log("[ERROR]: Not hightlighting")
+            return;
+        }
+        console.log("Start Highlighting")
+        this.ClearHighlight()
+        //Highlight all the view in new list
+        for(var i in list){
+            var p = list[i]
+            var coord = pointToCoord(p)
+            var views = mainView.getViewAt(coord)
+            console.log("views =>",views)
+
+            for(var j in views){
+                var v = views[j]
+                //Highlight the highest item that's not piece
+                if(v.type != "piece"){
+                    v.highlight(true)
+                    this.hightlights.push(v)
+                    break;
+                }
+            }
+        }
+
+        //Request to Redraw
+        this.dirty = this.dirty || true
+
+    }
+    this.ClearHighlight = function(){
+        if(this.hightlights.length == 0){
+            return;
+        }
+        for(var i in this.hightlights){
+            //Turn of Highlight from current view
+            var v = this.hightlights[i]
+            v.highlight(false)
+        }
+        this.hightlights = []
+
+        //Request to Redraw
+        this.dirty = this.dirty || true
+    }
+    this.GetCanvasMousePoint = function(){
+        return coordToPoint(getCanvasCoord(this.mouseCoord))
+    }
+    this.GetCanvasMouseCoord = function(){
+        return getCanvasCoord(this.mouseCoord)
     }
     //////////////////////////////////////// ANIMATION
     this.constructingAnimation = function(){
@@ -794,7 +894,8 @@ Tsh.Ddm.View = new function(){
         clearTimeout(mouseTimer)
     }
     var onMouseMove = function(e){
-        // var canvasCoord = getCanvasCoord(e)
+        mainView.mouseCoord = e;
+        emitEvent("boardmousemove");
     }
 
     var onViewItemPropertyChanged = function(opts){
