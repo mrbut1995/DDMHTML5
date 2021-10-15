@@ -9,6 +9,8 @@ Tsh.Ddm.Debug = new function(){
     this.isSelectingPiece   = false
     this.debugHighlightOnMove = false
 
+    var rot = 0
+
     this.init = function(){
         DOMBoard.addEventListener("itemclicked" ,onItemClicked,false)
         DOMBoard.addEventListener("boardmousemove" ,onBoardMouseMove,false)
@@ -72,6 +74,8 @@ Tsh.Ddm.Debug = new function(){
     }
     this.checkBoxHighlight = function(){
         var val = document.getElementById("higlightchecked").checked
+        var varRot 
+
         if(val){
             this.debugHighlightOnMove = true
             Tsh.Ddm.View.StartHighlight();
@@ -164,7 +168,8 @@ Tsh.Ddm.Debug = new function(){
     var onBoardMouseMove = function(opts){
         if(main.debugHighlightOnMove){
             var point = Tsh.Ddm.View.GetCanvasMousePoint()
-            Tsh.Ddm.View.Highlight([point])
+            var lst = pointsFromPattern(point,"TYPE_10",rot)
+            Tsh.Ddm.View.Highlight(lst)
         }
     }
 
