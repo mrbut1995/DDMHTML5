@@ -5,6 +5,28 @@ var DOMDiceOne
 var DOMDiceTwo
 var DOMDiceThree
 
+//
+var imageLoader = {
+    loaded:         true,
+    loadedImages:   0,
+    totalImages:    0,
+    load: function(url){
+        this.totalImages++;
+        this.load = false;
+        var image = new Image();
+        image.src = url;
+        image.onload = function(){
+            imageLoader.loadedImages ++;
+            if(imageLoader.loadedImages === imageLoader.totalImages){
+                imageLoader.loaded = true
+            }
+            image.onload = undefined
+        }
+        return image;
+    }
+}
+
+
 let start, previousTimeStamp;
 
 
@@ -19,7 +41,6 @@ window.onload = function(){
     Tsh.Ddm.View.init()
     Tsh.Ddm.Debug.init()
 
-    
     // gameLoop()
     window.requestAnimationFrame(step);
 }
@@ -239,9 +260,6 @@ function Piece(id,point,owner){
     }
 
 }
-function Player(){
-    
-}
 
 
 // Define Common attributes for Game of DDM
@@ -344,3 +362,4 @@ function roll(){
 function prototypeName(obj){
     return obj.constructor.name
 }
+

@@ -307,6 +307,8 @@ Tsh.Ddm.View = new function(){
 
     var canvas;
     var context;
+    var audio;
+
     var mainView = this
 
     /////Property
@@ -402,10 +404,17 @@ Tsh.Ddm.View = new function(){
             return this.locatingCell(point)
         }
     
+    var initAudio = function(){
+        if ($("#ddm-audio").length == 0 || !audio) {
+            audio = document.createElement("audio");
+			audio.id = "ddm-audio";
+
+            $("#board").append(audio)
+        }
+
+    }
     var initCanvas = function(){
-        if ($("#ddm-canvas").length == 0 || !canvas || !context) {
-            boardHTML = document.getElementById("landColId")
-            
+        if ($("#ddm-canvas").length == 0 || !canvas || !context) {            
 
 			canvas = document.createElement("canvas");
 			canvas.id = "ddm-canvas";
@@ -549,6 +558,7 @@ Tsh.Ddm.View = new function(){
         // console.log("redrawing","check if Dirty ",this.dirty)
         if(!canvasElement){
             initCanvas()
+            initAudio()
         }
         if(!this.dirty)
             return

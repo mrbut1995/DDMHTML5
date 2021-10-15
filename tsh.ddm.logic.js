@@ -1,14 +1,22 @@
 var Tsh = Tsh || {}
 Tsh.Ddm = Tsh.Ddm || {}
 
-let BoardModel = function(){
+
+let Player = function(){
+
+}
+let Piece  = function(){
+
+}
+let Land   = function(){
+    
+}
+
+Tsh.Ddm.Model = new function(){
     this.pieces = []
     this.lands  = []
-    
-    this.GetLandAt = function(point){}
-    this.GetPieceAt = function(point){}
-    this.SetLandAt  = function(point,item){}
-    this.SetPieceAt = function(point,item){}
+    this.players = []
+
 }
 
 Tsh.Ddm.Logic = new function(){
@@ -18,11 +26,10 @@ Tsh.Ddm.Logic = new function(){
     }
     this.CreateLand = function(){}
     this.CreatePiece = function(){}
+    this.Roll = function(){}
 }
-Tsh.Ddm.Game = new function(){
-    this.model = new BoardModel()
-    
-    this.players = []
+
+Tsh.Ddm.Game = new function(){    
     this.activeCreature = {
         uuid:0
     }
@@ -47,6 +54,7 @@ Tsh.Ddm.Game = new function(){
     this.connect = null
     this.multiplayer = false
 
+    
     //Resource
     this.resSoundEffect = [
 
