@@ -167,6 +167,7 @@ Tsh.Ddm.Debug = new function(){
     }
     var onBoardMouseMove = function(opts){
         if(main.debugHighlightOnMove){
+            console.log("===>>HIGHLIGHT")
             var point = Tsh.Ddm.View.GetCanvasMousePoint()
             var lst = pointsFromPattern(point,"TYPE_10",rot)
             Tsh.Ddm.View.Highlight(lst)

@@ -1,17 +1,77 @@
 
+var Tsh = Tsh || {}
+Tsh.Ddm = Tsh.Ddm || {}
+
 //DOM Object
 var DOMBoard = document.getElementById("board")
 var DOMDiceOne
 var DOMDiceTwo
 var DOMDiceThree
 
-//
-var imageLoader = {
+let start, previousTimeStamp;
+
+window.onload = function(){
+    Tsh.Ddm.Game.init()
+    Tsh.Ddm.Game.run()
+}
+
+//Loader
+Tsh.Ddm.Loader = {
     loaded:         true,
-    loadedImages:   0,
-    totalImages:    0,
+    loadedCount:    0, // Assets that have been loaded so far
+    totalCount:    0, // Total number of asstes that need loading
+    soundFileExtn: ".ogg",
+
+    init: function(){
+        var mp3support,oggsupport;
+        var audio = document.createElement("ddm-audio")
+
+        if(audio.canPlayType){
+            mp3support = "" !== audio.canPlayType("audio/mpeg");
+            oggsupport = "" !== audio.canPlayType("audio/ogg; codecs=\"vorbis\"");
+        }else{
+            mp3support = false
+            oggsupport = false
+        }
+        // Check for ogg, then mp3, and finally set soundFileExtn to undefined
+        loader.soundFileExtn = oggsupport ? ".ogg" : mp3support ? ".mp3" : undefined;
+    },
+    loadImage: function(url){
+        this.loaded = false;
+        this.totalCount++;
+        var image = new Image();
+        image.addEventListener("load", loader.itemLoaded, false);
+        image.src = url;
+        return image;
+    },
+    loadSound: function(url){
+        this.loaded = false;
+        this.totalCount++;
+        var audio = new Audio();
+        audio.addEventListener("canplaythrough", loader.itemLoaded, false);
+        audio.src = url + loader.soundFileExtn;
+        return audio;
+    },
+    itemLoaded: function(ev){
+        // Stop listening for event type (load or canplaythrough) for this item now that it has been loaded
+        ev.target.removeEventListener(ev.type, loader.itemLoaded, false);
+        loader.loadedCount++;
+        if (loader.loadedCount === loader.totalCount) {
+        // Loader has loaded completely..
+        // Reset and clear the loader
+        loader.loaded = true;
+        loader.loadedCount = 0;
+        loader.totalCount = 0;
+        // Hide the loading screen
+        // and call the loader.onload method if it exists
+        if (loader.onload) {
+                loader.onload();
+                loader.onload = undefined;
+            }
+        }
+    },
     load: function(url){
-        this.totalImages++;
+        this.totalCount++;
         this.load = false;
         var image = new Image();
         image.src = url;
@@ -26,8 +86,51 @@ var imageLoader = {
     }
 }
 
+Tsh.Ddm.Match = {
+    data :{
+        pieces  :[],
+        lands   :[],
+    },
+    init: function(){
+    },
+    load:function(){
+    }
+}
 
-let start, previousTimeStamp;
+Tsh.Ddm.Game = {
+    init: function(){
+        getDOMObject()
+
+        Tsh.Ddm.Match.init()
+        Tsh.Ddm.View.init()
+        Tsh.Ddm.Debug.init()
+
+        Tsh.Ddm.Match.load()
+    },
+    run: function(){
+        window.requestAnimationFrame(Tsh.Ddm.Game.step);    
+    },
+    step: function(timestamp) {
+        if (start === undefined)
+          start = timestamp;
+        const elapsed = timestamp - start;
+      
+        var delta =  timestamp - previousTimeStamp;
+    
+        if (previousTimeStamp !== timestamp) {
+          Tsh.Ddm.View.update({delta:delta})
+        }
+      
+        previousTimeStamp = timestamp
+        window.requestAnimationFrame(step);
+    },
+    hideScreen: function(id){
+    },
+    showScreen: function(){
+    },
+    hideScreens: function(){
+    }
+}
 
 
 let Config = {
@@ -35,19 +138,6 @@ let Config = {
     boardRow : 19
 }
 
-window.onload = function(){
-    getDOMObject()
-
-    Tsh.Ddm.View.init()
-    Tsh.Ddm.Debug.init()
-
-    // gameLoop()
-    window.requestAnimationFrame(step);
-}
-
-function run(){
-
-}
 function step(timestamp) {
     if (start === undefined)
       start = timestamp;
@@ -70,8 +160,6 @@ function getDOMObject(){
     DOMDiceTwo      = document.getElementById("dice2")
     DOMDiceThree    = document.getElementById("dice3")
 }
-var gGameState;
-
 
 function p(col,row){return new Point(col,row)}
 
