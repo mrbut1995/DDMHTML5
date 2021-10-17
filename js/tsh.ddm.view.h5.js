@@ -1,22 +1,6 @@
 var Tsh = Tsh || {}
 Tsh.Ddm = Tsh.Ddm || {}
 
-var Coord = function(x,y){
-    this.x = x;
-    this.y = y;
-};
-var Rect = function(coord,width,height){
-    this.w = width
-    this.h = height
-    this.x = coord.x 
-    this.y = coord.y
-
-    this.contain = function(coord){
-        return this.x <= coord.x &&  coord.x <= this.x + this.w 
-            && this.y <= coord.y &&  coord.y <= this.y + this.h 
-    }
-}
-
 var BaseView  = function(opts){
 
     var defOpts = {
