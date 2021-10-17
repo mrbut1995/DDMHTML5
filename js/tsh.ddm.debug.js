@@ -21,7 +21,6 @@ Tsh.Ddm.Debug = new function(){
         var lRow = document.getElementById("pieceRowId").value
         lCol = Math.max(lCol,0)
         lRow = Math.max(lRow,0)
-        console.log("create piece (",lCol,",",lRow,")")
         Tsh.Ddm.View.CreatePieceView(new Point(lCol,lRow),{},null,()=>{})
     }
     this.CreateLandView  = function(){
@@ -30,7 +29,6 @@ Tsh.Ddm.Debug = new function(){
         pCol = Math.max(pCol,0)
         pRow = Math.max(pRow,0)
 
-        console.log("create land (",pCol,",",pRow,")")
         Tsh.Ddm.View.CreateLandView(new Point(pCol,pRow),{},null,()=>{})
     }
     this.DestroyedSelectedView = function(){
@@ -121,7 +119,6 @@ Tsh.Ddm.Debug = new function(){
         }
 
         var val = document.getElementById("pieceVisible").checked
-        console.log("onSelectedPieceVisibleChanged value = ",val)
 
         Tsh.Ddm.View.SetViewProperty(this.debugPieceSelected.uuid,"visible",val)
     }
@@ -132,7 +129,6 @@ Tsh.Ddm.Debug = new function(){
         }
 
         var val = document.getElementById("pieceHighlight").checked
-        console.log("onSelectedPieceHighlightChanged value = ",val)
 
         Tsh.Ddm.View.SetViewProperty(this.debugPieceSelected.uuid,"highlight",val)
     }
@@ -143,7 +139,6 @@ Tsh.Ddm.Debug = new function(){
         }
 
         var val = document.getElementById("pieceFocus").checked
-        console.log("onSelectedPieceFocusChanged value = ",val)
 
         Tsh.Ddm.View.SetViewProperty(this.debugPieceSelected.uuid,"focused",val)
     }

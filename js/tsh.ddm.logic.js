@@ -1,5 +1,7 @@
-var Tsh = Tsh || {}
-Tsh.Ddm = Tsh.Ddm || {}
+define(function(){
+    console.log("LOAD TSH.DDM.LOGIC")
+// var Tsh = Tsh || {}
+    Tsh.Ddm = Tsh.Ddm || {}
 
 
 let Player = function(){
@@ -71,3 +73,4 @@ Tsh.Ddm.Game = new function(){
 
     }
 }
+})

@@ -1,12 +1,8 @@
-
-var Tsh = Tsh || {}
+define(function(){
+    console.log("LOAD TSH.DDM")
+// var Tsh = Tsh || {}
 Tsh.Ddm = Tsh.Ddm || {}
 
-//DOM Object
-var DOMBoard = document.getElementById("board")
-var DOMDiceOne
-var DOMDiceTwo
-var DOMDiceThree
 
 let start, previousTimeStamp;
 
@@ -161,45 +157,6 @@ function getDOMObject(){
     DOMDiceThree    = document.getElementById("dice3")
 }
 
-function p(col,row){return new Point(col,row)}
-
-function rotating(list,clockwise){
-    var val = []
-    if(clockwise){
-        for(var i = 0 ; i < list.length;i++){
-            val[i] = new Point(0,0)
-            val[i].col = -list[i].row
-            val[i].row = list[i].col
-        }
-    }
-    else{
-        for(var i = 0 ; i < list.length;i++){
-            val[i] = new Point(0,0)
-            val[i].col = list[i].row
-            val[i].row = -list[i].col
-        }
-    }
-    return val
-}
-
-function pointsFromPattern(point,pattern,rot){
-    var lst = [point]
-    rot = rot || 0
-    if(!Constants.RELATIVE_PATTERN.hasOwnProperty(pattern)){
-        console.log("DOES NOT CONTAIN PATTERN ",pattern)
-        return lst
-    }
-    var pRelativePattern = Constants.RELATIVE_PATTERN[pattern]
-    for(var i = 0 ; i <Math.abs(rot);i++){
-        pRelativePattern = rotating(pRelativePattern,Math.sign(rot) == -1);
-    }
-    for(var i in pRelativePattern){
-        var pRelative = pRelativePattern[i]
-        var p = point.add(pRelative)
-        lst.push(p)
-    }
-    return lst
-}
 
 
 function MoveResult(player,newPoint){
@@ -291,3 +248,4 @@ function prototypeName(obj){
     return obj.constructor.name
 }
 
+})
