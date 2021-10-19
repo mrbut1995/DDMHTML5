@@ -69,5 +69,5 @@ define(["ddm"], function (Tsh) {
             return image;
         }
     }
-
+    
 })

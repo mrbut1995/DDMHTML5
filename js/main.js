@@ -11,7 +11,8 @@ requirejs.config({
     'ddm-input':"./tsh.ddm.input",
 
     'view': './view',
-    'animation':"./animation"
+    'animation':"./animation",
+    'lib': './lib'
   }
 });
 
@@ -238,7 +239,7 @@ function pointsFromPattern(point, pattern, rot) {
   }
   return lst
 }
-define(["jquery"], function () {
+define(['lib/class',"jquery"], function () {
   console.log("LOAD MAIN")
   
   require(["ddm-view"])
@@ -246,7 +247,8 @@ define(["jquery"], function () {
   require(["ddm-loader"])
   require(["ddm-input"])
   require(["ddm-animator"])
-
+  require(["ddm-debug"])
+  
   require(["ddm"])
 })
 

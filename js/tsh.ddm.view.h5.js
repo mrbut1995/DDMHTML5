@@ -18,17 +18,12 @@ let ViewConstants = {
 
     wTile: 42,
     hTile: 42,
-    cTile: "#606060",
 
     wLand: 42,
     hLand: 42,
-    cLand: "#F0F0F0",
-    cPiece: "red",
-    cHighlight: "rgb(255, 100, 55, 0.5)",
 
     nCol: 13,
     nRow: 19,
-
 }
 
 var CoordToPoint = function (coord) {
@@ -47,22 +42,22 @@ var PointToCoord = function (point) {
 }
 
 // //Include Module
-define(["ddm", "jquery", "view/baseview", "view/landview", "view/pieceview", "view/tileview"], function (Tsh, $, baseview, landview, pieceview, tileview) {
+define(["ddm", "jquery", "view/views"], function (Tsh, $, Views) {
 
 
     Tsh.Ddm = Tsh.Ddm || {}
 
-    var BaseView = baseview
-    var LandView = landview
-    var PieceView = pieceview
-    var TileView = tileview
+    var LandView = Views.LandView
+    var PieceView = Views.PieceView
+    var TileView = Views.TileView
+
+    var canvas;
+    var context;
+    var audio;
+
 
     //Board Canvas View
     Tsh.Ddm.View = new function () {
-
-        var canvas;
-        var context;
-        var audio;
 
 
         /////Property
@@ -211,7 +206,7 @@ define(["ddm", "jquery", "view/baseview", "view/landview", "view/pieceview", "vi
 
         var emitEvent = function (event, detail) {
             var e = new CustomEvent(event, { detail: detail });
-            DOMBoard.dispatchEvent(e);
+            this.DOMBoard.dispatchEvent(e);
         }
         
         this.constructingViewItem = function () {
@@ -238,7 +233,6 @@ define(["ddm", "jquery", "view/baseview", "view/landview", "view/pieceview", "vi
                     var rTile = new Rect(PointToCoord(pTile), ViewConstants.wCell, ViewConstants.hCell)
                     var opts = {
                         rect: rTile,
-                        color: ViewConstants.cTile,
                     }
                     this.createView(TileView, opts, null, v => { Tsh.Ddm.View.addView(v, "tile") })
                 }
@@ -249,6 +243,7 @@ define(["ddm", "jquery", "view/baseview", "view/landview", "view/pieceview", "vi
                 if (this.layerViews[i] == null || this.layerViews[i].list.length <= 0)
                     continue
                 for (var j = 0; j < this.layerViews[i].list.length; j++) {
+                    console.log("DRAW VIEW")
                     this.layerViews[i].list[j].draw(context, this)
                 }
             }
@@ -309,11 +304,10 @@ define(["ddm", "jquery", "view/baseview", "view/landview", "view/pieceview", "vi
         }
 
         this.redraw = function (canvasElement) {
-            // console.log("redrawing","check if Dirty ",this.dirty)
+            console.log("redrawing","check if Dirty ",this.dirty)
             if (!canvasElement) {
                 this.initCanvas()
                 this.initAudio()
-                this.initDOM()
             }
             if (!this.dirty)
                 return
@@ -323,6 +317,7 @@ define(["ddm", "jquery", "view/baseview", "view/landview", "view/pieceview", "vi
 
 
         this.createView = function (prototype, opts, item, callback) {
+            console.log("prototype = ",prototype)
             var view = new prototype(opts)
             view.sendMessage({ msg: 'onCreated' })
             emitEvent(this.events.objectcreated, { source: view, uuid: view.uuid })
@@ -395,7 +390,6 @@ define(["ddm", "jquery", "view/baseview", "view/landview", "view/pieceview", "vi
             var rect = new Rect(PointToCoord(point), ViewConstants.wCell, ViewConstants.hCell)
             var opts = {
                 rect: rect,
-                color: ViewConstants.cPiece,
             }
             var view = this.createView(PieceView, opts, item, callback)
             this.addView(view, "piece")
@@ -405,7 +399,6 @@ define(["ddm", "jquery", "view/baseview", "view/landview", "view/pieceview", "vi
             var rect = new Rect(PointToCoord(point), ViewConstants.wCell, ViewConstants.hCell)
             var opts = {
                 rect: rect,
-                color: ViewConstants.cLand,
             }
             var view = this.createView(LandView, opts, item, callback)
             this.addView(view, "land")
@@ -523,6 +516,33 @@ define(["ddm", "jquery", "view/baseview", "view/landview", "view/pieceview", "vi
         this.GetCanvasMouseCoord = function () {
             return getCanvasCoord(this.mouseCoord)
         }
+                //Dice Rolling
+        this.DisplayDice = function(interval){
+            var dices = document.getElementById("dicesId");
+            dices.classList.toggle("show")
+            if(interval == undefined || interval == null)
+                return
+            setTimeout(() => { dices.classList.toggle("show") }, interval)
+        }
+        this.Roll =  function (dice, result) {
+            var DOMObject = undefined
+            switch(dice){
+                case 0: DOMObject = DOMDiceOne;break
+                case 1: DOMObject = DOMDiceTwo;break
+                case 2: DOMObject = DOMDiceThree;break
+            }
+            console.log("result = ", result)
+            for (var i = 1; i <= 6; i++) {
+                DOMObject.classList.remove('show-' + i);
+                if (result === i) {
+                    console.log("roll to ", 'show-' + i)
+                    DOMObject.classList.add('show-' + i);
+                    }
+                }
+        }
+        this.RequestRedraw = function(){
+            this.dirty = this.dirty || true
+        }
         //////////////////////////////////////// ANIMATION
         this.constructingAnimation = function () {
         }
@@ -541,6 +561,8 @@ define(["ddm", "jquery", "view/baseview", "view/landview", "view/pieceview", "vi
         }
         //Initializing View
         this.init = function () {
+            this.initDOM()
+
             this.constructingViewItem()
             this.constructingAnimation()
 

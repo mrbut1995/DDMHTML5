@@ -1,45 +1,44 @@
+var isParentInheritanceValue = function(name){
+    return name == "visible" || name == "enable" || name == "isHighlight";
+} 
+
 define(["jquery"],function($){
-    var prototype = function(opts){
-        var defOpts = {
-            parent                      : null,
-            childs                      : [],
+    console.log("CLASS = ",Class.extend)
+    var BaseView = Class.extend({
+        init      : function(otps){
+            this.parent                      = null
+            this.childs                      = []
     
-            uuid                        : uuid(),
-            rect                        : new Rect(0,0,0,0) ,
-            color                       : "#000000",
-            focused                     : false,
-            mouseReceived               : false,
-            type                        : "view",
+            this.uuid                        = uuid()
+            this.rect                        = new Rect(0,0,0,0) 
+            this.color                       = "#000000"
+            this.focused                     = false
+            this.mouseReceived               = false
+            this.type                        = "view"
     
             //Parent Inheritance Value
-            visible                     : true,
-            enable                      : true,
-            isHighlight                 : false,
+            this.visible                     = true
+            this.enable                      = true
+            this.isHighlight                 = false
     
             //Message Handle Method
-            onMouseClicked              : null ,
-            onMousePressed              : null ,
-            onMouseReleased             : null ,
-            onMousePressAndHold         : null ,
-            onUpdate                    : null ,
-            onPropertyChanged           : null ,
-            onFoucsed                   : null ,
-            onMove                      : null ,
-            onCreated                   : null ,
-            onDestroyed                 : null
-        }
-        opts = $.extend(defOpts,opts)
-        $.extend(true,this,opts)
+            this.onMouseClicked              = null 
+            this.onMousePressed              = null 
+            this.onMouseReleased             = null 
+            this.onMousePressAndHold         = null 
+            this.onUpdate                    = null 
+            this.onPropertyChanged           = null 
+            this.onFoucsed                   = null 
+            this.onMove                      = null 
+            this.onCreated                   = null 
+            this.onDestroyed                 = null
     
-        this.draw    = null
-        this.update  = null
+            this.onDraw                      = null
     
-    
-        var isParentInheritanceValue = function(name){
-            return name == "visible" || name == "enable" || name == "isHighlight";
-        } 
-    
-        this.childOf   = function(parent){
+            $.extend(this,otps,false)
+        },
+
+        childOf   : function(parent){
             if(this.parent != null){
                 //Remove item from the current parent's child list
                 this.removeInArray(this.parent.childs)
@@ -52,30 +51,30 @@ define(["jquery"],function($){
                 console.log("Set parent = ",parent.toString()," => add into parent's child")
                 this.parent.childs.push(this)
             }
-        }
-        this.sendMessage = function(opts){
+        },
+        sendMessage : function(evt){
             var defOpts = {
                 msg:"unknwon",
             }
-            opts = $.extend(defOpts,opts)
+            evt = $.extend(defOpts,evt)
             var defParam = {
                 source:this
             }
             var event = null
-            console.log("Call ",opts.mgs)
-            if(!this.hasOwnProperty(opts.mgs) || !isFunction(this[opts.mgs])){
+            console.log("Call ",evt.mgs)
+            if(!this.hasOwnProperty(evt.mgs) || !isFunction(this[evt.mgs])){
                 console.log("[ERROR] DOES NOT CAONTAIN SLOT METHOD");
                 return;
             }
-            this[opts.mgs](defParam);
-        }
-        this.contain      = function(coord){
+            this[evt.mgs](defParam);
+        },
+        contain      : function(coord){
             return this.rect.contain(coord)
-        }
-        this.property     = function(name){
+        },
+        property     : function(name){
             return this[name]
-        }
-        this.setProperty  = function(name,value){
+        },
+        setProperty  : function(name,value){
             if (!this.hasOwnProperty(name)) 
                 return false
             console.log("property[",name,"]=(",this[name],"=>",value,")")
@@ -87,38 +86,39 @@ define(["jquery"],function($){
                 }
             }
             this.sendMessage({msg:"onPropertyChanged"})
-        }
+        },
         
-        this.highlight = function(value){
+        highlight : function(value){
             this.setProperty("isHighlight",value);
-        }
+        },
     
-        this.move         = function(coord){
+        move         : function(coord){
             var r = new Rect(coord,this.rect.w,this.rect.h)
             this.setProperty("rect",r)
             this.sendMessage({msg:"onMove"})
-        }
-        this.inArray    = function(a){
+        },
+        inArray    : function(a){
             for(var i= 0 ; i < a.length;i++){
                 if(a[i] == this) 
                 return true
             }
             return false
-        }
-        this.removeInArray = function(a){
+        },
+        removeInArray : function(a){
             for(var i= 0 ; i < a.length;i++){
                 if(a[i] == this){
                     console.log("FOUND IN ARRAY i = ",i," => REMOVED")
                     a.splice(i,1)
                 }
             }
-        }
-        this.destroy = function(){
-    
-        }
-        this.toString = function(){
+        },
+        destroy : function(){
+        },
+        toString : function(){
             return this.type+"("+this.uuid+")"
-        }
-    }
-    return prototype
+        },
+    })
+
+    return BaseView
+
 })

@@ -75,19 +75,15 @@ define(function () {
         init: function () {
         },
         load: function () {
-        },
-        step:function(){
-        },
-        
+        },        
     }
 
     Tsh.Ddm.Game = {
         init: function () {
-            getDOMObject()
 
             Tsh.Ddm.Match.init()
             Tsh.Ddm.View.init()
-            // Tsh.Ddm.Debug.init()
+            Tsh.Ddm.Debug.init()
             Tsh.Ddm.Loader.init()
             Tsh.Ddm.Animator.init()
             Tsh.Ddm.Input.init()
@@ -120,28 +116,12 @@ define(function () {
         hideScreens: function () {
         },
         roll: function () {
-            console.log("roll ")
-
-            var dices = document.getElementById("dicesId");
-            dices.classList.toggle("show")
-            rollTo(DOMDiceOne, Math.floor(Math.random() * 6))
-            rollTo(DOMDiceTwo, Math.floor(Math.random() * 6))
-            rollTo(DOMDiceThree, Math.floor(Math.random() * 6))
-
-            //Hiding Dice When Done
-            setTimeout(() => { dices.classList.toggle("show") }, 1300)
+            console.log("roll")
+            Tsh.Ddm.View.DisplayDice(1300)
+            Tsh.Ddm.View.Roll(0, Math.floor(Math.random() * 6))
+            Tsh.Ddm.View.Roll(1, Math.floor(Math.random() * 6))
+            Tsh.Ddm.View.Roll(2, Math.floor(Math.random() * 6))
         },
-        //Dice Rolling
-        rollTo: function (DOMObject, result) {
-            console.log("result = ", result)
-            for (var i = 1; i <= 6; i++) {
-                DOMObject.classList.remove('show-' + i);
-                if (result === i) {
-                    console.log("roll to ", 'show-' + i)
-                    DOMObject.classList.add('show-' + i);
-                }
-            }
-        }
     }
 
     return Tsh
