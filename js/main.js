@@ -2,11 +2,16 @@ requirejs.config({
   paths: {
     'jquery': 'https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min',
     'ddm': "./tsh.ddm",
+    //Module 
     'ddm-view': "./tsh.ddm.view.h5",
     'ddm-logic': "./tsh.ddm.logic",
     'ddm-loader':"./tsh.ddm.loader",
     'ddm-debug' :"./tsh.ddm.debug",
-    'view': './view'
+    'ddm-animator':"./tsh.ddm.animator",
+    'ddm-input':"./tsh.ddm.input",
+
+    'view': './view',
+    'animation':"./animation"
   }
 });
 
@@ -190,10 +195,11 @@ function p(col, row) { return new Point(col, row) }
 
 //Global DOM
 //DOM Object
-var DOMBoard = document.getElementById("board")
+var DOMBoard
 var DOMDiceOne
 var DOMDiceTwo
 var DOMDiceThree
+var DOMCanvas
 
 function rotating(list, clockwise) {
   var val = []
@@ -234,9 +240,13 @@ function pointsFromPattern(point, pattern, rot) {
 }
 define(["jquery"], function () {
   console.log("LOAD MAIN")
+  
   require(["ddm-view"])
   require(["ddm-logic"])
   require(["ddm-loader"])
+  require(["ddm-input"])
+  require(["ddm-animator"])
+
   require(["ddm"])
 })
 

@@ -132,6 +132,16 @@ define(["ddm", "jquery", "view/baseview", "view/landview", "view/pieceview", "vi
             }
 
         }
+        this.initDOM = function(){
+            DOMBoard     = document.getElementById("board")
+            DOMDiceOne   = document.getElementById("dice1")
+            DOMDiceTwo   = document.getElementById("dice2")
+            DOMDiceThree = document.getElementById("dice3")
+            DOMCanvas    = document.getElementById("canvas")
+        }
+        this.getDOM = function(name){
+            return document.getElementById(name)
+        }
         this.initCanvas = function () {
             if ($("#ddm-canvas").length == 0 || !canvas || !context) {
 
@@ -203,7 +213,7 @@ define(["ddm", "jquery", "view/baseview", "view/landview", "view/pieceview", "vi
             var e = new CustomEvent(event, { detail: detail });
             DOMBoard.dispatchEvent(e);
         }
-
+        
         this.constructingViewItem = function () {
             var layerTile = {
                 name: 'tile',
@@ -303,6 +313,7 @@ define(["ddm", "jquery", "view/baseview", "view/landview", "view/pieceview", "vi
             if (!canvasElement) {
                 this.initCanvas()
                 this.initAudio()
+                this.initDOM()
             }
             if (!this.dirty)
                 return

@@ -44,12 +44,6 @@ function Piece(id, point, owner) {
 
 }
 
-function getDOMObject() {
-    DOMBoard = document.getElementById("board")
-    DOMDiceOne = document.getElementById("dice1")
-    DOMDiceTwo = document.getElementById("dice2")
-    DOMDiceThree = document.getElementById("dice3")
-}
 
 
 //Define Modul
@@ -95,11 +89,13 @@ define(function () {
             Tsh.Ddm.View.init()
             // Tsh.Ddm.Debug.init()
             Tsh.Ddm.Loader.init()
+            Tsh.Ddm.Animator.init()
+            Tsh.Ddm.Input.init()
 
             Tsh.Ddm.Match.load()
         },
         run: function () {
-            var cb = Tsh.Ddm.Game.step.bind(this)
+            var cb = this.step.bind(this)
             window.requestAnimationFrame(cb);
         },
         step: function (timestamp) {
@@ -114,7 +110,7 @@ define(function () {
             }
 
             previousTimeStamp = timestamp
-            var cb = Tsh.Ddm.Game.step.bind(this)
+            var cb = this.step.bind(this)
             window.requestAnimationFrame(cb);
         },
         hideScreen: function (id) {
