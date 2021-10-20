@@ -1,7 +1,9 @@
-define(["jquery", "view/baseview","view/boarditemview"], function ($, BaseView,BoardItemView) {
+define(["jquery", "view/boarditemview"], function ($,BoardItemView,cBoardView) {
+    console.log("CREATE VIEWS")
     var Views = {
         LandView: BoardItemView.extend({
             init: function (otps) {
+                console.log("INIT LandView")
                 this._super(otps)
                 this.mouseReceived = true
                 this.type = "land"
@@ -13,6 +15,7 @@ define(["jquery", "view/baseview","view/boarditemview"], function ($, BaseView,B
 
         TileView: BoardItemView.extend({
             init: function (otps) {
+                console.log("INIT TileView")
                 this._super(otps)
 
                 this.mouseReceived = true
@@ -25,6 +28,8 @@ define(["jquery", "view/baseview","view/boarditemview"], function ($, BaseView,B
 
         PieceView: BoardItemView.extend({
             init: function (otps) {
+                console.log("INIT PieceView")
+
                 this._super(otps)
                 this.mouseReceived = true
                 this.type = "piece"
@@ -33,7 +38,6 @@ define(["jquery", "view/baseview","view/boarditemview"], function ($, BaseView,B
                 this.imgSrcSelect = "rgb(255, 100, 55, 0.5)"
             }
         }),
-
     }
     return Views
 })

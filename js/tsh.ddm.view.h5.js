@@ -42,14 +42,14 @@ var PointToCoord = function (point) {
 }
 
 // //Include Module
-define(["ddm", "jquery", "view/views"], function (Tsh, $, Views) {
+define(["ddm", "jquery", "view/views","view/boardview"], function (Tsh, $, Views,BoardView) {
 
 
     Tsh.Ddm = Tsh.Ddm || {}
 
     var LandView = Views.LandView
     var PieceView = Views.PieceView
-    var TileView = Views.TileView
+    var TileView  = Views.TileView
 
     var canvas;
     var context;
@@ -62,10 +62,8 @@ define(["ddm", "jquery", "view/views"], function (Tsh, $, Views) {
 
         /////Property
         //Main View
-        this.layerViews = []
-        this.allViews = []
+        this.BoardView = new BoardView()
         this.dirty = true
-        this.focusedItem = null
 
         //Highlight
         this.isHighlight = false
@@ -93,30 +91,6 @@ define(["ddm", "jquery", "view/views"], function (Tsh, $, Views) {
 
         }
 
-
-        this.locatingCell = function (point) {
-            var coord = PointToCoord(point)
-            return $.extend({
-                x: 0,
-                y: 0,
-                width: ViewConstants.wCell,
-                height: ViewConstants.hCell
-            }, coord);
-        }
-
-        //Calculating Board Piece Position
-        this.locatingTile = function (point) {
-            return this.locatingCell(point)
-        }
-        this.locatingLand = function (point) {
-            return this.locatingCell(point)
-        }
-        this.locatingPiece = function (point) {
-            return this.locatingCell(point)
-        }
-        this.locatingHighlight = function (point) {
-            return this.locatingCell(point)
-        }
 
         this.initAudio = function () {
             if ($("#ddm-audio").length == 0 || !audio) {
@@ -209,68 +183,13 @@ define(["ddm", "jquery", "view/views"], function (Tsh, $, Views) {
             this.DOMBoard.dispatchEvent(e);
         }
         
-        this.constructingViewItem = function () {
-            var layerTile = {
-                name: 'tile',
-                list: []
-            }
-            var layerLand = {
-                name: 'land',
-                list: []
-            }
-            var layerPiece = {
-                name: 'piece',
-                list: []
-            }
-
-            this.layerViews.push(layerTile)
-            this.layerViews.push(layerLand)
-            this.layerViews.push(layerPiece)
-
-            for (var i = 0; i < ViewConstants.nRow; i++) {
-                for (var j = 0; j < ViewConstants.nCol; j++) {
-                    var pTile = new Point(j, i)
-                    var rTile = new Rect(PointToCoord(pTile), ViewConstants.wCell, ViewConstants.hCell)
-                    var opts = {
-                        rect: rTile,
-                    }
-                    this.createView(TileView, opts, null, v => { Tsh.Ddm.View.addView(v, "tile") })
-                }
-            }
-        }
-        this.drawViewItem = function () {
-            for (var i = 0; i < this.layerViews.length; i++) {
-                if (this.layerViews[i] == null || this.layerViews[i].list.length <= 0)
-                    continue
-                for (var j = 0; j < this.layerViews[i].list.length; j++) {
-                    console.log("DRAW VIEW")
-                    this.layerViews[i].list[j].draw(context, this)
-                }
-            }
-        }
-        this.getViewAt = function (coord) {
-            var lst = []
-            for (var i = 0; i < this.layerViews.length; i++) {
-                if (this.layerViews[i] == null || this.layerViews[i].length == 0)
-                    continue;
-                for (var j = 0; j < this.layerViews[i].list.length; j++) {
-                    if (this.layerViews[i].list[j].contain(coord)) {
-                        lst.unshift(this.layerViews[i].list[j])
-                    }
-                }
-            }
-            return lst;
+        this.constructBoardView = function(){
+            //TODO:
         }
 
-        this.drawBoard = function (opts) {
-            var defOpts = {
-                x: 0,
-                y: 0
-            }
-            opts = $.extend(defOpts, opts)
-
+        this.draw = function () {
             context.clearRect(0, 0, ViewConstants.canvasWidth, ViewConstants.canvasHeight)
-            this.drawViewItem()
+            this.BoardView.draw(context,this)
         }
 
         //Member of class
@@ -311,13 +230,12 @@ define(["ddm", "jquery", "view/views"], function (Tsh, $, Views) {
             }
             if (!this.dirty)
                 return
-            this.drawBoard();
+            this.draw();
             this.dirty = false
         }
 
 
         this.createView = function (prototype, opts, item, callback) {
-            console.log("prototype = ",prototype)
             var view = new prototype(opts)
             view.sendMessage({ msg: 'onCreated' })
             emitEvent(this.events.objectcreated, { source: view, uuid: view.uuid })
@@ -325,41 +243,6 @@ define(["ddm", "jquery", "view/views"], function (Tsh, $, Views) {
             return view
         }
 
-        this.addView = function (view, layer) {
-            if (view == null) {
-                return;
-            }
-            console.log("add view ", view, "into layer ", layer)
-            if (layer == "") {
-            }
-            for (var i in this.layerViews) {
-                if (this.layerViews[i].name == layer) {
-                    console.log("Add to layer ", this.layerViews[i].name)
-                    this.layerViews[i].list.push(view)
-                    break;
-                }
-            }
-            this.allViews.push(view)
-
-            //Request to redraw
-            this.dirty = this.dirty || true
-        }
-        this.destroyView = function (view) {
-            if (view.inArray(this.allViews)) {
-                //Remove View in All View List
-                view.removeInArray(this.allViews)
-
-                //Remove View in Layer List
-                for (var i in this.layerViews) {
-                    view.removeInArray(this.layerViews[i].list)
-                }
-            }
-            view.sendMessage({ msg: 'onDestroyed' })
-            emitEvent(this.events.itemdestroyed, { source: view, uuid: view.uuid })
-
-            //Request to Redraw
-            this.dirty = this.dirty || true
-        }
         this.moveView = function (view, coord) {
             if (view.inArray(this.allViews)) {
                 //Move View Coord
@@ -374,17 +257,6 @@ define(["ddm", "jquery", "view/views"], function (Tsh, $, Views) {
             }
         }
 
-        this.getView = function (uuid) {
-            for (var i in this.allViews) {
-                if (this.allViews[i].uuid == uuid) {
-                    console.log("FOUND ", uuid, " = ", this.allViews[i])
-                    return this.allViews[i]
-                }
-            }
-            console.log("CANNOT FOUND ", uuid)
-            return null
-        }
-
         //////////////////////////////////////// SPECIFY 
         this.CreatePieceView = function (point, opts, item, callback) {
             var rect = new Rect(PointToCoord(point), ViewConstants.wCell, ViewConstants.hCell)
@@ -392,7 +264,7 @@ define(["ddm", "jquery", "view/views"], function (Tsh, $, Views) {
                 rect: rect,
             }
             var view = this.createView(PieceView, opts, item, callback)
-            this.addView(view, "piece")
+            this.BoardView.addViewChild(view,"piece")
             this.dirty = this.dirty || true
         }
         this.CreateLandView = function (point, opts, item, callback) {
@@ -401,42 +273,28 @@ define(["ddm", "jquery", "view/views"], function (Tsh, $, Views) {
                 rect: rect,
             }
             var view = this.createView(LandView, opts, item, callback)
-            this.addView(view, "land")
+            this.BoardView.addViewChild(view,"land")
 
             //Request to Redraw
             this.dirty = this.dirty || true
         }
         this.DestroyView = function (uuid) {
-            var view = this.getView(uuid);
-            this.destroyView(view)
+            var view = this.BoardView.view(uuid);
 
-            //Request to Redraw
-            this.dirty = this.dirty || true
-        }
-        this.ForceActiveFocus = function (item) {
-            if (item != null && item.inArray(this.allViews)) {
-                if (this.focusedItem != null) {
-                    this.focusedItem.setProperty("focused", false)
-                }
-                this.focusedItem = item
-
-                if (item != null) {
-                    item.setProperty("focused", true)
-                }
-            }
+            this.BoardView.removeViewChild(view)
 
             //Request to Redraw
             this.dirty = this.dirty || true
         }
         this.GetViewProperty = function (uuid, property) {
-            var view = this.getView(uuid);
+            var view = this.BoardView.view(uuid);
             if (view != null) {
                 return view.property(property)
             }
             return null
         }
         this.SetViewProperty = function (uuid, property, value) {
-            var view = this.getView(uuid);
+            var view = this.BoardView.view(uuid);
             if (view != null) {
                 this.changeViewProperty(view, property, value)
             }
@@ -445,11 +303,11 @@ define(["ddm", "jquery", "view/views"], function (Tsh, $, Views) {
             this.dirty = this.dirty || true
         }
         this.MoveView = function (uuid, point) {
-            var view = this.getView(uuid);
+            var view = this.BoardView.view(uuid);
 
             if (view != null) {
                 var coord = PointToCoord(point)
-                this.moveView(this.getView(uuid), coord)
+                this.moveView(view, coord)
             }
 
             //Request to Redraw
@@ -465,8 +323,6 @@ define(["ddm", "jquery", "view/views"], function (Tsh, $, Views) {
             this.ClearHighlight()
             this.dirty = this.dirty || true
         }
-
-
         this.Highlight = function (list) {
             if (!this.isHighlight) {
                 console.log("[ERROR]: Not hightlighting")
@@ -478,7 +334,7 @@ define(["ddm", "jquery", "view/views"], function (Tsh, $, Views) {
             for (var i in list) {
                 var p = list[i]
                 var coord = PointToCoord(p)
-                var views = Tsh.Ddm.View.getViewAt(coord)
+                var views = this.BoardView.viewsAt(coord)//Tsh.Ddm.View.getViewAt(coord)
                 console.log("views =>", views)
 
                 for (var j in views) {
@@ -563,9 +419,10 @@ define(["ddm", "jquery", "view/views"], function (Tsh, $, Views) {
         this.init = function () {
             this.initDOM()
 
-            this.constructingViewItem()
+            // this.constructingViewItem()
             this.constructingAnimation()
-
+            this.constructBoardView()
+            
             this.redraw()
         }
         //Track Mouse on the board
@@ -579,7 +436,7 @@ define(["ddm", "jquery", "view/views"], function (Tsh, $, Views) {
             }
             opts = $.extend(defOpts, opts)
 
-            var views = Tsh.Ddm.View.getViewAt(opts)
+            var views = Tsh.Ddm.View.BoardView.viewsAt(opts)//Tsh.Ddm.View.getViewAt(opts)
             for (var i in views) {
                 if (views[i].mouseReceived == false)
                     continue;
@@ -598,7 +455,7 @@ define(["ddm", "jquery", "view/views"], function (Tsh, $, Views) {
             }
             opts = $.extend(defOpts, opts)
 
-            var views = Tsh.Ddm.View.getViewAt(opts)
+            var views = Tsh.Ddm.View.BoardView.viewsAt(opts)//Tsh.Ddm.View.getViewAt(opts)
             for (var i in views) {
                 if (views[i].mouseReceived == false)
                     continue;
@@ -615,7 +472,7 @@ define(["ddm", "jquery", "view/views"], function (Tsh, $, Views) {
             }
             opts = $.extend(defOpts, opts)
 
-            var views = Tsh.Ddm.View.getViewAt(opts)
+            var views = Tsh.Ddm.View.BoardView.viewsAt(opts)
             for (var i in views) {
                 if (views[i].mouseReceived == false)
                     continue;
@@ -631,7 +488,7 @@ define(["ddm", "jquery", "view/views"], function (Tsh, $, Views) {
                 y: 0
             }
             opts = $.extend(defOpts, opts)
-            var views = Tsh.Ddm.View.getViewAt(opts)
+            var views = Tsh.Ddm.View.BoardView.viewsAt(opts)
             for (var i in views) {
                 if (views[i].mouseReceived == false)
                     continue;

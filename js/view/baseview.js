@@ -21,23 +21,26 @@ define(["jquery"],function($){
             this.enable                      = true
             this.isHighlight                 = false
     
-            //Message Handle Method
-            this.onMouseClicked              = null 
-            this.onMousePressed              = null 
-            this.onMouseReleased             = null 
-            this.onMousePressAndHold         = null 
-            this.onUpdate                    = null 
-            this.onPropertyChanged           = null 
-            this.onFoucsed                   = null 
-            this.onMove                      = null 
-            this.onCreated                   = null 
-            this.onDestroyed                 = null
     
-            this.onDraw                      = null
-    
-            $.extend(this,otps,false)
+            //Method
+            $.extend(this,otps)
         },
 
+        //Message Handle Method
+        onMouseClicked              : null, 
+        onMousePressed              : null, 
+        onMouseReleased             : null, 
+        onMousePressAndHold         : null, 
+        onUpdate                    : null, 
+        onPropertyChanged           : null, 
+        onFoucsed                   : null, 
+        onMove                      : null, 
+        onCreated                   : null, 
+        onDestroyed                 : null,
+        onDraw                      : null,
+
+        draw : null,
+       
         childOf   : function(parent){
             if(this.parent != null){
                 //Remove item from the current parent's child list

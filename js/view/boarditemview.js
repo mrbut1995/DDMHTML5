@@ -1,13 +1,16 @@
 define(["jquery", "view/baseview"], function ($, BaseView) {
     var BoardItemView = BaseView.extend({
         init:function(opts){
+            console.log("INIT BoardItemView")
+            this._super(opts)
+
             this.imgSrcNormal  = ""
             this.imgSrcHidden  = ""
             this.imgSrcSelect  = ""
             this.imgSrcDisable = ""
 
-            this._super(opts)
-
+            this.col           = 0
+            this.row           = 0
         },
         draw: function (context, mainView) {
             context.save()
