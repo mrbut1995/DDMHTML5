@@ -104,7 +104,6 @@ define(["jquery", "view/baseview", "view/views"], function ($, BaseView, Views) 
                     }
                 }
             }
-            console.log("viewsAt = ",lst)
             return lst;
         },
         initViews: function () {
@@ -129,7 +128,62 @@ define(["jquery", "view/baseview", "view/views"], function ($, BaseView, Views) 
             }
             console.log("CANNOT FOUND ", uuid)
             return null
-        }
+        },
+        onMouseClicked      : function(ev){
+            var views = this.viewsAt(ev)
+            for(var i in views){
+                var view = views[i]
+                if(!isFunction(view.onMouseClicked))
+                    continue;
+                view.onMouseClicked(ev)
+            }
+        },
+        onMousePressed      : function(ev){
+            var views = this.viewsAt(ev)
+            for(var i in views){
+                var view = views[i]
+                if(!isFunction(view.onMousePressed))
+                    continue;
+                view.onMousePressed(ev)
+            }
+        },
+        onMouseReleased     : function(ev){
+            var views = this.viewsAt(ev)
+            for(var i in views){
+                var view = views[i]
+                if(!isFunction(view.onMouseReleased))
+                    continue;
+                view.onMouseReleased(ev)
+            }
+        },
+        onMousePressAndHold : function(ev){
+            var views = this.viewsAt(ev)
+            for(var i in views){
+                var view = views[i]
+                if(!isFunction(view.onMousePressAndHold))
+                    continue;
+                view.onMousePressAndHold(ev)
+            }
+        },
+        onMouseDrag : function(ev){
+            var views = this.viewsAt(ev)
+            for(var i in views){
+                var view = views[i]
+                if(!isFunction(view.onMouseDrag))
+                    continue;
+                view.onMouseDrag(ev)
+            }
+        },
+        onMouseDrag : function(ev){
+            var views = this.viewsAt(ev)
+            for(var i in views){
+                var view = views[i]
+                if(!isFunction(view.onMouseDrag))
+                    continue;
+                view.onMouseCancel(ev)
+            }
+        },
+
     })
     return BoardView
 })

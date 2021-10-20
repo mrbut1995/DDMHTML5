@@ -6,16 +6,14 @@ define(["ddm", "jquery"], function(Tsh,$){
             down:false,
             dragging: false
         },
+        inputListener: [],
+
         init:function(){
             var canvas = Tsh.Ddm.View.getDOM("canvas")
-            // canvas.addEventListener("click",this.onmouseclicked.bind(this), false);
-            // canvas.addEventListener("mousemove",this.onmousemove.bind(this), false);
-            // canvas.addEventListener("mousedown",this.onmousedown.bind(this), false);
-            // canvas.addEventListener("mouseup",  this.onmouseup.bind(this),  false);
-            // canvas.addEventListener("mouseout", this.onmouseout.bind(this), false);
         },
-        onmouseclicked:function(ev){
 
+        //Listener
+        onmouseclicked:function(ev){
             ev.preventDefault();
         },
         onmousedown:function(ev){

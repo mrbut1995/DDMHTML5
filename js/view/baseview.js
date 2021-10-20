@@ -23,24 +23,25 @@ define(["jquery"],function($){
     
     
             //Method
-            $.extend(this,otps)
+            $.extend(this,otps,false)
         },
-
         //Message Handle Method
         onMouseClicked              : null, 
         onMousePressed              : null, 
         onMouseReleased             : null, 
-        onMousePressAndHold         : null, 
+        onMousePressAndHold         : null,
+        onMouseDrag                 : null,
+        onMouseCancel               : null,
+         
         onUpdate                    : null, 
         onPropertyChanged           : null, 
-        onFoucsed                   : null, 
-        onMove                      : null, 
+        onFocused                   : null, 
         onCreated                   : null, 
         onDestroyed                 : null,
-        onDraw                      : null,
+
 
         draw : null,
-       
+        
         childOf   : function(parent){
             if(this.parent != null){
                 //Remove item from the current parent's child list
@@ -83,10 +84,7 @@ define(["jquery"],function($){
             console.log("property[",name,"]=(",this[name],"=>",value,")")
             this[name] = value
             if(isParentInheritanceValue(name)){
-                //Set Child's property to the same value as parent
-                for(var i in this.childs){
-                    this.childs[i].setProperty(name,value)
-                }
+                callChild(child => child.setProperty(name,value));
             }
             this.sendMessage({msg:"onPropertyChanged"})
         },
@@ -120,6 +118,11 @@ define(["jquery"],function($){
         toString : function(){
             return this.type+"("+this.uuid+")"
         },
+        callChild: function(callback){
+            for(var i in this.childs){
+                callback(this.childs[i])
+            }
+        }
     })
 
     return BaseView
