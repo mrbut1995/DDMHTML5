@@ -1,38 +1,35 @@
-define(["jquery", "view/boarditemview"], function ($,BoardItemView,cBoardView) {
+define(["jquery", "view/view"], function ($,View) {
     console.log("CREATE VIEWS")
     var Views = {
-        LandView: BoardItemView.extend({
+        LandView: View.extend({
             init: function (otps) {
-                console.log("INIT LandView")
                 this._super(otps)
-                this.mouseReceived = true
+
                 this.type = "land"
+                this.layer = "land"
 
                 this.imgSrcNormal = "#F0F0F0",
                 this.imgSrcSelect = "rgb(255, 100, 55, 0.5)"
             }
         }),
 
-        TileView: BoardItemView.extend({
+        TileView: View.extend({
             init: function (otps) {
-                console.log("INIT TileView")
                 this._super(otps)
-
-                this.mouseReceived = true
+                
                 this.type = "tile"
+                this.layer = "tile"
 
                 this.imgSrcNormal =  "#606060",
                 this.imgSrcSelect = "rgb(255, 100, 55, 0.5)"
             }
         }),
 
-        PieceView: BoardItemView.extend({
+        PieceView: View.extend({
             init: function (otps) {
-                console.log("INIT PieceView")
-
                 this._super(otps)
-                this.mouseReceived = true
                 this.type = "piece"
+                this.layer = "piece"
 
                 this.imgSrcNormal =  "red",
                 this.imgSrcSelect = "rgb(255, 100, 55, 0.5)"

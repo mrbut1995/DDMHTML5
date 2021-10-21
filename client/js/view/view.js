@@ -4,7 +4,7 @@ var isParentInheritanceValue = function(name){
 
 define(["jquery"],function($){
     console.log("CLASS = ",Class.extend)
-    var BaseView = Class.extend({
+    var View = Class.extend({
         init      : function(otps){
             this.parent                      = null
             this.childs                      = []
@@ -21,7 +21,12 @@ define(["jquery"],function($){
             this.enable                      = true
             this.isHighlight                 = false
     
-    
+            //Source For drawing Image
+            this.imgSrcNormal                = ""
+            this.imgSrcHidden                = ""
+            this.imgSrcSelect                = ""
+            this.imgSrcDisable               = ""
+
             //Method
             $.extend(this,otps,false)
         },
@@ -39,8 +44,21 @@ define(["jquery"],function($){
         onCreated                   : null, 
         onDestroyed                 : null,
 
-
-        draw : null,
+        draw: function (context, mainView) {
+            context.save()
+            if(!this.enable){
+                context.fillStyle = this.imgSrcDisable
+            }else if(!this.visible){
+                context.fillStyle = this.imgSrcHidden
+            }else if (this.isHighlight) {
+                context.fillStyle = this.imgSrcSelect
+            } else {
+                context.fillStyle = this.imgSrcNormal
+            }
+            let drawingRect = this.rect
+            context.fillRect(drawingRect.x, drawingRect.y, drawingRect.w, drawingRect.h)
+            context.restore()
+        },
         
         childOf   : function(parent){
             if(this.parent != null){
@@ -50,9 +68,7 @@ define(["jquery"],function($){
             this.parent = parent
     
             if(parent == null){
-                console.log("Set parent = null => Doint nothing")
             }else{
-                console.log("Set parent = ",parent.toString()," => add into parent's child")
                 this.parent.childs.push(this)
             }
         },
@@ -125,6 +141,6 @@ define(["jquery"],function($){
         }
     })
 
-    return BaseView
+    return View
 
 })

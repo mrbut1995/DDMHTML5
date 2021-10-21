@@ -11,7 +11,7 @@ define(["ddm", "jquery"], function(Tsh,$){
         init:function(){
             var canvas = Tsh.Ddm.View.getDOM("canvas")
         },
-
+        
         //Listener
         onmouseclicked:function(ev){
             ev.preventDefault();

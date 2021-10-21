@@ -1,6 +1,6 @@
-define(["jquery", "view/baseview", "view/views"], function ($, BaseView, Views) {
+define(["jquery", "view/view", "view/views"], function ($, View, Views) {
     console.log("CREATE BOARD VIEW")
-    var BoardView = BaseView.extend({
+    var BoardView = View.extend({
         init: function (opts) {
             this._super(opts)
 
@@ -111,10 +111,10 @@ define(["jquery", "view/baseview", "view/views"], function ($, BaseView, Views) 
             for (var i = 0; i < this.constant.nRow; i++) {
                 for (var j = 0; j < this.constant.nCol; j++) {
                     var pTile = new Point(j, i)
-                    var rTile = new Rect(PointToCoord(pTile), ViewConstants.wCell, ViewConstants.hCell)
+                    var cTile = this.pointToCoord(pTile)
+                    var rTile = new Rect(cTile, this.constant.wCell, this.constant.hCell)
                     var opts = { rect: rTile, }
                     var tileView = new Views.TileView(opts)
-                    console.log("create TileView = ", tileView)
                     this.addViewChild(tileView, "tile")
                 }
             }

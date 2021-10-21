@@ -1,46 +1,4 @@
 
-let ViewConstants = {
-    canvasWidth: 633,
-    canvasHeight: 923,
-
-    horMarGrid: 8,
-    verMarGrid: 8,
-
-    wCell: 42,
-    hCell: 42,
-
-    horPadCell: 6,
-    verPadCell: 6,
-    verPadCell: 6,
-    verPadCell: 6,
-    verPadCell: 6,
-    verPadCell: 6,
-
-    wTile: 42,
-    hTile: 42,
-
-    wLand: 42,
-    hLand: 42,
-
-    nCol: 13,
-    nRow: 19,
-}
-
-var CoordToPoint = function (coord) {
-    var x = coord.x
-    var y = coord.y
-    var col = Math.floor((x - ViewConstants.horMarGrid) / (ViewConstants.wCell + ViewConstants.horPadCell))
-    var row = Math.floor((y - ViewConstants.verMarGrid) / (ViewConstants.hCell + ViewConstants.verPadCell))
-    return new Point(col, row)
-}
-var PointToCoord = function (point) {
-    var col = point.col
-    var row = point.row
-    var x = ViewConstants.horMarGrid + (ViewConstants.wCell + ViewConstants.horPadCell) * col
-    var y = ViewConstants.verMarGrid + (ViewConstants.hCell + ViewConstants.verPadCell) * row
-    return new Coord(x, y)
-}
-
 // //Include Module
 define(["ddm", "jquery", "view/views","view/boardview"], function (Tsh, $, Views,BoardView) {
 
@@ -75,6 +33,14 @@ define(["ddm", "jquery", "view/views","view/boardview"], function (Tsh, $, Views
         //Mouse
         this.mouseCoord = null
 
+        this.dom = {
+            DOMBoard : null,
+            DOMDiceOne : null,
+            DOMDiceTwo : null,
+            DOMDiceThree : null,
+            DOMCanvas : null,
+        }
+
         //Event 
         this.events = {
             itemclicked: "itemclicked",
@@ -102,11 +68,12 @@ define(["ddm", "jquery", "view/views","view/boardview"], function (Tsh, $, Views
 
         }
         this.initDOM = function(){
-            DOMBoard     = document.getElementById("board")
-            DOMDiceOne   = document.getElementById("dice1")
-            DOMDiceTwo   = document.getElementById("dice2")
-            DOMDiceThree = document.getElementById("dice3")
-            DOMCanvas    = document.getElementById("canvas")
+            this.dom.DOMBoard     = document.getElementById("board")
+            console.log("this.dom.DOMBoard = ",this.dom.DOMBoard)
+            this.dom.DOMDiceOne   = document.getElementById("dice1")
+            this.dom.DOMDiceTwo   = document.getElementById("dice2")
+            this.dom.DOMDiceThree = document.getElementById("dice3")
+            this.dom.DOMCanvas    = document.getElementById("canvas")
         }
         this.getDOM = function(name){
             return document.getElementById(name)
@@ -118,8 +85,8 @@ define(["ddm", "jquery", "view/views","view/boardview"], function (Tsh, $, Views
                 canvas.id = "ddm-canvas";
                 $("#board").append(canvas);
 
-                canvas.width = ViewConstants.canvasWidth;
-                canvas.height = ViewConstants.canvasHeight;
+                canvas.width = this.BoardView.constant.canvasWidth;
+                canvas.height = this.BoardView.constant.canvasHeight;
                 canvas.style.background = "white no-repeat 0 0";
 
                 //Declare Slot
@@ -149,7 +116,7 @@ define(["ddm", "jquery", "view/views","view/boardview"], function (Tsh, $, Views
                 }
                 var onMouseMove = function (e) {
                     Tsh.Ddm.View.mouseCoord = e;
-                    emitEvent("boardmousemove");
+                    Tsh.Ddm.View.emitEvent("boardmousemove");
                 }
         
                 var onViewItemPropertyChanged = function (opts) {
@@ -169,7 +136,7 @@ define(["ddm", "jquery", "view/views","view/boardview"], function (Tsh, $, Views
                 canvas.addEventListener("mouseup", onMouseUp, false);
                 canvas.addEventListener("mousemove", onMouseMove);
 
-                DOMBoard.addEventListener("propertychanged", onViewItemPropertyChanged, false)
+                this.dom.DOMBoard.addEventListener("propertychanged", onViewItemPropertyChanged, false)
 
                 context = canvas.getContext("2d");
 
@@ -178,9 +145,9 @@ define(["ddm", "jquery", "view/views","view/boardview"], function (Tsh, $, Views
             }
         }
 
-        var emitEvent = function (event, detail) {
+        this.emitEvent = function (event, detail) {
             var e = new CustomEvent(event, { detail: detail });
-            this.DOMBoard.dispatchEvent(e);
+            Tsh.Ddm.View.dom.DOMBoard.dispatchEvent(e);
         }
         
         this.constructBoardView = function(){
@@ -188,7 +155,7 @@ define(["ddm", "jquery", "view/views","view/boardview"], function (Tsh, $, Views
         }
 
         this.draw = function () {
-            context.clearRect(0, 0, ViewConstants.canvasWidth, ViewConstants.canvasHeight)
+            context.clearRect(0, 0, this.BoardView.constant.canvasWidth, this.BoardView.constant.canvasHeight)
             this.BoardView.draw(context,this)
         }
 
@@ -223,7 +190,6 @@ define(["ddm", "jquery", "view/views","view/boardview"], function (Tsh, $, Views
         }
 
         this.redraw = function (canvasElement) {
-            console.log("redrawing","check if Dirty ",this.dirty)
             if (!canvasElement) {
                 this.initCanvas()
                 this.initAudio()
@@ -238,7 +204,7 @@ define(["ddm", "jquery", "view/views","view/boardview"], function (Tsh, $, Views
         this.createView = function (prototype, opts, item, callback) {
             var view = new prototype(opts)
             view.sendMessage({ msg: 'onCreated' })
-            emitEvent(this.events.objectcreated, { source: view, uuid: view.uuid })
+            this.emitEvent(this.events.objectcreated, { source: view, uuid: view.uuid })
             callback(view)
             return view
         }
@@ -259,7 +225,8 @@ define(["ddm", "jquery", "view/views","view/boardview"], function (Tsh, $, Views
 
         //////////////////////////////////////// SPECIFY 
         this.CreatePieceView = function (point, opts, item, callback) {
-            var rect = new Rect(PointToCoord(point), ViewConstants.wCell, ViewConstants.hCell)
+            var coord = this.BoardView.pointToCoord(point)
+            var rect = new Rect(coord, this.BoardView.constant.wCell, this.BoardView.constant.hCell)
             var opts = {
                 rect: rect,
             }
@@ -268,7 +235,8 @@ define(["ddm", "jquery", "view/views","view/boardview"], function (Tsh, $, Views
             this.dirty = this.dirty || true
         }
         this.CreateLandView = function (point, opts, item, callback) {
-            var rect = new Rect(PointToCoord(point), ViewConstants.wCell, ViewConstants.hCell)
+            var coord = this.BoardView.pointToCoord(point)
+            var rect = new Rect(coord, this.BoardView.constant.wCell, this.BoardView.constant.hCell)
             var opts = {
                 rect: rect,
             }
@@ -306,7 +274,7 @@ define(["ddm", "jquery", "view/views","view/boardview"], function (Tsh, $, Views
             var view = this.BoardView.view(uuid);
 
             if (view != null) {
-                var coord = PointToCoord(point)
+                var coord = this.BoardView.pointToCoord(point) 
                 this.moveView(view, coord)
             }
 
@@ -328,14 +296,12 @@ define(["ddm", "jquery", "view/views","view/boardview"], function (Tsh, $, Views
                 console.log("[ERROR]: Not hightlighting")
                 return;
             }
-            console.log("Start Highlighting")
             this.ClearHighlight()
             //Highlight all the view in new list
             for (var i in list) {
                 var p = list[i]
-                var coord = PointToCoord(p)
+                var coord =this.BoardView.pointToCoord(p) 
                 var views = this.BoardView.viewsAt(coord)//Tsh.Ddm.View.getViewAt(coord)
-                console.log("views =>", views)
 
                 for (var j in views) {
                     var v = views[j]
@@ -367,7 +333,7 @@ define(["ddm", "jquery", "view/views","view/boardview"], function (Tsh, $, Views
             this.dirty = this.dirty || true
         }
         this.GetCanvasMousePoint = function () {
-            return CoordToPoint(getCanvasCoord(this.mouseCoord))
+            return this.board.CoordToPoint(getCanvasCoord(this.mouseCoord))
         }
         this.GetCanvasMouseCoord = function () {
             return getCanvasCoord(this.mouseCoord)
@@ -383,9 +349,9 @@ define(["ddm", "jquery", "view/views","view/boardview"], function (Tsh, $, Views
         this.Roll =  function (dice, result) {
             var DOMObject = undefined
             switch(dice){
-                case 0: DOMObject = DOMDiceOne;break
-                case 1: DOMObject = DOMDiceTwo;break
-                case 2: DOMObject = DOMDiceThree;break
+                case 0: DOMObject =  this.dom.DOMDiceOne;break
+                case 1: DOMObject =  this.dom.DOMDiceTwo;break
+                case 2: DOMObject =  this.dom.DOMDiceThree;break
             }
             console.log("result = ", result)
             for (var i = 1; i <= 6; i++) {
@@ -417,6 +383,7 @@ define(["ddm", "jquery", "view/views","view/boardview"], function (Tsh, $, Views
         }
         //Initializing View
         this.init = function () {
+            console.log("DDM.VIEW.INIT")
             this.initDOM()
 
             // this.constructingViewItem()
@@ -442,7 +409,7 @@ define(["ddm", "jquery", "view/views","view/boardview"], function (Tsh, $, Views
                     continue;
                 console.log("view = ", views[i].constructor.name)
                 views[i].sendMessage({ msg: "onMouseClicked" });
-                emitEvent(Tsh.Ddm.View.events.itemclicked, { source: views[i], uuid: views[i].uuid })
+                Tsh.Ddm.View.emitEvent(Tsh.Ddm.View.events.itemclicked, { source: views[i], uuid: views[i].uuid })
 
                 break;
             }
@@ -460,7 +427,7 @@ define(["ddm", "jquery", "view/views","view/boardview"], function (Tsh, $, Views
                 if (views[i].mouseReceived == false)
                     continue;
                 views[i].sendMessage({ msg: "onMousePressed" });
-                emitEvent(Tsh.Ddm.View.events.itempressed, { source: views[i], uuid: views[i].uuid })
+                Tsh.Ddm.View.emitEvent(Tsh.Ddm.View.events.itempressed, { source: views[i], uuid: views[i].uuid })
 
                 break;
             }
@@ -477,7 +444,7 @@ define(["ddm", "jquery", "view/views","view/boardview"], function (Tsh, $, Views
                 if (views[i].mouseReceived == false)
                     continue;
                 views[i].sendMessage({ msg: "onMousePressAndHold" });
-                emitEvent(Tsh.Ddm.View.events.itempressandhold, { source: views[i], uuid: views[i].uuid })
+                Tsh.Ddm.View.emitEvent(Tsh.Ddm.View.events.itempressandhold, { source: views[i], uuid: views[i].uuid })
 
                 break;
             }
@@ -493,7 +460,7 @@ define(["ddm", "jquery", "view/views","view/boardview"], function (Tsh, $, Views
                 if (views[i].mouseReceived == false)
                     continue;
                 views[i].sendMessage({ msg: "onMouseReleased" });
-                emitEvent(Tsh.Ddm.View.events.itemreleased, { source: views[i], uuid: views[i].uuid })
+                Tsh.Ddm.View.emitEvent(Tsh.Ddm.View.events.itemreleased, { source: views[i], uuid: views[i].uuid })
 
                 break;
             }

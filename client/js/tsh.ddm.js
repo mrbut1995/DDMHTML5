@@ -55,7 +55,7 @@ define(function () {
 
 
     window.onload = function () {
-        console.log("TSH.Ddm.Game",Tsh.Ddm.Game)
+        console.log("window.onload")
         Tsh.Ddm.Game.init()
         Tsh.Ddm.Game.run()
     }

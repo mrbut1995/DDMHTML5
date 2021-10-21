@@ -14,17 +14,18 @@ requirejs.config({
     'animation':"./animation",
     'lib': './lib',
     'util': './util',
+    'entity': "./entity",
   }
 });
 
 
 //Global DOM
 //DOM Object
-var DOMBoard
-var DOMDiceOne
-var DOMDiceTwo
-var DOMDiceThree
-var DOMCanvas
+// var DOMBoard
+// var DOMDiceOne
+// var DOMDiceTwo
+// var DOMDiceThree
+// var DOMCanvas
 
 define(['lib/class','util/util','util/constant','util/struct',"jquery"], function () {
   console.log("LOAD MAIN")
@@ -37,9 +38,6 @@ define(['lib/class','util/util','util/constant','util/struct',"jquery"], functio
   require(["ddm-debug"])
   
   require(["ddm"])
-  var A  = Class.extend({f:null})
-  var B  = A.extend({f:function(){this._super();console.log("CALL FROM B")}})
-  var val = new B()
-  val.f()
 })
+
 

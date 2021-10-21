@@ -241,7 +241,6 @@ define(["ddm","jquery"],function(Tsh,$){
         }
         var onBoardMouseMove = function (opts) {
             if (Tsh.Ddm.Debug.debugHighlightOnMove) {
-                console.log("===>>HIGHLIGHT")
                 var point = Tsh.Ddm.View.GetCanvasMousePoint()
                 var lst = pointsFromPattern(point, "TYPE_10", rot)
                 Tsh.Ddm.View.Highlight(lst)
