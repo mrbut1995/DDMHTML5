@@ -10,10 +10,8 @@ define(["jquery"],function($){
             this.childs                      = []
     
             this.uuid                        = uuid()
-            this.rect                        = new Rect(0,0,0,0) 
-            this.color                       = "#000000"
+            this.bound                        = new Rect(0,0,0,0) 
             this.focused                     = false
-            this.mouseReceived               = false
             this.type                        = "view"
     
             //Parent Inheritance Value
@@ -55,11 +53,27 @@ define(["jquery"],function($){
             } else {
                 context.fillStyle = this.imgSrcNormal
             }
-            let drawingRect = this.rect
+            let drawingRect = this.bound
             context.fillRect(drawingRect.x, drawingRect.y, drawingRect.w, drawingRect.h)
             context.restore()
         },
         
+        //Get Set Property
+        setPosition : function(point){
+            this.bound.x = point.x
+            this.bound.y = point.y
+            this.sendMessage({msg:"onPropertyChanged"})
+        },
+        getPosition : function(){
+            return new Coord(this.bound.x,this.bound.y)
+        },
+        setBounding : function(rect){
+            this.bound = rect
+            this.sendMessage({msg:"onPropertyChanged"})
+        },
+        getBounding : function(){
+            return this.bound
+        },
         childOf   : function(parent){
             if(this.parent != null){
                 //Remove item from the current parent's child list
@@ -89,7 +103,7 @@ define(["jquery"],function($){
             this[evt.mgs](defParam);
         },
         contain      : function(coord){
-            return this.rect.contain(coord)
+            return this.bound.contain(coord)
         },
         property     : function(name){
             return this[name]
@@ -110,8 +124,8 @@ define(["jquery"],function($){
         },
     
         move         : function(coord){
-            var r = new Rect(coord,this.rect.w,this.rect.h)
-            this.setProperty("rect",r)
+            var r = new Rect(coord,this.bound.w,this.bound.h)
+            this.setProperty("bound",r)
             this.sendMessage({msg:"onMove"})
         },
         inArray    : function(a){

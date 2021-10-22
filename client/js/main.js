@@ -27,7 +27,7 @@ requirejs.config({
 // var DOMDiceThree
 // var DOMCanvas
 
-define(['lib/class','util/util','util/constant','util/struct',"jquery"], function () {
+define(['lib/class','util/util','util/constant','util/struct','util/gametype',"jquery"], function () {
   console.log("LOAD MAIN")
   
   require(["ddm-view"])

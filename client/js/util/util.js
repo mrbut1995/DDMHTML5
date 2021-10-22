@@ -7,15 +7,6 @@ function extend(a, b) {
     }
     return a
   }
-  function isFunction(f) {
-    return typeof f === 'function'
-  }
-  function isString(s) {
-    return typeof s === 'string'
-  }
-  function isInteger(n) {
-    return typeof n === 'number' && Math.floor(n) === n && isFinite(n)
-  }
   function deepCopy(thing) {
     return JSON.parse(JSON.stringify(thing))
   }

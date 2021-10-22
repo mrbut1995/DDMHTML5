@@ -6,7 +6,7 @@ define(["ddm", "jquery", "view/views","view/boardview"], function (Tsh, $, Views
     Tsh.Ddm = Tsh.Ddm || {}
 
     var LandView = Views.LandView
-    var PieceView = Views.PieceView
+    var PieceView = Views.MonsterView
     var TileView  = Views.TileView
 
     var canvas;
@@ -224,23 +224,28 @@ define(["ddm", "jquery", "view/views","view/boardview"], function (Tsh, $, Views
         }
 
         //////////////////////////////////////// SPECIFY 
+        this.PlaceViewIntoBoard = function(view,point){
+            console.log("PlaceViewIntoBoard")
+            this.BoardView.relocatingView(view,point)
+        }
+
         this.CreatePieceView = function (point, opts, item, callback) {
-            var coord = this.BoardView.pointToCoord(point)
-            var rect = new Rect(coord, this.BoardView.constant.wCell, this.BoardView.constant.hCell)
+            var rect = new Rect(new Coord(0,0), this.BoardView.constant.wCell, this.BoardView.constant.hCell)
             var opts = {
-                rect: rect,
+                bound: rect,
             }
             var view = this.createView(PieceView, opts, item, callback)
+            this.BoardView.relocatingView(view,point)
             this.BoardView.addViewChild(view,"piece")
             this.dirty = this.dirty || true
         }
         this.CreateLandView = function (point, opts, item, callback) {
-            var coord = this.BoardView.pointToCoord(point)
-            var rect = new Rect(coord, this.BoardView.constant.wCell, this.BoardView.constant.hCell)
+            var rect = new Rect(new Coord(0,0), this.BoardView.constant.wCell, this.BoardView.constant.hCell)
             var opts = {
-                rect: rect,
+                bound: rect,
             }
             var view = this.createView(LandView, opts, item, callback)
+            this.BoardView.relocatingView(view,point)
             this.BoardView.addViewChild(view,"land")
 
             //Request to Redraw
@@ -392,86 +397,22 @@ define(["ddm", "jquery", "view/views","view/boardview"], function (Tsh, $, Views
             
             this.redraw()
         }
-        //Track Mouse on the board
-        var mouseTimer = null
 
         //Mouse Handle
         var mouseClickedHandle = function (opts) {
-            var defOpts = {
-                x: 0,
-                y: 0
-            }
-            opts = $.extend(defOpts, opts)
-
-            var views = Tsh.Ddm.View.BoardView.viewsAt(opts)//Tsh.Ddm.View.getViewAt(opts)
-            for (var i in views) {
-                if (views[i].mouseReceived == false)
-                    continue;
-                console.log("view = ", views[i].constructor.name)
-                views[i].sendMessage({ msg: "onMouseClicked" });
-                Tsh.Ddm.View.emitEvent(Tsh.Ddm.View.events.itemclicked, { source: views[i], uuid: views[i].uuid })
-
-                break;
-            }
-
+            Tsh.Ddm.View.BoardView.onMouseClicked(opts)
         }
         var mousePressedHandle = function (opts) {
-            var defOpts = {
-                x: 0,
-                y: 0
-            }
-            opts = $.extend(defOpts, opts)
-
-            var views = Tsh.Ddm.View.BoardView.viewsAt(opts)//Tsh.Ddm.View.getViewAt(opts)
-            for (var i in views) {
-                if (views[i].mouseReceived == false)
-                    continue;
-                views[i].sendMessage({ msg: "onMousePressed" });
-                Tsh.Ddm.View.emitEvent(Tsh.Ddm.View.events.itempressed, { source: views[i], uuid: views[i].uuid })
-
-                break;
-            }
+            Tsh.Ddm.View.BoardView.onMousePressed(opts)
         }
         var mousePressedAndHoldHandle = function (opts) {
-            var defOpts = {
-                x: 0,
-                y: 0
-            }
-            opts = $.extend(defOpts, opts)
-
-            var views = Tsh.Ddm.View.BoardView.viewsAt(opts)
-            for (var i in views) {
-                if (views[i].mouseReceived == false)
-                    continue;
-                views[i].sendMessage({ msg: "onMousePressAndHold" });
-                Tsh.Ddm.View.emitEvent(Tsh.Ddm.View.events.itempressandhold, { source: views[i], uuid: views[i].uuid })
-
-                break;
-            }
+            Tsh.Ddm.View.BoardView.onMousePressAndHold(opts)
         }
         var mouseReleasedHandle = function (opts) {
-            var defOpts = {
-                x: 0,
-                y: 0
-            }
-            opts = $.extend(defOpts, opts)
-            var views = Tsh.Ddm.View.BoardView.viewsAt(opts)
-            for (var i in views) {
-                if (views[i].mouseReceived == false)
-                    continue;
-                views[i].sendMessage({ msg: "onMouseReleased" });
-                Tsh.Ddm.View.emitEvent(Tsh.Ddm.View.events.itemreleased, { source: views[i], uuid: views[i].uuid })
-
-                break;
-            }
+            Tsh.Ddm.View.BoardView.onMouseReleased(opts)
         }
         var mouseDragHandle = function (e) {
-            var defOpts = {
-                source: null,
-                x: 0,
-                y: 0,
-            }
-            opts = $.extend(defOpts, opts)
+            Tsh.Ddm.View.BoardView.onMouseDrag(opts)
         }
 
     }

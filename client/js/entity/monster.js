@@ -1,5 +1,5 @@
-define(["entity/monster","view/views"],function(Entity){
-    var Monster = Entity.extend({
+define(["entity/piece","view/views"],function(Piece){
+    var Monster = Piece.extend({
         init(){
             this._super()
 
@@ -7,8 +7,14 @@ define(["entity/monster","view/views"],function(Entity){
             this.defend = 0
             this.movement = 0
             this.movetype = "walk"
-            this.status   = "alive"
             this.targets   = []
+            this.attacker  = {}
+
+            //Status
+            this.status   = "alive"
+            this.attackmode = false
+            this.movemode   = false
+            this.effectmode = false
         },
         select(){
 

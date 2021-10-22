@@ -25,7 +25,7 @@ define(["jquery", "view/view"], function ($,View) {
             }
         }),
 
-        PieceView: View.extend({
+        MonsterView: View.extend({
             init: function (otps) {
                 this._super(otps)
                 this.type = "piece"
@@ -35,6 +35,18 @@ define(["jquery", "view/view"], function ($,View) {
                 this.imgSrcSelect = "rgb(255, 100, 55, 0.5)"
             }
         }),
+
+        MonsterLordView: View.extend({
+            init: function (otps) {
+                this._super(otps)
+                this.type = "piece"
+                this.layer = "piece"
+
+                this.imgSrcNormal =  "red",
+                this.imgSrcSelect = "rgb(255, 100, 55, 0.5)"
+            }
+        }),
+
     }
     return Views
 })

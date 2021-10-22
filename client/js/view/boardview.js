@@ -90,8 +90,8 @@ define(["jquery", "view/view", "view/views"], function ($, View, Views) {
         },
         relocatingView: function (view, point) {
             var coord = this.pointToCoord(point)
-            view.rect.x = coord.x
-            view.rect.y = coord.y
+            view.bound.x = coord.x
+            view.bound.y = coord.y
         },
         viewsAt: function (coord) {
             var lst = []
@@ -113,7 +113,7 @@ define(["jquery", "view/view", "view/views"], function ($, View, Views) {
                     var pTile = new Point(j, i)
                     var cTile = this.pointToCoord(pTile)
                     var rTile = new Rect(cTile, this.constant.wCell, this.constant.hCell)
-                    var opts = { rect: rTile, }
+                    var opts = { bound: rTile, }
                     var tileView = new Views.TileView(opts)
                     this.addViewChild(tileView, "tile")
                 }
@@ -174,7 +174,7 @@ define(["jquery", "view/view", "view/views"], function ($, View, Views) {
                 view.onMouseDrag(ev)
             }
         },
-        onMouseDrag : function(ev){
+        onMouseCancel : function(ev){
             var views = this.viewsAt(ev)
             for(var i in views){
                 var view = views[i]

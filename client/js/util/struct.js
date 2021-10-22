@@ -3,6 +3,10 @@
 var Coord = function (x, y) {
     this.x = x;
     this.y = y;
+
+    this.add = function (point) {
+        return new Point(point.x + this.x, this.y + point.y)
+    }
 };
 var Rect = function (coord, width, height) {
     this.w = width
