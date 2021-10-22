@@ -38,6 +38,19 @@ define(['lib/class','util/util','util/constant','util/struct','util/gametype',"j
   require(["ddm-debug"])
   
   require(["ddm"])
+
+  var items = {
+    a:"a0",
+    b:"b1",
+    x:2,
+    y:3,
+    e:4
+  }
+  items["f"] = 9
+  var keys = Object.keys(items)
+  for(var i in keys){
+    console.log(keys[i])
+  }
 })
 
 

@@ -3,6 +3,8 @@ define(["entity/piece","view/views"],function(Piece){
         init(){
             this._super()
 
+            this.view = new Views.MonsterView()
+            
             this.attack = 0
             this.defend = 0
             this.movement = 0

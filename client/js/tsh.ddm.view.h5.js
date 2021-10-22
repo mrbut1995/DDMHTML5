@@ -20,7 +20,9 @@ define(["ddm", "jquery", "view/views","view/boardview"], function (Tsh, $, Views
 
         /////Property
         //Main View
-        this.BoardView = new BoardView()
+        this.views = {
+            board : new BoardView()
+        }
         this.dirty = true
 
         //Highlight
@@ -85,8 +87,8 @@ define(["ddm", "jquery", "view/views","view/boardview"], function (Tsh, $, Views
                 canvas.id = "ddm-canvas";
                 $("#board").append(canvas);
 
-                canvas.width = this.BoardView.constant.canvasWidth;
-                canvas.height = this.BoardView.constant.canvasHeight;
+                canvas.width = this.views.board.constant.canvasWidth;
+                canvas.height = this.views.board.constant.canvasHeight;
                 canvas.style.background = "white no-repeat 0 0";
 
                 //Declare Slot
@@ -155,8 +157,8 @@ define(["ddm", "jquery", "view/views","view/boardview"], function (Tsh, $, Views
         }
 
         this.draw = function () {
-            context.clearRect(0, 0, this.BoardView.constant.canvasWidth, this.BoardView.constant.canvasHeight)
-            this.BoardView.draw(context,this)
+            context.clearRect(0, 0, this.views.board.constant.canvasWidth, this.views.board.constant.canvasHeight)
+            this.views.board.draw(context,this)
         }
 
         //Member of class
@@ -226,48 +228,48 @@ define(["ddm", "jquery", "view/views","view/boardview"], function (Tsh, $, Views
         //////////////////////////////////////// SPECIFY 
         this.PlaceViewIntoBoard = function(view,point){
             console.log("PlaceViewIntoBoard")
-            this.BoardView.relocatingView(view,point)
+            this.views.board.relocatingView(view,point)
         }
 
         this.CreatePieceView = function (point, opts, item, callback) {
-            var rect = new Rect(new Coord(0,0), this.BoardView.constant.wCell, this.BoardView.constant.hCell)
+            var rect = new Rect(new Coord(0,0), this.views.board.constant.wCell, this.views.board.constant.hCell)
             var opts = {
                 bound: rect,
             }
             var view = this.createView(PieceView, opts, item, callback)
-            this.BoardView.relocatingView(view,point)
-            this.BoardView.addViewChild(view,"piece")
+            this.views.board.relocatingView(view,point)
+            this.views.board.addViewChild(view,"piece")
             this.dirty = this.dirty || true
         }
         this.CreateLandView = function (point, opts, item, callback) {
-            var rect = new Rect(new Coord(0,0), this.BoardView.constant.wCell, this.BoardView.constant.hCell)
+            var rect = new Rect(new Coord(0,0), this.views.board.constant.wCell, this.views.board.constant.hCell)
             var opts = {
                 bound: rect,
             }
             var view = this.createView(LandView, opts, item, callback)
-            this.BoardView.relocatingView(view,point)
-            this.BoardView.addViewChild(view,"land")
+            this.views.board.relocatingView(view,point)
+            this.views.board.addViewChild(view,"land")
 
             //Request to Redraw
             this.dirty = this.dirty || true
         }
         this.DestroyView = function (uuid) {
-            var view = this.BoardView.view(uuid);
+            var view = this.views.board.view(uuid);
 
-            this.BoardView.removeViewChild(view)
+            this.views.board.removeViewChild(view)
 
             //Request to Redraw
             this.dirty = this.dirty || true
         }
         this.GetViewProperty = function (uuid, property) {
-            var view = this.BoardView.view(uuid);
+            var view = this.views.board.view(uuid);
             if (view != null) {
                 return view.property(property)
             }
             return null
         }
         this.SetViewProperty = function (uuid, property, value) {
-            var view = this.BoardView.view(uuid);
+            var view = this.views.board.view(uuid);
             if (view != null) {
                 this.changeViewProperty(view, property, value)
             }
@@ -276,10 +278,10 @@ define(["ddm", "jquery", "view/views","view/boardview"], function (Tsh, $, Views
             this.dirty = this.dirty || true
         }
         this.MoveView = function (uuid, point) {
-            var view = this.BoardView.view(uuid);
+            var view = this.views.board.view(uuid);
 
             if (view != null) {
-                var coord = this.BoardView.pointToCoord(point) 
+                var coord = this.views.board.pointToCoord(point) 
                 this.moveView(view, coord)
             }
 
@@ -305,8 +307,8 @@ define(["ddm", "jquery", "view/views","view/boardview"], function (Tsh, $, Views
             //Highlight all the view in new list
             for (var i in list) {
                 var p = list[i]
-                var coord =this.BoardView.pointToCoord(p) 
-                var views = this.BoardView.viewsAt(coord)//Tsh.Ddm.View.getViewAt(coord)
+                var coord =this.views.board.pointToCoord(p) 
+                var views = this.views.board.viewsAt(coord)//Tsh.Ddm.View.getViewAt(coord)
 
                 for (var j in views) {
                     var v = views[j]
@@ -400,19 +402,19 @@ define(["ddm", "jquery", "view/views","view/boardview"], function (Tsh, $, Views
 
         //Mouse Handle
         var mouseClickedHandle = function (opts) {
-            Tsh.Ddm.View.BoardView.onMouseClicked(opts)
+            Tsh.Ddm.View.views.board.onMouseClicked(opts)
         }
         var mousePressedHandle = function (opts) {
-            Tsh.Ddm.View.BoardView.onMousePressed(opts)
+            Tsh.Ddm.View.views.board.onMousePressed(opts)
         }
         var mousePressedAndHoldHandle = function (opts) {
-            Tsh.Ddm.View.BoardView.onMousePressAndHold(opts)
+            Tsh.Ddm.View.views.board.onMousePressAndHold(opts)
         }
         var mouseReleasedHandle = function (opts) {
-            Tsh.Ddm.View.BoardView.onMouseReleased(opts)
+            Tsh.Ddm.View.views.board.onMouseReleased(opts)
         }
         var mouseDragHandle = function (e) {
-            Tsh.Ddm.View.BoardView.onMouseDrag(opts)
+            Tsh.Ddm.View.views.board.onMouseDrag(opts)
         }
 
     }

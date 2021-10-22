@@ -1,5 +1,5 @@
-define(["entity/entity","view/views"],function(Entity,Views){
-    var Land = Entity.extend({
+define(["entity/piece","view/views"],function(Piece,Views){
+    var Land = Piece.extend({
         init(){
             this._super()
             this.views = new Views.LandView()
@@ -13,6 +13,9 @@ define(["entity/entity","view/views"],function(Entity,Views){
         hidden(){
 
         },
+        steppedOn(piece){
+
+        }
     })
     return Land;
 })

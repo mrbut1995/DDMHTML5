@@ -30,38 +30,52 @@ define(["jquery", "view/view", "view/views"], function ($, View, Views) {
                 nCol: 13,
                 nRow: 19,
             }
-            this.layers = []
+            this.layers = {}
 
-            var layerTile = { name: 'tile', list: [] }
-            var layerLand = { name: 'land', list: [] }
-            var layerPiece = { name: 'piece', list: [] }
-
-            this.layers.push(layerTile)
-            this.layers.push(layerLand)
-            this.layers.push(layerPiece)
+            this.layers = $.extend(this.layers,{
+                tile:[],
+                land:[],
+                piece:[]
+            })
 
             this.initViews()
         },
-        draw: function (context, mainView) {
-            context.save()
-            for (var i = 0; i < this.layers.length; i++) {
-                if (this.layers[i] == null || this.layers[i].list.length <= 0)
+        layersName : function(){
+            return Object.keys(this.layers)
+        },
+        forEachLayer : function(callback){
+            var keys = this.layersName()
+            for(var i in keys){
+                var name = keys[i]
+                callback(name,this.layers[name])
+            }
+        },
+        forEachView: function(callback){
+            var keys = this.layersName()
+            for(var i in keys){
+                var name = keys[i]
+                if(this.layers[name] == undefined || this.layers[name].length <= 0)
                     continue
-                for (var j = 0; j < this.layers[i].list.length; j++) {
-                    console.log("DRAW VIEW")
-                    this.layers[i].list[j].draw(context, this)
+                for(var j in this.layers[name]){
+                    var view = this.layers[name][j]
+                    callback(view)
                 }
             }
+        },
+        draw: function (context, mainView) {
+            context.save()
+            this.forEachView(function(view){
+                view.draw(context,this)
+            }.bind(this))
             context.restore()
         },
         addViewChild: function (view, layer) {
-            for (var i in this.layers) {
-                if (this.layers[i].name == layer) {
-                    console.log("Add to layer ", this.layers[i].name)
-                    this.layers[i].list.push(view)
-                    break;
+            this.forEachLayer(function(name,list){
+                if(name == layer){
+                    console.log("Add to layer ", name," layers = ",this)
+                    this.layers[name].push(view)
                 }
-            }
+            }.bind(this))
             view.childOf(this)
         },
         removeViewChild: function (view) {
@@ -69,9 +83,9 @@ define(["jquery", "view/view", "view/views"], function ($, View, Views) {
 
                 view.childOf(null)
                 //Remove View in Layer List
-                for (var i in this.layers) {
-                    view.removeInArray(this.layers[i].list)
-                }
+                this.forEachLayer(function(name,list){
+                    view.removeInArray(this.layers[name])
+                }.bind(this))    
             }
         },
         coordToPoint: function (coord) {
@@ -95,15 +109,11 @@ define(["jquery", "view/view", "view/views"], function ($, View, Views) {
         },
         viewsAt: function (coord) {
             var lst = []
-            for (var i = 0; i < this.layers.length; i++) {
-                if (this.layers[i] == null || this.layers[i].length == 0)
-                    continue;
-                for (var j = 0; j < this.layers[i].list.length; j++) {
-                    if (this.layers[i].list[j].contain(coord)) {
-                        lst.unshift(this.layers[i].list[j])
-                    }
+            this.forEachView(function(view){
+                if(view.contain(coord)){
+                    lst.unshift(view)
                 }
-            }
+            }.bind(this))
             return lst;
         },
         initViews: function () {

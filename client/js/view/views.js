@@ -1,7 +1,7 @@
-define(["jquery", "view/view"], function ($,View) {
+define(["jquery", "view/pieceview"], function ($,PieceView) {
     console.log("CREATE VIEWS")
     var Views = {
-        LandView: View.extend({
+        LandView: PieceView.extend({
             init: function (otps) {
                 this._super(otps)
 
@@ -13,7 +13,7 @@ define(["jquery", "view/view"], function ($,View) {
             }
         }),
 
-        TileView: View.extend({
+        TileView: PieceView.extend({
             init: function (otps) {
                 this._super(otps)
                 
@@ -25,7 +25,7 @@ define(["jquery", "view/view"], function ($,View) {
             }
         }),
 
-        MonsterView: View.extend({
+        MonsterView: PieceView.extend({
             init: function (otps) {
                 this._super(otps)
                 this.type = "piece"
@@ -36,7 +36,7 @@ define(["jquery", "view/view"], function ($,View) {
             }
         }),
 
-        MonsterLordView: View.extend({
+        MonsterLordView: PieceView.extend({
             init: function (otps) {
                 this._super(otps)
                 this.type = "piece"
