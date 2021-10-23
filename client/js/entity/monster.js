@@ -71,6 +71,22 @@ define(["entity/piece","view/views","animation/animations"],function(Piece,Views
                 speed : this.summonSpeed,
             })
         },
+        walk(point){
+            this.animate("walk",{
+                speed : this.walkSpeed,
+            })
+        },
+        fly(point){
+            this.animate("fly",{
+                speed : this.walkSpeed,
+            })
+        },
+        teleport(point){
+            this.animate("teleport",{
+                speed : this.walkSpeed,
+            })
+        },
+
         changestat(stat,value){
 
         },
@@ -79,12 +95,6 @@ define(["entity/piece","view/views","animation/animations"],function(Piece,Views
         },
 
         //Step
-        onBeforeStep(callback){
-            this._onBeforeStep =callback
-        },
-        onStep(callback){
-            this._onStep = callback
-        },
         nextStep(){
 
         },
@@ -94,12 +104,7 @@ define(["entity/piece","view/views","animation/animations"],function(Piece,Views
         onRequestPath(callback){
             this._onRequestPath = callback
         },
-        onStartPath(callback){
-            this._onStartPath = callback
-        },
-        onStopPath(callback){
-            this._onStopPath = callback
-        },
+
         requestPathfindingTo(point){
             if(this._onRequestPath){
                 return this._onRequestPath(point)
@@ -118,15 +123,22 @@ define(["entity/piece","view/views","animation/animations"],function(Piece,Views
                 }
             }
         },
-
-        walk(point){
-
+        go(point){
+            this._moveTo(point)
+        },
+        stop(){
+            if(this.isMoving()){
+                this.interrupted = true
+            }
         },
         canMove(){
 
         },
         isMoving(){
-
+            return !(this.path === null)
+        },
+        hasNextStep: function(){
+            return !(this.path.length - 1 > this.step)
         },
         _continueTo(coord){
             this.newDestination = coord
@@ -177,6 +189,33 @@ define(["entity/piece","view/views","animation/animations"],function(Piece,Views
         canReachTarget(){
 
         },
+
+        //Signal Slot
+        onAttack(callback){
+            this._onAttacking = callback
+        },
+        onAttacked(callback){
+            this._onAttacked = callback
+        },
+        onDeath(callback){
+            this._onDeath = callback
+        },
+        onHasMoved(callback){
+            this._onHasMoved = callback
+        },
+        onStartPath(callback){
+            this._onStartPath = callback
+        },
+        onStopPath(callback){
+            this._onStopPath = callback
+        },
+        onBeforeStep(callback){
+            this._onBeforeStep =callback
+        },
+        onStep(callback){
+            this._onStep = callback
+        },
+
     })
     return Monster;
 })

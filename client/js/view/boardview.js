@@ -46,21 +46,9 @@ define(["jquery", "view/view", "view/views"], function ($, View, Views) {
                 callback(name,this.layers[name])
             }
         },
-        forEachView: function(callback){
-            var keys = this.layersName()
-            for(var i in keys){
-                var name = keys[i]
-                if(this.layers[name] == undefined || this.layers[name].length <= 0)
-                    continue
-                for(var j in this.layers[name]){
-                    var view = this.layers[name][j]
-                    callback(view)
-                }
-            }
-        },
         draw: function (context, mainView) {
             context.save()
-            this.forEachView(function(view){
+            this.forEachChild(function(view){
                 view.draw(context,this)
             }.bind(this))
             context.restore()
@@ -103,15 +91,6 @@ define(["jquery", "view/view", "view/views"], function ($, View, Views) {
             view.bound.x = coord.x
             view.bound.y = coord.y
         },
-        viewsAt: function (coord) {
-            var lst = []
-            this.forEachView(function(view){
-                if(view.contain(coord)){
-                    lst.unshift(view)
-                }
-            }.bind(this))
-            return lst;
-        },
         initViews: function () {
             //Create TileView Layer
             for (var i = 0; i < this.constant.nRow; i++) {
@@ -134,60 +113,6 @@ define(["jquery", "view/view", "view/views"], function ($, View, Views) {
             }
             console.log("CANNOT FOUND ", uuid)
             return null
-        },
-        mouseClicked      : function(ev){
-            var views = this.viewsAt(ev)
-            for(var i in views){
-                var view = views[i]
-                if(!isFunction(view.mouseClicked))
-                    continue;
-                view.mouseClicked(ev)
-            }
-        },
-        mousePressed      : function(ev){
-            var views = this.viewsAt(ev)
-            for(var i in views){
-                var view = views[i]
-                if(!isFunction(view.mousePressed))
-                    continue;
-                view.mousePressed(ev)
-            }
-        },
-        mouseReleased     : function(ev){
-            var views = this.viewsAt(ev)
-            for(var i in views){
-                var view = views[i]
-                if(!isFunction(view.mouseReleased))
-                    continue;
-                view.mouseReleased(ev)
-            }
-        },
-        mousePressAndHold : function(ev){
-            var views = this.viewsAt(ev)
-            for(var i in views){
-                var view = views[i]
-                if(!isFunction(view.mousePressAndHold))
-                    continue;
-                view.mousePressAndHold(ev)
-            }
-        },
-        mouseDrag : function(ev){
-            var views = this.viewsAt(ev)
-            for(var i in views){
-                var view = views[i]
-                if(!isFunction(view.mouseDrag))
-                    continue;
-                view.mouseDrag(ev)
-            }
-        },
-        mouseCancel : function(ev){
-            var views = this.viewsAt(ev)
-            for(var i in views){
-                var view = views[i]
-                if(!isFunction(view.mouseDrag))
-                    continue;
-                view.mouseCancel(ev)
-            }
         },
 
     })

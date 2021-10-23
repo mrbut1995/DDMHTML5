@@ -3,7 +3,6 @@ var isParentInheritanceValue = function(name){
 } 
 
 define(["jquery"],function($){
-    console.log("CLASS = ",Class.extend)
     var View = Class.extend({
         init      : function(otps){
             this.parent                      = null
@@ -28,32 +27,93 @@ define(["jquery"],function($){
             //Method
             $.extend(this,otps,false)
         },
-
+        forEachChild: function(callback){
+            var keys = this.layersName()
+            for(var i in keys){
+                var name = keys[i]
+                if(this.layers[name] == undefined || this.layers[name].length <= 0)
+                    continue
+                for(var j in this.layers[name]){
+                    var view = this.layers[name][j]
+                    callback(view)
+                }
+            }
+        },
+        childAt: function (coord) {
+            var lst = []
+            this.forEachChild(function(view){
+                if(view.contain(coord)){
+                    lst.unshift(view)
+                }
+            }.bind(this))
+            return lst;
+        },
         //Mouse Handle
         mouseClicked            (ev){
             if(this._onMouseClicked)
                 this._onMouseClicked(ev)
+            if(this.childs.length <= 0)
+                return;
+            var views = this.childAt(ev)
+            for(var i in views){
+                var view = views[i]
+                view.mouseClicked(ev)
+            }
         }, 
         mousePressed            (ev){
             if(this._onMousePressed)
                 this._onMousePressed(ev)
+            if(this.childs.length <= 0)
+                return;
+            var views = this.childAt(ev)
+            for(var i in views){
+                var view = views[i]
+                view.mousePressed(ev)
+            }
         }, 
         mouseReleased           (ev){
             if(this._onMouseReleased)
                 this._onMouseReleased(ev)
+            if(this.childs.length <= 0)
+                return;
+            var views = this.childAt(ev)
+            for(var i in views){
+                var view = views[i]
+                view.mouseReleased(ev)
+            }
         }, 
         mousePressAndHold       (ev){
             if(this._onPressAndHold)
                 this._onPressAndHold(ev)
+            if(this.childs.length <= 0)
+                return;
+            var views = this.childAt(ev)
+            for(var i in views){
+                var view = views[i]
+                view.mousePressAndHold(ev)
+            }
         },
         mouseDrag               (ev){
             if(this._onMouseDrag)
                 this._onMouseDrag(ev)
-
+            if(this.childs.length <= 0)
+                return;
+            var views = this.childAt(ev)
+            for(var i in views){
+                var view = views[i]
+                view.mouseDrag(ev)
+            }
         },
         mouseCancel             (ev){
             if(this._onMouseCancel)
                 this._onMouseCancel(ev)
+            if(this.childs.length <= 0)
+                return;
+            var views = this.childAt(ev)
+            for(var i in views){
+                var view = views[i]
+                view.mouseCancel(ev)
+            }
         },
          
         //Signal
@@ -102,6 +162,7 @@ define(["jquery"],function($){
             let drawingRect = this.bound
             context.fillRect(drawingRect.x, drawingRect.y, drawingRect.w, drawingRect.h)
             context.restore()
+            //Draw Child
         },
         
         //Get Set Property
