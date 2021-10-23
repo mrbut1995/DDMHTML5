@@ -15,36 +15,33 @@ define(["ddm", "jquery", "view/views","view/boardview"], function (Tsh, $, Views
 
 
     //Board Canvas View
-    Tsh.Ddm.View = new function () {
+    Tsh.Ddm.View =  {
 
 
         /////Property
         //Main View
-        this.views = {
+        views : {
             board : new BoardView()
-        }
-        this.dirty = true
+        },
+        dirty : true,
 
         //Highlight
-        this.isHighlight = false
-        this.hightlights = []
-
-        //Animation
-        this.animations = []
+        isHighlight : false,
+        hightlights : [],
 
         //Mouse
-        this.mouseCoord = null
+        mouseCoord : null,
 
-        this.dom = {
+        dom : {
             DOMBoard : null,
             DOMDiceOne : null,
             DOMDiceTwo : null,
             DOMDiceThree : null,
             DOMCanvas : null,
-        }
+        },
 
         //Event 
-        this.events = {
+        events : {
             itemclicked: "itemclicked",
             itempressed: "itempressed",
             itemreleased: "itemreleased",
@@ -56,11 +53,10 @@ define(["ddm", "jquery", "view/views","view/boardview"], function (Tsh, $, Views
             itemmove: "itemmove",
             boardmousemove: "boardmousemove",
             boardmouseclicked: "boardmouseclicked",
+        },
 
-        }
 
-
-        this.initAudio = function () {
+        initAudio  () {
             if ($("#ddm-audio").length == 0 || !audio) {
                 audio = document.createElement("audio");
                 audio.id = "ddm-audio";
@@ -68,19 +64,18 @@ define(["ddm", "jquery", "view/views","view/boardview"], function (Tsh, $, Views
                 $("#board").append(audio)
             }
 
-        }
-        this.initDOM = function(){
+        },
+        initDOM (){
             this.dom.DOMBoard     = document.getElementById("board")
-            console.log("this.dom.DOMBoard = ",this.dom.DOMBoard)
             this.dom.DOMDiceOne   = document.getElementById("dice1")
             this.dom.DOMDiceTwo   = document.getElementById("dice2")
             this.dom.DOMDiceThree = document.getElementById("dice3")
             this.dom.DOMCanvas    = document.getElementById("canvas")
-        }
-        this.getDOM = function(name){
+        },
+        getDOM (name){
             return document.getElementById(name)
-        }
-        this.initCanvas = function () {
+        },
+        initCanvas  () {
             if ($("#ddm-canvas").length == 0 || !canvas || !context) {
 
                 canvas = document.createElement("canvas");
@@ -91,78 +86,25 @@ define(["ddm", "jquery", "view/views","view/boardview"], function (Tsh, $, Views
                 canvas.height = this.views.board.constant.canvasHeight;
                 canvas.style.background = "white no-repeat 0 0";
 
-                //Declare Slot
-                var onMouseClicked = function (e) {
-                    var canvasCoord = getCanvasCoord(e)
-                    console.log("clicked", canvasCoord)
-                    mouseClickedHandle($.extend({}, canvasCoord))
-        
-                }
-                var onMouseDown = function (e) {
-                    //Mouse Press Handle
-                    var canvasCoord = getCanvasCoord(e)
-                    console.log("press", canvasCoord)
-                    mousePressedHandle($.extend({}, canvasCoord))
-        
-                    //Mouse Press And Hold Handle
-                    mouseTimer = setTimeout(function () {
-                        console.log("press and hold ", canvasCoord)
-                        mousePressedAndHoldHandle($.extend({}, canvasCoord))
-                    }, 300)
-                }
-                var onMouseUp = function (e) {
-                    var canvasCoord = getCanvasCoord(e)
-                    console.log("released", canvasCoord)
-                    mouseReleasedHandle($.extend({}, canvasCoord))
-                    clearTimeout(mouseTimer)
-                }
-                var onMouseMove = function (e) {
-                    Tsh.Ddm.View.mouseCoord = e;
-                    Tsh.Ddm.View.emitEvent("boardmousemove");
-                }
-        
-                var onViewItemPropertyChanged = function (opts) {
-                    var defOpts = {
-                        source: null,
-                        old_value: "",
-                        new_value: ""
-                    }
-                    opts = $.extend(defOpts, opts.detail)
-                    Tsh.Ddm.View.dirty = Tsh.Ddm.View.dirty || true
-                    emitEvent(Tsh.Ddm.View.events.itempropertychanged, { source: defOpts })
-                }
-        
-                //Register Event Handler
-                canvas.addEventListener("click", onMouseClicked, false);
-                canvas.addEventListener("mousedown", onMouseDown, false);
-                canvas.addEventListener("mouseup", onMouseUp, false);
-                canvas.addEventListener("mousemove", onMouseMove);
-
-                this.dom.DOMBoard.addEventListener("propertychanged", onViewItemPropertyChanged, false)
-
                 context = canvas.getContext("2d");
 
             } else {
                 console.log("already initCanvas")
             }
-        }
+        },
 
-        this.emitEvent = function (event, detail) {
+        emitEvent  (event, detail) {
             var e = new CustomEvent(event, { detail: detail });
             Tsh.Ddm.View.dom.DOMBoard.dispatchEvent(e);
-        }
+        },
         
-        this.constructBoardView = function(){
-            //TODO:
-        }
-
-        this.draw = function () {
+        draw  () {
             context.clearRect(0, 0, this.views.board.constant.canvasWidth, this.views.board.constant.canvasHeight)
             this.views.board.draw(context,this)
-        }
+        },
 
         //Member of class
-        var getCanvasCoord = function (e) {
+        getCanvasCoord  (e) {
             var x, y;
 
             // Get xy coords on page
@@ -179,19 +121,15 @@ define(["ddm", "jquery", "view/views","view/boardview"], function (Tsh, $, Views
             y -= canvas.offsetTop;
 
             return new Coord(x, y);
-        }
-
-
-        this.update = function (opts) {
+        },
+        update  (opts) {
             var defOpts = {
                 delta: 0
             }
             opts = $.extend(defOpts, opts)
-            this.updatingAnimations(opts.delta)
             this.redraw(true)
-        }
-
-        this.redraw = function (canvasElement) {
+        },
+        redraw  (canvasElement) {
             if (!canvasElement) {
                 this.initCanvas()
                 this.initAudio()
@@ -200,38 +138,36 @@ define(["ddm", "jquery", "view/views","view/boardview"], function (Tsh, $, Views
                 return
             this.draw();
             this.dirty = false
-        }
-
-
-        this.createView = function (prototype, opts, item, callback) {
+        },
+        createView  (prototype, opts, item, callback) {
             var view = new prototype(opts)
             view.sendMessage({ msg: 'onCreated' })
             this.emitEvent(this.events.objectcreated, { source: view, uuid: view.uuid })
             callback(view)
             return view
-        }
-
-        this.moveView = function (view, coord) {
+        },
+        moveView  (view, coord) {
             if (view.inArray(this.allViews)) {
                 //Move View Coord
                 view.move(coord)
             }
             //Request to Redraw
             this.dirty = this.dirty || true
-        }
-        this.changeViewProperty = function (view, property, value) {
+        },
+        changeViewProperty  (view, property, value) {
             if (view != null) {
                 view.setProperty(property, value)
             }
-        }
+        },
 
-        //////////////////////////////////////// SPECIFY 
-        this.PlaceViewIntoBoard = function(view,point){
+        //////////////////////////////////////// SPECIFY
+
+        PlaceViewIntoBoard (view,point){
             console.log("PlaceViewIntoBoard")
             this.views.board.relocatingView(view,point)
-        }
+        },
 
-        this.CreatePieceView = function (point, opts, item, callback) {
+        CreatePieceView  (point, opts, item, callback) {
             var rect = new Rect(new Coord(0,0), this.views.board.constant.wCell, this.views.board.constant.hCell)
             var opts = {
                 bound: rect,
@@ -240,8 +176,8 @@ define(["ddm", "jquery", "view/views","view/boardview"], function (Tsh, $, Views
             this.views.board.relocatingView(view,point)
             this.views.board.addViewChild(view,"piece")
             this.dirty = this.dirty || true
-        }
-        this.CreateLandView = function (point, opts, item, callback) {
+        },
+        CreateLandView  (point, opts, item, callback) {
             var rect = new Rect(new Coord(0,0), this.views.board.constant.wCell, this.views.board.constant.hCell)
             var opts = {
                 bound: rect,
@@ -252,23 +188,23 @@ define(["ddm", "jquery", "view/views","view/boardview"], function (Tsh, $, Views
 
             //Request to Redraw
             this.dirty = this.dirty || true
-        }
-        this.DestroyView = function (uuid) {
+        },
+        DestroyView  (uuid) {
             var view = this.views.board.view(uuid);
 
             this.views.board.removeViewChild(view)
 
             //Request to Redraw
             this.dirty = this.dirty || true
-        }
-        this.GetViewProperty = function (uuid, property) {
+        },
+        GetViewProperty  (uuid, property) {
             var view = this.views.board.view(uuid);
             if (view != null) {
                 return view.property(property)
             }
             return null
-        }
-        this.SetViewProperty = function (uuid, property, value) {
+        },
+        SetViewProperty  (uuid, property, value) {
             var view = this.views.board.view(uuid);
             if (view != null) {
                 this.changeViewProperty(view, property, value)
@@ -276,8 +212,8 @@ define(["ddm", "jquery", "view/views","view/boardview"], function (Tsh, $, Views
 
             //Request to Redraw
             this.dirty = this.dirty || true
-        }
-        this.MoveView = function (uuid, point) {
+        },
+        MoveView  (uuid, point) {
             var view = this.views.board.view(uuid);
 
             if (view != null) {
@@ -287,18 +223,18 @@ define(["ddm", "jquery", "view/views","view/boardview"], function (Tsh, $, Views
 
             //Request to Redraw
             this.dirty = this.dirty || true
-        }
-        this.StartHighlight = function () {
+        },
+        StartHighlight  () {
             this.isHighlight = true
             this.ClearHighlight()
             this.dirty = this.dirty || true
-        }
-        this.StopHighlight = function () {
+        },
+        StopHighlight  () {
             this.isHighlight = false
             this.ClearHighlight()
             this.dirty = this.dirty || true
-        }
-        this.Highlight = function (list) {
+        },
+        Highlight  (list) {
             if (!this.isHighlight) {
                 console.log("[ERROR]: Not hightlighting")
                 return;
@@ -324,8 +260,8 @@ define(["ddm", "jquery", "view/views","view/boardview"], function (Tsh, $, Views
             //Request to Redraw
             this.dirty = this.dirty || true
 
-        }
-        this.ClearHighlight = function () {
+        },
+        ClearHighlight  () {
             if (this.hightlights.length == 0) {
                 return;
             }
@@ -338,22 +274,22 @@ define(["ddm", "jquery", "view/views","view/boardview"], function (Tsh, $, Views
 
             //Request to Redraw
             this.dirty = this.dirty || true
-        }
-        this.GetCanvasMousePoint = function () {
-            return this.board.CoordToPoint(getCanvasCoord(this.mouseCoord))
-        }
-        this.GetCanvasMouseCoord = function () {
-            return getCanvasCoord(this.mouseCoord)
-        }
+        },
+        GetCanvasMousePoint  () {
+            return this.board.CoordToPoint(this.getCanvasCoord(this.mouseCoord))
+        },
+        GetCanvasMouseCoord  () {
+            return this.getCanvasCoord(this.mouseCoord)
+        },
                 //Dice Rolling
-        this.DisplayDice = function(interval){
+        DisplayDice (interval){
             var dices = document.getElementById("dicesId");
             dices.classList.toggle("show")
             if(interval == undefined || interval == null)
                 return
             setTimeout(() => { dices.classList.toggle("show") }, interval)
-        }
-        this.Roll =  function (dice, result) {
+        },
+        Roll (dice, result) {
             var DOMObject = undefined
             switch(dice){
                 case 0: DOMObject =  this.dom.DOMDiceOne;break
@@ -368,58 +304,41 @@ define(["ddm", "jquery", "view/views","view/boardview"], function (Tsh, $, Views
                     DOMObject.classList.add('show-' + i);
                     }
                 }
-        }
-        this.RequestRedraw = function(){
+        },
+        RequestRedraw (){
             this.dirty = this.dirty || true
-        }
+        },
         //////////////////////////////////////// ANIMATION
-        this.constructingAnimation = function () {
-        }
-
-        this.updatingAnimations = function (delta) {
-            var isAnimationAlive = false
-            for (var i in this.animations) {
-                isAnimationAlive = isAnimationAlive || this.animations[i].isRunning
-                this.animations[i].update(delta)
-            }
-            if (isAnimationAlive) {
-                this.dirty = this.dirty || true
-            } else {
-                this.dirty = this.dirty || false
-            }
-        }
-        //Initializing View
-        this.init = function () {
+        
+        init  () {
             console.log("DDM.VIEW.INIT")
             this.initDOM()
-
-            // this.constructingViewItem()
-            this.constructingAnimation()
-            this.constructBoardView()
+            this.initCanvas()
             
             this.redraw()
-        }
+        },
 
         //Mouse Handle
-        var mouseClickedHandle = function (opts) {
-            Tsh.Ddm.View.views.board.onMouseClicked(opts)
-        }
-        var mousePressedHandle = function (opts) {
-            Tsh.Ddm.View.views.board.onMousePressed(opts)
-        }
-        var mousePressedAndHoldHandle = function (opts) {
-            Tsh.Ddm.View.views.board.onMousePressAndHold(opts)
-        }
-        var mouseReleasedHandle = function (opts) {
-            Tsh.Ddm.View.views.board.onMouseReleased(opts)
-        }
-        var mouseDragHandle = function (e) {
-            Tsh.Ddm.View.views.board.onMouseDrag(opts)
-        }
-
+        mouseClickedCanvasHandle  (opts) {
+            console.log("mouseClickedCanvasHandle ",opts)
+            Tsh.Ddm.View.views.board.mouseClicked(opts)
+        },
+         mousePressedCanvasHandle  (opts) {
+            console.log("mousePressedCanvasHandle ",opts)
+            Tsh.Ddm.View.views.board.mousePressed(opts)
+        },
+         mousePressedAndHoldCanvasHandle  (opts) {
+            console.log("mousePressedAndHoldCanvasHandle ",opts)
+            Tsh.Ddm.View.views.board.mousePressAndHold(opts)
+        },
+         mouseReleasedCanvasHandle  (opts) {
+            console.log("mouseReleasedCanvasHandle ",opts)
+            Tsh.Ddm.View.views.board.mouseReleased(opts)
+        },
+         mouseDragCanvasHandle  (opts) {
+            Tsh.Ddm.View.views.board.mouseDrag(opts)
+        },
     }
-
-
 })
 
 

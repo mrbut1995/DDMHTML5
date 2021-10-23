@@ -28,19 +28,65 @@ define(["jquery"],function($){
             //Method
             $.extend(this,otps,false)
         },
-        //Message Handle Method
-        onMouseClicked              : null, 
-        onMousePressed              : null, 
-        onMouseReleased             : null, 
-        onMousePressAndHold         : null,
-        onMouseDrag                 : null,
-        onMouseCancel               : null,
+
+        //Mouse Handle
+        mouseClicked            (ev){
+            if(this._onMouseClicked)
+                this._onMouseClicked(ev)
+        }, 
+        mousePressed            (ev){
+            if(this._onMousePressed)
+                this._onMousePressed(ev)
+        }, 
+        mouseReleased           (ev){
+            if(this._onMouseReleased)
+                this._onMouseReleased(ev)
+        }, 
+        mousePressAndHold       (ev){
+            if(this._onPressAndHold)
+                this._onPressAndHold(ev)
+        },
+        mouseDrag               (ev){
+            if(this._onMouseDrag)
+                this._onMouseDrag(ev)
+
+        },
+        mouseCancel             (ev){
+            if(this._onMouseCancel)
+                this._onMouseCancel(ev)
+        },
          
-        onUpdate                    : null, 
-        onPropertyChanged           : null, 
-        onFocused                   : null, 
-        onCreated                   : null, 
-        onDestroyed                 : null,
+        //Signal
+        onUpdate (callback){
+            this._onUpdate = callback
+        },
+        onPropertyChanged(callback){
+            this._onPropertyChanged = callback
+        },
+        onCreated(callback){
+            this._onCreated = callback
+        },
+        onDestroyed(callback){
+            this._onDestroyed = callback
+        },
+        onMouseClicked(callback){
+            this._onMouseClicked = callback
+        },
+        onMousePressed(callback){
+            this._onMousePressed = callback
+        },
+        onMouseReleased(callback){
+            this._onMouseReleased = callback
+        },
+        onMousePressAndHold(callback){
+            this._onPressAndHold = callback
+        },
+        onMouseDrag(callback){
+            this._onMouseDrag = callback
+        },
+        onMouseCancel(callback){
+            this._onMouseCancel = callback
+        },
 
         draw: function (context, mainView) {
             context.save()

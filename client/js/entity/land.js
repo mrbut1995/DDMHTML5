@@ -15,6 +15,12 @@ define(["entity/piece","view/views"],function(Piece,Views){
         },
         steppedOn(piece){
 
+        },
+        placedOn(piece){
+
+        },
+        destroy(){
+            
         }
     })
     return Land;

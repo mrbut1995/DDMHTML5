@@ -106,13 +106,51 @@ html {
 }
 /*User UI CSS*/
 .player-ui {
-  width: 330px;
-  border-top: 2px solid #ddd;
-  padding: 10px;
-  margin-top: 10px;
-  background-color: #eee;
+  text-align: center;
+  margin: 20px;
+  position: relative;
+  width: 100%;
+}
+
+.player-ui .player-btns-container{
+  padding: 0 10px;
+  position: relative;
+}
+.player-ui:before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  transform: translateY(-50%);
+}
+.player-ui .player-btns-container .player-btn{
+  width: min(15%,120px);
+  /* width: 120px; */
+  height: 100px;
+  margin-left:1%;
+  margin-right:1%;
+  background-color:rgba(253, 232, 109, 0.7);
+  border: 3px solid rgba(237, 255, 238, 0.705);
+	box-shadow: 0px 0px 10px rgb(173, 192, 233);
+  font-size:20px;
+  color:rgba(173, 192, 233, 0.705);
+}
+.player-ui .player-btns-container .player-btn.left-side{
+  float:left
+}
+.player-ui .player-btns-container .player-btn.right-side{
+  float:right
+}
+
+.player-ui .player-btns-container .player-btn.highlight-btn{
+  width: min(17%,160px);
+  /* width: 160px; */
+  height: 100px;
+  background-color:rgba(212, 75, 51, 0.7);
 }
 .ui{
+
 
 }
 .player1{

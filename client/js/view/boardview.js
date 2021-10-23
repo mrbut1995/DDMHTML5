@@ -16,10 +16,6 @@ define(["jquery", "view/view", "view/views"], function ($, View, Views) {
 
                 horPadCell: 6,
                 verPadCell: 6,
-                verPadCell: 6,
-                verPadCell: 6,
-                verPadCell: 6,
-                verPadCell: 6,
 
                 wTile: 42,
                 hTile: 42,
@@ -139,58 +135,58 @@ define(["jquery", "view/view", "view/views"], function ($, View, Views) {
             console.log("CANNOT FOUND ", uuid)
             return null
         },
-        onMouseClicked      : function(ev){
+        mouseClicked      : function(ev){
             var views = this.viewsAt(ev)
             for(var i in views){
                 var view = views[i]
-                if(!isFunction(view.onMouseClicked))
+                if(!isFunction(view.mouseClicked))
                     continue;
-                view.onMouseClicked(ev)
+                view.mouseClicked(ev)
             }
         },
-        onMousePressed      : function(ev){
+        mousePressed      : function(ev){
             var views = this.viewsAt(ev)
             for(var i in views){
                 var view = views[i]
-                if(!isFunction(view.onMousePressed))
+                if(!isFunction(view.mousePressed))
                     continue;
-                view.onMousePressed(ev)
+                view.mousePressed(ev)
             }
         },
-        onMouseReleased     : function(ev){
+        mouseReleased     : function(ev){
             var views = this.viewsAt(ev)
             for(var i in views){
                 var view = views[i]
-                if(!isFunction(view.onMouseReleased))
+                if(!isFunction(view.mouseReleased))
                     continue;
-                view.onMouseReleased(ev)
+                view.mouseReleased(ev)
             }
         },
-        onMousePressAndHold : function(ev){
+        mousePressAndHold : function(ev){
             var views = this.viewsAt(ev)
             for(var i in views){
                 var view = views[i]
-                if(!isFunction(view.onMousePressAndHold))
+                if(!isFunction(view.mousePressAndHold))
                     continue;
-                view.onMousePressAndHold(ev)
+                view.mousePressAndHold(ev)
             }
         },
-        onMouseDrag : function(ev){
+        mouseDrag : function(ev){
             var views = this.viewsAt(ev)
             for(var i in views){
                 var view = views[i]
-                if(!isFunction(view.onMouseDrag))
+                if(!isFunction(view.mouseDrag))
                     continue;
-                view.onMouseDrag(ev)
+                view.mouseDrag(ev)
             }
         },
-        onMouseCancel : function(ev){
+        mouseCancel : function(ev){
             var views = this.viewsAt(ev)
             for(var i in views){
                 var view = views[i]
-                if(!isFunction(view.onMouseDrag))
+                if(!isFunction(view.mouseDrag))
                     continue;
-                view.onMouseCancel(ev)
+                view.mouseCancel(ev)
             }
         },
 

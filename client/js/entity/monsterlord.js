@@ -6,8 +6,23 @@ define(["entity/piece","view/views"],function(Piece){
             this.view = new Views.MonsterLordView()
 
             this.lifepoint = 0
+        },
+        attacked(){
+
+        },
+        isAttackedBy(piece){
+
+        },
+        addAttacker(piece){
+
+        },
+        removeAttacker(piece){
             
         },
+        forEachAttacker(callback){
+
+        },
+
     })
     return MonsterLord;
 })

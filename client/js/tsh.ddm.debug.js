@@ -72,7 +72,7 @@ define(["ddm","jquery"],function(Tsh,$){
         }
         this.init = function () {
             var DOMBoard = Tsh.Ddm.View.getDOM("board")
-            this.CreateDebugDOM()
+            // this.CreateDebugDOM()
             DOMBoard.addEventListener("itemclicked", onItemClicked, false)
             DOMBoard.addEventListener("boardmousemove", onBoardMouseMove, false)
     

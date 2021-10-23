@@ -1,4 +1,4 @@
-define(["ddm"],function(Tsh){
+define(["jquery","ddm"],function($,Tsh){
     var Entity = Class.extend({
         //Property
         
@@ -13,7 +13,14 @@ define(["ddm"],function(Tsh){
             this.name = name;
         },
         setAnimation: function(animations){
-
+            var self = this
+        },
+        animate:function(name,opts,onEndCallback){
+            let defOpts = {
+                speed : 0,
+                count : 0,
+            }
+            opts = $.extend(defOpts,opts)
         },
         //Set Callback
         ready : function(f){
