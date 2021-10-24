@@ -141,23 +141,9 @@ define(["ddm", "jquery", "view/views","view/boardview"], function (Tsh, $, Views
         },
         createView  (prototype, opts, item, callback) {
             var view = new prototype(opts)
-            view.sendMessage({ msg: 'onCreated' })
             this.emitEvent(this.events.objectcreated, { source: view, uuid: view.uuid })
             callback(view)
             return view
-        },
-        moveView  (view, coord) {
-            if (view.inArray(this.allViews)) {
-                //Move View Coord
-                view.move(coord)
-            }
-            //Request to Redraw
-            this.dirty = this.dirty || true
-        },
-        changeViewProperty  (view, property, value) {
-            if (view != null) {
-                view.setProperty(property, value)
-            }
         },
 
         //////////////////////////////////////// SPECIFY
@@ -193,33 +179,6 @@ define(["ddm", "jquery", "view/views","view/boardview"], function (Tsh, $, Views
             var view = this.views.board.view(uuid);
 
             this.views.board.removeViewChild(view)
-
-            //Request to Redraw
-            this.dirty = this.dirty || true
-        },
-        GetViewProperty  (uuid, property) {
-            var view = this.views.board.view(uuid);
-            if (view != null) {
-                return view.property(property)
-            }
-            return null
-        },
-        SetViewProperty  (uuid, property, value) {
-            var view = this.views.board.view(uuid);
-            if (view != null) {
-                this.changeViewProperty(view, property, value)
-            }
-
-            //Request to Redraw
-            this.dirty = this.dirty || true
-        },
-        MoveView  (uuid, point) {
-            var view = this.views.board.view(uuid);
-
-            if (view != null) {
-                var coord = this.views.board.pointToCoord(point) 
-                this.moveView(view, coord)
-            }
 
             //Request to Redraw
             this.dirty = this.dirty || true

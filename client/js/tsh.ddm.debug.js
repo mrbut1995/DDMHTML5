@@ -139,12 +139,9 @@ define(["ddm","jquery"],function(Tsh,$){
             mCol = Math.min(Math.max(mCol, 0), 12)
             mRow = Math.min(Math.max(mRow, 0), 18)
     
-    
-            Tsh.Ddm.View.MoveView(this.debugPieceSelected.uuid, new Point(mCol, mRow))
         }
         this.btnDisplayActionPopup = function () {
             console.log("btnDisplayActionPopup")
-
         }
         this.btnRoll = function () {
             // roll()
@@ -199,7 +196,6 @@ define(["ddm","jquery"],function(Tsh,$){
     
             var val = document.getElementById("pieceVisible").checked
     
-            Tsh.Ddm.View.SetViewProperty(this.debugPieceSelected.uuid, "visible", val)
         }
         this.onSelectedPieceHighlightChanged = function () {
             if (this.debugPieceSelected == null) {
@@ -209,7 +205,6 @@ define(["ddm","jquery"],function(Tsh,$){
     
             var val = document.getElementById("pieceHighlight").checked
     
-            Tsh.Ddm.View.SetViewProperty(this.debugPieceSelected.uuid, "highlight", val)
         }
         this.onSelectedPieceFocusChanged = function () {
             if (this.debugPieceSelected == null) {
@@ -219,7 +214,6 @@ define(["ddm","jquery"],function(Tsh,$){
     
             var val = document.getElementById("pieceFocus").checked
     
-            Tsh.Ddm.View.SetViewProperty(this.debugPieceSelected.uuid, "focused", val)
         }
         this.onSelectedPiecePositionChanged = function () {
             console.log("onSelectedPiecePositionChanged")
@@ -229,8 +223,6 @@ define(["ddm","jquery"],function(Tsh,$){
         var onItemClicked = function (opts) {
             console.log("debug onItemClicked = ", opts)
             if (Tsh.Ddm.Debug.isSelectingPiece) {
-                // var uuid = opts.uuid
-                // var type = Tsh.Ddm.View.GetViewProperty()
                 if (opts.detail.source.type == "piece") {
                     Tsh.Ddm.Debug.SetSelectingPiece(opts.detail.source)
                 } else {

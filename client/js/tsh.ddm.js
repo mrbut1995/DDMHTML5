@@ -1,51 +1,5 @@
 let start, previousTimeStamp;
 
-function Land(id, point, owner) {
-    this.id = id || -1
-    this.point = point || new Point(0, 0)
-    this.owner = owner || -1
-
-    this.getInArray = function (array) {
-        for (var i = 0; i < array.length; i++) {
-            if (this.id === array[i])
-                return i
-        }
-        return -1
-    }
-
-    this.isInArray = function (array) {
-        return this.getInArray(array) != -1
-    }
-
-    this.isAt = function (point) {
-        return this.point.equals(point)
-    }
-}
-
-function Piece(id, point, owner) {
-    this.point = point || new Point(0, 0)
-    this.owner = owner || -1
-
-    this.getInArray = function (array) {
-        for (var i = 0; i < array.length; i++) {
-            if (this.id === array[i])
-                return i
-        }
-        return -1
-    }
-
-    this.isInArray = function (array) {
-        return this.getInArray(array) != -1
-    }
-
-    this.isAt = function (point) {
-        return this.point.equals(point)
-    }
-
-}
-
-
-
 //Define Modul
 define(function () {
 
@@ -87,7 +41,8 @@ define(function () {
             Tsh.Ddm.Loader.init()
             Tsh.Ddm.Animator.init()
             Tsh.Ddm.Input.init()
-
+            Tsh.Ddm.Entity.init()
+            
             Tsh.Ddm.Match.load()
         },
         run: function () {

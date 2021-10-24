@@ -46,17 +46,37 @@ define(["jquery", "view/view", "view/views"], function ($, View, Views) {
                 callback(name,this.layers[name])
             }
         },
+        forEachView: function(callback){
+            var keys = this.layersName()
+            for(var i in keys){
+                var name = keys[i]
+                if(this.layers[name] == undefined || this.layers[name].length <= 0)
+                    continue
+                for(var j in this.layers[name]){
+                    var view = this.layers[name][j]
+                    callback(view)
+                }
+            } 
+        },
         draw: function (context, mainView) {
             context.save()
-            this.forEachChild(function(view){
+            this.forEachView(function(view){
                 view.draw(context,this)
             }.bind(this))
             context.restore()
         },
+        viewAt: function(coord){
+            var lst = []
+            this.forEachView(function(view){
+                if(view.contain(coord)){
+                    lst.unshift(view)
+                }
+            }.bind(this))
+            return lst;
+        },
         addViewChild: function (view, layer) {
             this.forEachLayer(function(name,list){
                 if(name == layer){
-                    console.log("Add to layer ", name," layers = ",this)
                     this.layers[name].push(view)
                 }
             }.bind(this))

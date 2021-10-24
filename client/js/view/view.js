@@ -1,6 +1,3 @@
-var isParentInheritanceValue = function(name){
-    return name == "visible" || name == "enable" || name == "isHighlight";
-} 
 
 define(["jquery"],function($){
     var View = Class.extend({
@@ -16,7 +13,7 @@ define(["jquery"],function($){
             //Parent Inheritance Value
             this.visible                     = true
             this.enable                      = true
-            this.isHighlight                 = false
+            this.highlight                   = false
     
             //Source For drawing Image
             this.imgSrcNormal                = ""
@@ -26,17 +23,16 @@ define(["jquery"],function($){
 
             //Method
             $.extend(this,otps,false)
+
+            if(this._onCreated)
+                this._onCreated()
         },
         forEachChild: function(callback){
-            var keys = this.layersName()
-            for(var i in keys){
-                var name = keys[i]
-                if(this.layers[name] == undefined || this.layers[name].length <= 0)
+            for(var i in this.childs){
+                var view = this.childs[i]
+                if(view == null)
                     continue
-                for(var j in this.layers[name]){
-                    var view = this.layers[name][j]
-                    callback(view)
-                }
+                callback(view)
             }
         },
         childAt: function (coord) {
@@ -48,72 +44,45 @@ define(["jquery"],function($){
             }.bind(this))
             return lst;
         },
+        forEachChildAt(coord,callback){
+            if(this.childs.length <= 0)
+                return;
+            var childs = this.childAt(ev)
+            for(var i in childs){
+                callback(childs[i])
+            }
+        },
+
         //Mouse Handle
         mouseClicked            (ev){
             if(this._onMouseClicked)
                 this._onMouseClicked(ev)
-            if(this.childs.length <= 0)
-                return;
-            var views = this.childAt(ev)
-            for(var i in views){
-                var view = views[i]
-                view.mouseClicked(ev)
-            }
+                this.forEachChildAt( v => v.mouseClicked(ev))
         }, 
         mousePressed            (ev){
             if(this._onMousePressed)
                 this._onMousePressed(ev)
-            if(this.childs.length <= 0)
-                return;
-            var views = this.childAt(ev)
-            for(var i in views){
-                var view = views[i]
-                view.mousePressed(ev)
-            }
+            this.forEachChildAt( v => v.mousePressed(ev))
         }, 
         mouseReleased           (ev){
             if(this._onMouseReleased)
                 this._onMouseReleased(ev)
-            if(this.childs.length <= 0)
-                return;
-            var views = this.childAt(ev)
-            for(var i in views){
-                var view = views[i]
-                view.mouseReleased(ev)
-            }
+            this.forEachChildAt( v => v.mouseReleased(ev))
         }, 
         mousePressAndHold       (ev){
             if(this._onPressAndHold)
                 this._onPressAndHold(ev)
-            if(this.childs.length <= 0)
-                return;
-            var views = this.childAt(ev)
-            for(var i in views){
-                var view = views[i]
-                view.mousePressAndHold(ev)
-            }
+            this.forEachChildAt( v => v.mousePressAndHold(ev))
         },
         mouseDrag               (ev){
             if(this._onMouseDrag)
                 this._onMouseDrag(ev)
-            if(this.childs.length <= 0)
-                return;
-            var views = this.childAt(ev)
-            for(var i in views){
-                var view = views[i]
-                view.mouseDrag(ev)
-            }
+            this.forEachChildAt( v => v.mouseDrag(ev))
         },
         mouseCancel             (ev){
             if(this._onMouseCancel)
                 this._onMouseCancel(ev)
-            if(this.childs.length <= 0)
-                return;
-            var views = this.childAt(ev)
-            for(var i in views){
-                var view = views[i]
-                view.mouseCancel(ev)
-            }
+            this.forEachChildAt( v => v.mouseCancel(ev))
         },
          
         //Signal
@@ -147,40 +116,68 @@ define(["jquery"],function($){
         onMouseCancel(callback){
             this._onMouseCancel = callback
         },
-
+        
         draw: function (context, mainView) {
             context.save()
+            var style;
             if(!this.enable){
-                context.fillStyle = this.imgSrcDisable
+                style = this.imgSrcDisable
             }else if(!this.visible){
-                context.fillStyle = this.imgSrcHidden
-            }else if (this.isHighlight) {
-                context.fillStyle = this.imgSrcSelect
+                style = this.imgSrcHidden
+            }else if (this.highlight) {
+                style = this.imgSrcSelect
             } else {
-                context.fillStyle = this.imgSrcNormal
+                style = this.imgSrcNormal
             }
             let drawingRect = this.bound
+            context.fillStyle = style
             context.fillRect(drawingRect.x, drawingRect.y, drawingRect.w, drawingRect.h)
             context.restore()
-            //Draw Child
         },
         
         //Get Set Property
         setPosition : function(point){
             this.bound.x = point.x
             this.bound.y = point.y
-            this.sendMessage({msg:"onPropertyChanged"})
+
+            if(this._onPropertyChanged)
+                this._onPropertyChanged()
         },
         getPosition : function(){
             return new Coord(this.bound.x,this.bound.y)
         },
         setBounding : function(rect){
             this.bound = rect
-            this.sendMessage({msg:"onPropertyChanged"})
+
+            if(this._onPropertyChanged)
+                this._onPropertyChanged()
         },
         getBounding : function(){
             return this.bound
         },
+        setHighlight(value){
+            this.highlight = value
+            forEachChild(child => this.setHighlight(value));
+        },
+        isHighlight(){
+            return this.highlight
+        },
+        setVisible(value){
+            this.visible = value
+            forEachChild(child => this.setVisible(value));
+        },
+        isVisible(){
+            return this.visible
+        },
+        setEnable(value){
+            this.enable = value
+            forEachChild(child => this.setEnable(value));
+        },
+        isEnabled(){
+            return this.enable
+        },
+        /////////////////////////////////////////
+
         childOf   : function(parent){
             if(this.parent != null){
                 //Remove item from the current parent's child list
@@ -193,48 +190,11 @@ define(["jquery"],function($){
                 this.parent.childs.push(this)
             }
         },
-        sendMessage : function(evt){
-            var defOpts = {
-                msg:"unknwon",
-            }
-            evt = $.extend(defOpts,evt)
-            var defParam = {
-                source:this
-            }
-            var event = null
-            console.log("Call ",evt.mgs)
-            if(!this.hasOwnProperty(evt.mgs) || !isFunction(this[evt.mgs])){
-                console.log("[ERROR] DOES NOT CAONTAIN SLOT METHOD");
-                return;
-            }
-            this[evt.mgs](defParam);
-        },
+
         contain      : function(coord){
             return this.bound.contain(coord)
         },
-        property     : function(name){
-            return this[name]
-        },
-        setProperty  : function(name,value){
-            if (!this.hasOwnProperty(name)) 
-                return false
-            console.log("property[",name,"]=(",this[name],"=>",value,")")
-            this[name] = value
-            if(isParentInheritanceValue(name)){
-                callChild(child => child.setProperty(name,value));
-            }
-            this.sendMessage({msg:"onPropertyChanged"})
-        },
-        
-        highlight : function(value){
-            this.setProperty("isHighlight",value);
-        },
     
-        move         : function(coord){
-            var r = new Rect(coord,this.bound.w,this.bound.h)
-            this.setProperty("bound",r)
-            this.sendMessage({msg:"onMove"})
-        },
         inArray    : function(a){
             for(var i= 0 ; i < a.length;i++){
                 if(a[i] == this) 
@@ -251,11 +211,16 @@ define(["jquery"],function($){
             }
         },
         destroy : function(){
+            forEachChild(c => c.destroy())
+            if(this.parent != null){
+                this.removeInArray(this.parent.childs)
+            }
+            this.parent = null
         },
         toString : function(){
             return this.type+"("+this.uuid+")"
         },
-        callChild: function(callback){
+        forEachChild: function(callback){
             for(var i in this.childs){
                 callback(this.childs[i])
             }

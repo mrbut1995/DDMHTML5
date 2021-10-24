@@ -1,7 +1,9 @@
 requirejs.config({
   paths: {
+    'message':'./message',
     'jquery': 'https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min',
     'ddm': "./tsh.ddm",
+    
     //Module 
     'ddm-view': "./tsh.ddm.view.h5",
     'ddm-logic': "./tsh.ddm.logic",
@@ -9,6 +11,7 @@ requirejs.config({
     'ddm-debug' :"./tsh.ddm.debug",
     'ddm-animator':"./tsh.ddm.animator",
     'ddm-input':"./tsh.ddm.input",
+    'ddm-input':"./tsh.ddm.entity",
 
     'view': './view',
     'animation':"./animation",
@@ -36,7 +39,8 @@ define(['lib/class','util/util','util/constant','util/struct','util/gametype',"j
   require(["ddm-input"])
   require(["ddm-animator"])
   require(["ddm-debug"])
-  
+  require(["ddm-entity"])
+
   require(["ddm"])
 
   var items = {

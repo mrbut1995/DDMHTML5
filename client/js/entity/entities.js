@@ -1,10 +1,7 @@
-define(["entity/entity","entity/land","entity/piece"],function(Entity,Land,Piece){
+define(["entity/entity","entity/land","entity/monster"],function(Entity,Land,Monster){
     var Entities = {
         //================ LAND
-        NormalLand      : Land.extend({}),
-        PoisonLand      : Land.extend({}),
-        DestroyedLand   : Land.extend({}),
-        GrassLand       : Land.extend({})
+
     }
     return Entities
 })
