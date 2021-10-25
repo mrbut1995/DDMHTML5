@@ -18,6 +18,9 @@ define(["jquery","ddm"],function($,Tsh){
         getView(){
             return this.view;
         },
+        setView(view){
+            this.view = view
+        },
         setAnimation: function(animations){
             var self = this
         },

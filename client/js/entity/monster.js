@@ -219,6 +219,9 @@ define(["entity/piece", "view/views", "animation/animations"], function (Piece, 
                 }
             }
         },
+        nextPoint(){
+            return {col : this.nextGridCol, row : this.nextGridRow}
+        },
         isNear(piece,distance){
             var dx, dy, near = false;
         

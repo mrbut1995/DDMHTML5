@@ -1,5 +1,8 @@
 
 define(["ddm","jquery"],function(Tsh,$){    
+    Tsh = Tsh || {}
+    Tsh.Ddm = Tsh.Ddm || {}
+
     Tsh.Ddm.Debug = new function () {
     
     
@@ -152,10 +155,8 @@ define(["ddm","jquery"],function(Tsh,$){
     
             if (val) {
                 this.debugHighlightOnMove = true
-                Tsh.Ddm.View.StartHighlight();
             } else {
                 this.debugHighlightOnMove = false
-                Tsh.Ddm.View.StopHighlight();
             }
         }
         this.StartSelectingPiece = function () {
@@ -235,7 +236,6 @@ define(["ddm","jquery"],function(Tsh,$){
             if (Tsh.Ddm.Debug.debugHighlightOnMove) {
                 var point = Tsh.Ddm.View.GetCanvasMousePoint()
                 var lst = pointsFromPattern(point, "TYPE_10", rot)
-                Tsh.Ddm.View.Highlight(lst)
             }
         }
     

@@ -3,11 +3,11 @@
 define(["ddm", "jquery", "view/views","view/boardview"], function (Tsh, $, Views,BoardView) {
 
 
+    Tsh = Tsh || {}
     Tsh.Ddm = Tsh.Ddm || {}
 
     var LandView = Views.LandView
     var PieceView = Views.MonsterView
-    var TileView  = Views.TileView
 
     var canvas;
     var context;
@@ -41,19 +41,6 @@ define(["ddm", "jquery", "view/views","view/boardview"], function (Tsh, $, Views
         },
 
         //Event 
-        events : {
-            itemclicked: "itemclicked",
-            itempressed: "itempressed",
-            itemreleased: "itemreleased",
-            itempressandhold: "itempressandhold",
-            itempropertychanged: "itempropertychanged",
-            itemcreated: "itemcreated",
-            itemdetroyed: "itemdetroyed",
-            itemfocused: "itemfocused",
-            itemmove: "itemmove",
-            boardmousemove: "boardmousemove",
-            boardmouseclicked: "boardmouseclicked",
-        },
 
 
         initAudio  () {
@@ -92,13 +79,9 @@ define(["ddm", "jquery", "view/views","view/boardview"], function (Tsh, $, Views
                 console.log("already initCanvas")
             }
         },
-
-        emitEvent  (event, detail) {
-            var e = new CustomEvent(event, { detail: detail });
-            Tsh.Ddm.View.dom.DOMBoard.dispatchEvent(e);
-        },
         
         draw  () {
+            console.log("draw")
             context.clearRect(0, 0, this.views.board.constant.canvasWidth, this.views.board.constant.canvasHeight)
             this.views.board.draw(context,this)
         },
@@ -122,6 +105,7 @@ define(["ddm", "jquery", "view/views","view/boardview"], function (Tsh, $, Views
 
             return new Coord(x, y);
         },
+
         update  (opts) {
             var defOpts = {
                 delta: 0
@@ -139,13 +123,50 @@ define(["ddm", "jquery", "view/views","view/boardview"], function (Tsh, $, Views
             this.draw();
             this.dirty = false
         },
-        createView  (prototype, opts, item, callback) {
+        createView  (prototype, opts, item) {
             var view = new prototype(opts)
             this.emitEvent(this.events.objectcreated, { source: view, uuid: view.uuid })
-            callback(view)
+            if(this._onViewCreated){
+                this._onViewCreated(view)
+            }
             return view
         },
+        destroyView(view){
+            if(this._onViewDestroyed){
+                this._onViewDestroyed(view)
+            }
+        },
+        setDirty(){
+            this.dirty = this.dirty || true
+        },
+        clean(){
+            this.dirty = false
+        },
 
+        //////////////////////////////////////// DOM Event
+        displayDice(interval){
+            var dices = document.getElementById("dicesId");
+            dices.classList.toggle("show")
+            if(interval == undefined || interval == null)
+                return
+            setTimeout(() => { dices.classList.toggle("show") }, interval)
+        },
+        rollDice(index,face){
+            var DOMObject = undefined
+            switch(dice){
+                case 0: DOMObject =  this.dom.DOMDiceOne;break
+                case 1: DOMObject =  this.dom.DOMDiceTwo;break
+                case 2: DOMObject =  this.dom.DOMDiceThree;break
+            }
+            console.log("result = ", result)
+            for (var i = 1; i <= 6; i++) {
+                DOMObject.classList.remove('show-' + i);
+                if (result === i) {
+                    console.log("roll to ", 'show-' + i)
+                    DOMObject.classList.add('show-' + i);
+                    }
+            }
+        },
         //////////////////////////////////////// SPECIFY
 
         PlaceViewIntoBoard (view,point){
@@ -161,7 +182,7 @@ define(["ddm", "jquery", "view/views","view/boardview"], function (Tsh, $, Views
             var view = this.createView(PieceView, opts, item, callback)
             this.views.board.relocatingView(view,point)
             this.views.board.addViewChild(view,"piece")
-            this.dirty = this.dirty || true
+            this.setDirty()
         },
         CreateLandView  (point, opts, item, callback) {
             var rect = new Rect(new Coord(0,0), this.views.board.constant.wCell, this.views.board.constant.hCell)
@@ -171,101 +192,19 @@ define(["ddm", "jquery", "view/views","view/boardview"], function (Tsh, $, Views
             var view = this.createView(LandView, opts, item, callback)
             this.views.board.relocatingView(view,point)
             this.views.board.addViewChild(view,"land")
-
-            //Request to Redraw
-            this.dirty = this.dirty || true
+            this.setDirty()
         },
         DestroyView  (uuid) {
             var view = this.views.board.view(uuid);
 
             this.views.board.removeViewChild(view)
-
-            //Request to Redraw
-            this.dirty = this.dirty || true
-        },
-        StartHighlight  () {
-            this.isHighlight = true
-            this.ClearHighlight()
-            this.dirty = this.dirty || true
-        },
-        StopHighlight  () {
-            this.isHighlight = false
-            this.ClearHighlight()
-            this.dirty = this.dirty || true
-        },
-        Highlight  (list) {
-            if (!this.isHighlight) {
-                console.log("[ERROR]: Not hightlighting")
-                return;
-            }
-            this.ClearHighlight()
-            //Highlight all the view in new list
-            for (var i in list) {
-                var p = list[i]
-                var coord =this.views.board.pointToCoord(p) 
-                var views = this.views.board.viewsAt(coord)//Tsh.Ddm.View.getViewAt(coord)
-
-                for (var j in views) {
-                    var v = views[j]
-                    //Highlight the highest item that's not piece
-                    if (v.type != "piece") {
-                        v.highlight(true)
-                        this.hightlights.push(v)
-                        break;
-                    }
-                }
-            }
-
-            //Request to Redraw
-            this.dirty = this.dirty || true
-
-        },
-        ClearHighlight  () {
-            if (this.hightlights.length == 0) {
-                return;
-            }
-            for (var i in this.hightlights) {
-                //Turn of Highlight from current view
-                var v = this.hightlights[i]
-                v.highlight(false)
-            }
-            this.hightlights = []
-
-            //Request to Redraw
-            this.dirty = this.dirty || true
+            this.setDirty()
         },
         GetCanvasMousePoint  () {
             return this.board.CoordToPoint(this.getCanvasCoord(this.mouseCoord))
         },
         GetCanvasMouseCoord  () {
             return this.getCanvasCoord(this.mouseCoord)
-        },
-                //Dice Rolling
-        DisplayDice (interval){
-            var dices = document.getElementById("dicesId");
-            dices.classList.toggle("show")
-            if(interval == undefined || interval == null)
-                return
-            setTimeout(() => { dices.classList.toggle("show") }, interval)
-        },
-        Roll (dice, result) {
-            var DOMObject = undefined
-            switch(dice){
-                case 0: DOMObject =  this.dom.DOMDiceOne;break
-                case 1: DOMObject =  this.dom.DOMDiceTwo;break
-                case 2: DOMObject =  this.dom.DOMDiceThree;break
-            }
-            console.log("result = ", result)
-            for (var i = 1; i <= 6; i++) {
-                DOMObject.classList.remove('show-' + i);
-                if (result === i) {
-                    console.log("roll to ", 'show-' + i)
-                    DOMObject.classList.add('show-' + i);
-                    }
-                }
-        },
-        RequestRedraw (){
-            this.dirty = this.dirty || true
         },
         //////////////////////////////////////// ANIMATION
         
@@ -297,6 +236,11 @@ define(["ddm", "jquery", "view/views","view/boardview"], function (Tsh, $, Views
          mouseDragCanvasHandle  (opts) {
             Tsh.Ddm.View.views.board.mouseDrag(opts)
         },
+
+        //Signal Slots
+        onViewCreated   (callback){this._onViewCreated = callback},
+        onViewDestroyed (callback){this._onViewDestroyed = callback},
+        onDirty         (callback){this._onDirty = callback},
     }
 })
 

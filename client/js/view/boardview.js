@@ -113,6 +113,7 @@ define(["jquery", "view/view", "view/views"], function ($, View, Views) {
         },
         initViews: function () {
             //Create TileView Layer
+            console.log("initView")
             for (var i = 0; i < this.constant.nRow; i++) {
                 for (var j = 0; j < this.constant.nCol; j++) {
                     var pTile = new Point(j, i)

@@ -1,5 +1,7 @@
-define(["entity/piece","view/views"],function(Piece,Views){
-    var Land = Piece.extend({
+define(["entity/entity","view/views"],function(Entity,Views){
+    console.log("LOAD ENTITY LAND")
+
+    var Land = Entity.extend({
         init(){
             this._super()
             this.views = new Views.LandView()

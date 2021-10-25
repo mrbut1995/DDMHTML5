@@ -3,7 +3,7 @@ requirejs.config({
     'message':'./message',
     'jquery': 'https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min',
     'ddm': "./tsh.ddm",
-    
+
     //Module 
     'ddm-view': "./tsh.ddm.view.h5",
     'ddm-logic': "./tsh.ddm.logic",
@@ -11,50 +11,42 @@ requirejs.config({
     'ddm-debug' :"./tsh.ddm.debug",
     'ddm-animator':"./tsh.ddm.animator",
     'ddm-input':"./tsh.ddm.input",
-    'ddm-input':"./tsh.ddm.entity",
+    'ddm-entity':"./tsh.ddm.entity",
+    'ddm-player':"./tsh.ddm.player",
+    'ddm-client':"./tsh.ddm.client",
 
     'view': './view',
     'animation':"./animation",
     'lib': './lib',
     'util': './util',
     'entity': "./entity",
-  }
+  },
+  shim:{
+    'ddm':[],
+    'ddm-view':['ddm'],
+    'ddm-logic':['ddm'],
+    'ddm-loader':['ddm'],
+    'ddm-debug':['ddm'],
+    'ddm-animator':['ddm'],
+    'ddm-input':['ddm'],
+    'ddm-entity':['ddm'],
+  },
 });
 
 
-//Global DOM
-//DOM Object
-// var DOMBoard
-// var DOMDiceOne
-// var DOMDiceTwo
-// var DOMDiceThree
-// var DOMCanvas
 
-define(['lib/class','util/util','util/constant','util/struct','util/gametype',"jquery"], function () {
-  console.log("LOAD MAIN")
-  
-  require(["ddm-view"])
-  require(["ddm-logic"])
-  require(["ddm-loader"])
-  require(["ddm-input"])
-  require(["ddm-animator"])
-  require(["ddm-debug"])
-  require(["ddm-entity"])
+window.onload = function(){
+  console.log("window.onLoad")
+  var tsh_module = ["ddm-view","ddm-logic","ddm-loader","ddm-input","ddm-animator","ddm-debug","ddm-entity","ddm-player","ddm-client"]
+  var required_lib = ['lib/class','util/util','util/constant','util/struct','util/gametype',"jquery"]
+  var ddm = ["ddm"]
+  ddm.push(...required_lib)
+  ddm.push(...tsh_module)
+  require(ddm,function(Tsh){
+    console.log("onLoaded All Module")
+    Tsh.Ddm.Game.init()
+    Tsh.Ddm.Game.run()
 
-  require(["ddm"])
-
-  var items = {
-    a:"a0",
-    b:"b1",
-    x:2,
-    y:3,
-    e:4
-  }
-  items["f"] = 9
-  var keys = Object.keys(items)
-  for(var i in keys){
-    console.log(keys[i])
-  }
-})
-
-
+  })
+  // require(["tsh"])
+}

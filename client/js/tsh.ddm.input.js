@@ -1,4 +1,7 @@
 define(["ddm", "jquery"], function(Tsh,$){
+    Tsh = Tsh || {}
+    Tsh.Ddm = Tsh.Ddm || {}
+
     Tsh.Ddm.Input = {
         mouse : {
             x:0,

@@ -47,7 +47,7 @@ define(["jquery"],function($){
         forEachChildAt(coord,callback){
             if(this.childs.length <= 0)
                 return;
-            var childs = this.childAt(ev)
+            var childs = this.childAt(coord)
             for(var i in childs){
                 callback(childs[i])
             }

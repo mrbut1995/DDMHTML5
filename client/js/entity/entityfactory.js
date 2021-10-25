@@ -1,4 +1,5 @@
-define(["entity/lands","entity/monsters"],function(Lands,Monster){
+define(["entity/lands","entity/monsters","entity/items"],function(Lands,Monsters,Items){
+    console.log("LOAD ENTITY FACTORY")
     var EntityFactory = {};
     EntityFactory.createEntity = function(kind,id,name){
         if(!kind){
@@ -8,7 +9,7 @@ define(["entity/lands","entity/monsters"],function(Lands,Monster){
             console.log(kind + " is not a valid Entity type");
             return null;
         }
-        return EntityFactory.builder[kind](id,name);
+        return EntityFactory.builders[kind](id,name);
     }
 
     //Builder Define

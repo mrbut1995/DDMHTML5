@@ -1,4 +1,7 @@
 define(["ddm"], function (Tsh) {
+    Tsh = Tsh || {}
+    Tsh.Ddm = Tsh.Ddm || {}
+
     Tsh.Ddm.Loader = {
 
         loaded: true,
