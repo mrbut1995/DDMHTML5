@@ -77,21 +77,47 @@ define(function () {
                 Tsh.Ddm.Client.onSpawnEntity(function(){
 
                 });
-                Tsh.Ddm.Client.onDespawnEntity(function(id){
+                Tsh.Ddm.Client.onDespawnEntity(function(player,id){
                     
                 })
-                Tsh.Ddm.Client.onEntityMove(function(id,x,y){
+
+                Tsh.Ddm.Client.onEntityMove(function(player,id,x,y){
 
                 });
-                Tsh.Ddm.Client.onEntityDestroy(function(id,x,y){
+                Tsh.Ddm.Client.onEntityDestroy(function(player,id,x,y){
 
                 });
-                Tsh.Ddm.Client.onEntityAttack(function(id,x,y){
+                Tsh.Ddm.Client.onEntityAttack(function(player,id,x,y){
+
+                });
+                Tsh.Ddm.Client.onEntityEffect(function(player,id,x,y){
+
+                });
+                Tsh.Ddm.Client.onPropertyChanging(function(id,property,value){
+
+                });
+                Tsh.Ddm.Client.onEffectTrigger(function(player,id,x,y){
 
                 });
                 Tsh.Ddm.Client.onPlayerActive(function(playerid){
 
-                })
+                });
+                Tsh.Ddm.Client.onPlayerDeactive(function(playerid){
+
+                });
+                Tsh.Ddm.Client.onPlayerDie(function(playerid,result){
+
+                });
+                Tsh.Ddm.Client.onPlayerRollDice(function(playerid,dice,result){
+
+                });
+                Tsh.Ddm.Client.onPlayerChangePhase(function(playerid,changephase){
+
+                });
+                Tsh.Ddm.Client.onGameEnd(function(state,playerid){
+
+                });
+
                 Tsh.Ddm.Client.onDisconnected(function(message){
 
                 });
