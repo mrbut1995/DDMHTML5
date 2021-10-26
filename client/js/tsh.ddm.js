@@ -9,24 +9,14 @@ define(function () {
     Tsh.Ddm = Tsh.Ddm || {}
 
     Tsh.Ddm.Match = {
-        data: {
-            pieces: [],
-            lands: [],
-            dices:[],
-            player:[],
-            phase:"standby-phase",
-            turn: 0,
-            playerindex:0
-        },
         init(){
-
+            this.matchid = 0
         }
     }
 
     Tsh.Ddm.Game = {
         init: function () {
 
-            Tsh.Ddm.Match.init()
             Tsh.Ddm.View.init()
             Tsh.Ddm.Debug.init()
             Tsh.Ddm.Loader.init()
@@ -36,7 +26,6 @@ define(function () {
             Tsh.Ddm.Client.init()
             Tsh.Ddm.Player.init()
 
-            Tsh.Ddm.Match.load()
 
             // var entity = EntityFactory.createEntity("DummyMonster1","00001")
             // console.log(entity)
@@ -57,8 +46,17 @@ define(function () {
             Tsh.Ddm.Client.onEntityList(function(list){
 
             })
-            Tsh.Ddm.Client.onWelcome(function(id,name,data){
+            Tsh.Ddm.Client.onWelcome(function(id,name,contain,avatar,lp,crests,matchid){
                 console.log("Successfull Connect to server => Init handle")
+                
+                Tsh.Ddm.Player.id = id
+                Tsh.Ddm.Player.name = name;
+                Tsh.Ddm.Player.contain = contain;
+                Tsh.Ddm.Player.avatar = avatar;
+                Tsh.Ddm.Player.lp     = lp;
+                Tsh.Ddm.Player.crests = crests
+
+                Tsh.Ddm.Match.matchid = matchid
                 
                 //Connecting Player Handle
                 Tsh.Ddm.Player.onActive(function(){

@@ -3,7 +3,6 @@ var Messages = {
     DISPATCH : 1,
     CONNECTED : 2,
     LIST : 3,
-    DISCONNECTED : 4,
     SYNCHRONIZING : 5,
     SPAWN : 6,
     DESPAWN : 7,

@@ -1,13 +1,10 @@
 
 // //Include Module
-define(["ddm", "jquery", "view/views","view/boardview"], function (Tsh, $, Views,BoardView) {
+define(["ddm", "jquery", "view/views","view/boardview","view/viewfactory","view/layer"], function (Tsh, $, Views,BoardView,ViewFactory,Layer) {
 
 
     Tsh = Tsh || {}
     Tsh.Ddm = Tsh.Ddm || {}
-
-    var LandView = Views.LandView
-    var PieceView = Views.MonsterView
 
     var canvas;
     var context;
@@ -16,14 +13,12 @@ define(["ddm", "jquery", "view/views","view/boardview"], function (Tsh, $, Views
 
     //Board Canvas View
     Tsh.Ddm.View =  {
-
-
         /////Property
         //Main View
-        views : {
-            board : new BoardView()
-        },
+        layers : {},
+        views : [],        
         dirty : true,
+
 
         //Highlight
         isHighlight : false,
@@ -69,8 +64,8 @@ define(["ddm", "jquery", "view/views","view/boardview"], function (Tsh, $, Views
                 canvas.id = "ddm-canvas";
                 $("#board").append(canvas);
 
-                canvas.width = this.views.board.constant.canvasWidth;
-                canvas.height = this.views.board.constant.canvasHeight;
+                canvas.width = 633//this.getBoard().constant.canvasWidth;
+                canvas.height = 923//this.getBoard().constant.canvasHeight;
                 canvas.style.background = "white no-repeat 0 0";
 
                 context = canvas.getContext("2d");
@@ -82,8 +77,10 @@ define(["ddm", "jquery", "view/views","view/boardview"], function (Tsh, $, Views
         
         draw  () {
             console.log("draw")
-            context.clearRect(0, 0, this.views.board.constant.canvasWidth, this.views.board.constant.canvasHeight)
-            this.views.board.draw(context,this)
+            context.clearRect(0, 0, canvas.width, canvas.height)
+            this.forEachLayer(function(layer){
+                layer.draw(canvas)
+            }.bind(this))
         },
 
         //Member of class
@@ -123,14 +120,6 @@ define(["ddm", "jquery", "view/views","view/boardview"], function (Tsh, $, Views
             this.draw();
             this.dirty = false
         },
-        createView  (prototype, opts, item) {
-            var view = new prototype(opts)
-            this.emitEvent(this.events.objectcreated, { source: view, uuid: view.uuid })
-            if(this._onViewCreated){
-                this._onViewCreated(view)
-            }
-            return view
-        },
         destroyView(view){
             if(this._onViewDestroyed){
                 this._onViewDestroyed(view)
@@ -141,6 +130,98 @@ define(["ddm", "jquery", "view/views","view/boardview"], function (Tsh, $, Views
         },
         clean(){
             this.dirty = false
+        },
+
+        addView(view){
+            if(view == null){
+                console.log("[ERROR] View == null");
+                return;
+            }
+
+        },
+        removeView(view){
+
+        },
+        forEachView(callback){
+            this.forEachLayer(function(layer){
+                layer.forEachView(callback)
+            }.bind(this))
+        },
+        forEachViewAtLayer(namelayer,callback){
+            this.forEachLayer(function(layer){
+                if(layer.name == namelayer){
+                    layer.forEachView(callback)
+                }
+            }.bind(this))
+        },
+        forEachLayer(callback){
+            var ids = Object.keys(this.layers)
+            for(var i in ids){
+                var id = ids[i]
+                var layer = this.layers[id]
+                callback(layer)
+            }
+        },
+        viewIdExists(id){
+
+        },
+        getViewById(id){
+
+        },
+        getViewsByClass(c){
+            var lst = []
+            this.forEachView(function(view){
+                if(view instanceof c){
+                    lst.push(view)
+                }
+            }.bind(this))
+            return lst;
+        },
+        registerViewIntoLayer(view,layer){
+            if(view == null){
+                console.log("[ERROR] view = null");
+                return;
+            }
+            if(layer == "" || layer == null || layer == undefined){
+                layer = "common"
+                // this.layers.common.push(view)
+            }
+            if(layer in this.layers){
+                this.layers[layer].registerView(view)
+            }else{
+                console.log("Dont contain layer " + layer+" => create layer")
+                this.registerLayer(layer,[view])
+            }
+            view.layer = layer
+        },
+        changeViewIntoLayer(view,layer){
+
+        },
+        getViewAt(x,y){
+            var lst = []
+            this.forEachView(function(view){
+                if(view.contain(coord)){
+                    lst.unshift(view)
+                }
+            }.bind(this))
+            return lst;
+        },
+        registerLayer(name,views){
+            if(name in this.layers){
+                console.log("Already contain layer ",name)
+            }else{
+                var layer = new Layer(name,canvas);
+                console.log("regsiter layer ",name," success")
+                views = views | []
+                for(var i in views){
+                    layer.registerView(views[i])
+                }
+                this.layers[name] = layer
+            }
+        },
+        //////////////////////////////////////// Specify View
+        getBoard(){
+            this.getViewsByClass(BoardView)[0]
         },
 
         //////////////////////////////////////// DOM Event
@@ -168,44 +249,40 @@ define(["ddm", "jquery", "view/views","view/boardview"], function (Tsh, $, Views
             }
         },
         //////////////////////////////////////// SPECIFY
-
-        PlaceViewIntoBoard (view,point){
-            console.log("PlaceViewIntoBoard")
-            this.views.board.relocatingView(view,point)
-        },
-
-        CreatePieceView  (point, opts, item, callback) {
-            var rect = new Rect(new Coord(0,0), this.views.board.constant.wCell, this.views.board.constant.hCell)
+        createViewMonster  (point, opts, item, callback) {
+            var rect = new Rect(new Coord(0,0), this.getBoard().constant.wCell, this.getBoard().constant.hCell)
             var opts = {
                 bound: rect,
             }
-            var view = this.createView(PieceView, opts, item, callback)
-            this.views.board.relocatingView(view,point)
-            this.views.board.addViewChild(view,"piece")
+
+            var view = ViewFactory.createView("MonsterView",opts,this.getBoard())
+            this.getBoard().relocatingView(view,point)
+            this.getBoard().addViewChild(view,"piece")
+            if(this._onViewCreated){
+                this._onViewCreated(view)
+            }
             this.setDirty()
         },
-        CreateLandView  (point, opts, item, callback) {
-            var rect = new Rect(new Coord(0,0), this.views.board.constant.wCell, this.views.board.constant.hCell)
+        createViewLand  (point, opts, item, callback) {
+            var rect = new Rect(new Coord(0,0), this.getBoard().constant.wCell, this.getBoard().constant.hCell)
             var opts = {
                 bound: rect,
             }
-            var view = this.createView(LandView, opts, item, callback)
-            this.views.board.relocatingView(view,point)
-            this.views.board.addViewChild(view,"land")
+            var view = ViewFactory.createView("LandView",opts,this.getBoard())
+            this.getBoard().relocatingView(view,point)
+            this.getBoard().addViewChild(view,"land")
+            if(this._onViewCreated){
+                this._onViewCreated(view)
+            }
             this.setDirty()
         },
-        DestroyView  (uuid) {
-            var view = this.views.board.view(uuid);
+        destroyView  (uuid) {
+            var view = this.getBoard().view(uuid);
 
-            this.views.board.removeViewChild(view)
+            this.getBoard().removeViewChild(view)
             this.setDirty()
         },
-        GetCanvasMousePoint  () {
-            return this.board.CoordToPoint(this.getCanvasCoord(this.mouseCoord))
-        },
-        GetCanvasMouseCoord  () {
-            return this.getCanvasCoord(this.mouseCoord)
-        },
+
         //////////////////////////////////////// ANIMATION
         
         init  () {
@@ -213,28 +290,38 @@ define(["ddm", "jquery", "view/views","view/boardview"], function (Tsh, $, Views
             this.initDOM()
             this.initCanvas()
             
+            this.initBoard();
+
             this.redraw()
         },
+        initBoard(){
+            this.registerLayer("board");
+            this.registerLayer("land" );
+            this.registerLayer("piece");
+            this.registerLayer("common");
 
+            var board =new BoardView();
+            this.registerViewIntoLayer(board,"board")
+        },
         //Mouse Handle
         mouseClickedCanvasHandle  (opts) {
             console.log("mouseClickedCanvasHandle ",opts)
-            Tsh.Ddm.View.views.board.mouseClicked(opts)
+            this.getBoard().mouseClicked(opts)
         },
          mousePressedCanvasHandle  (opts) {
             console.log("mousePressedCanvasHandle ",opts)
-            Tsh.Ddm.View.views.board.mousePressed(opts)
+            this.getBoard().mousePressed(opts)
         },
          mousePressedAndHoldCanvasHandle  (opts) {
             console.log("mousePressedAndHoldCanvasHandle ",opts)
-            Tsh.Ddm.View.views.board.mousePressAndHold(opts)
+            this.getBoard().mousePressAndHold(opts)
         },
          mouseReleasedCanvasHandle  (opts) {
             console.log("mouseReleasedCanvasHandle ",opts)
-            Tsh.Ddm.View.views.board.mouseReleased(opts)
+            this.getBoard().mouseReleased(opts)
         },
          mouseDragCanvasHandle  (opts) {
-            Tsh.Ddm.View.views.board.mouseDrag(opts)
+            this.getBoard().mouseDrag(opts)
         },
 
         //Signal Slots

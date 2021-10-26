@@ -79,8 +79,8 @@ define(["ddm","jquery"],function(Tsh,$){
             DOMBoard.addEventListener("itemclicked", onItemClicked, false)
             DOMBoard.addEventListener("boardmousemove", onBoardMouseMove, false)
     
-            $("#dbCreateLand").click(this.CreateLandView.bind(this))
-            $("#dbCreatePiece").click(this.CreatePieceView.bind(this))
+            $("#dbCreateLand").click(this.createViewLand.bind(this))
+            $("#dbCreatePiece").click(this.createViewMonster.bind(this))
             $("#dbSelectPiece").click(this.btnSelectPieceClicked.bind(this))
             $("#pieceHighlight").click(this.onSelectedPieceHighlightChanged.bind(this))
             $("#pieceFocus").click(this.onSelectedPieceFocusChanged.bind(this))
@@ -90,22 +90,22 @@ define(["ddm","jquery"],function(Tsh,$){
             $("#dbDisplayAction").click(this.btnDisplayActionPopup.bind(this))
 
         }
-        this.CreatePieceView = function () {
-            console.log("CreatePieceView")
+        this.createViewMonster = function () {
+            console.log("createViewMonster")
             var lCol = document.getElementById("pieceColId").value
             var lRow = document.getElementById("pieceRowId").value
             lCol = Math.max(lCol, 0)
             lRow = Math.max(lRow, 0)
-            Tsh.Ddm.View.CreatePieceView(new Point(lCol, lRow), {}, null, () => { })
+            Tsh.Ddm.View.createViewMonster(new Point(lCol, lRow), {}, null, () => { })
         }
-        this.CreateLandView = function () {
-            console.log("CreateLandView")
+        this.createViewLand = function () {
+            console.log("createViewLand")
             var pCol = document.getElementById("landColId").value
             var pRow = document.getElementById("landRowId").value
             pCol = Math.max(pCol, 0)
             pRow = Math.max(pRow, 0)
     
-            Tsh.Ddm.View.CreateLandView(new Point(pCol, pRow), {}, null, () => { })
+            Tsh.Ddm.View.createViewLand(new Point(pCol, pRow), {}, null, () => { })
         }
         this.DestroyedSelectedView = function () {
             console.log("DestroyedSelectedView")
@@ -126,7 +126,7 @@ define(["ddm","jquery"],function(Tsh,$){
         this.btnDestroySelectedPiece = function () {
             console.log("btnDestroySelectedPiece")
             if (this.debugPieceSelected != null) {
-                Tsh.Ddm.View.DestroyView(this.debugPieceSelected.uuid)
+                Tsh.Ddm.View.destroyView(this.debugPieceSelected.uuid)
                 this.debugPieceSelected = null
                 this.SetSelectingPiece(this.debugPieceSelected)
             }
@@ -234,8 +234,6 @@ define(["ddm","jquery"],function(Tsh,$){
         }
         var onBoardMouseMove = function (opts) {
             if (Tsh.Ddm.Debug.debugHighlightOnMove) {
-                var point = Tsh.Ddm.View.GetCanvasMousePoint()
-                var lst = pointsFromPattern(point, "TYPE_10", rot)
             }
         }
     

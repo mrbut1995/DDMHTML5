@@ -100,7 +100,8 @@ define(["ddm"],function(Tsh){
 
         //Messge Handler
         receiveWelcome(data){
-
+            var playerid = data[0]
+            
         },
         receiveDispatch(data){
 

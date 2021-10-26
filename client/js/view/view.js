@@ -8,13 +8,14 @@ define(["jquery"],function($){
             this.uuid                        = uuid()
             this.bound                        = new Rect(0,0,0,0) 
             this.focused                     = false
-            this.type                        = "view"
-    
+            this.type                        = ""
+            this.view                        = ""
+
             //Parent Inheritance Value
             this.visible                     = true
             this.enable                      = true
             this.highlight                   = false
-    
+            
             //Source For drawing Image
             this.imgSrcNormal                = ""
             this.imgSrcHidden                = ""
