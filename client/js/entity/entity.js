@@ -6,8 +6,8 @@ define(["jquery","ddm"],function($,Tsh){
             this.id = id
             this.kind = kind
             this.animations = []
-            this.view = null
-
+            this.viewtype = Types.Views.VIEW
+            this.view = null            
             this.isLoaded = false
 
             this.point = new Point(0,0)

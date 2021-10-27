@@ -12,24 +12,24 @@ define(["ddm"],function(Tsh){
             this._onDisconnected = null;
 
             this.handlers = [];
-            this.handles[Messages.WELCOME]          = this.receiveWelcome;
-            this.handles[Messages.DISPATCH ]        = this.receiveDispatch;
-            this.handles[Messages.LIST ]            = this.receiveEntityList;
-            this.handles[Messages.SYNCHRONIZING ]   = this.receiveSynchronizingData;
-            this.handles[Messages.SPAWN ]           = this.receiveSpawnEntity;
-            this.handles[Messages.DESPAWN ]         = this.receiveDespawnEntity;
-            this.handles[Messages.MOVE]             = this.receiveEntityMove;
-            this.handles[Messages.DESTROY ]         = this.receiveEntityDestroy;
-            this.handles[Messages.ATTACK ]          = this.receiveEntityAttack;
-            this.handles[Messages.EFFECT ]          = this.receiveEntityEffect;
-            this.handles[Messages.CHANGING ]        = this.receivePropertyChanging;
-            this.handles[Messages.TRIGGER ]         = this.receiveEffectTrigger;
-            this.handles[Messages.ACTIVE]           = this.receivePlayerActive;
-            this.handles[Messages.DEACTIVE ]        = this.receivePlayerDeactive;
-            this.handles[Messages.DIE ]             = this.receivePlayerDie;
-            this.handles[Messages.ROLL ]            = this.receivePlayerRollDice;
-            this.handles[Messages.PHASE ]           = this.receivePlayerChangePhase;
-            this.handles[Messages.END ]             = this.receiveGameEnd;
+            this.handlers[Messages.WELCOME]          = this.receiveWelcome;
+            this.handlers[Messages.DISPATCH ]        = this.receiveDispatch;
+            this.handlers[Messages.LIST ]            = this.receiveEntityList;
+            this.handlers[Messages.SYNCHRONIZING ]   = this.receiveSynchronizingData;
+            this.handlers[Messages.SPAWN ]           = this.receiveSpawnEntity;
+            this.handlers[Messages.DESPAWN ]         = this.receiveDespawnEntity;
+            this.handlers[Messages.MOVE]             = this.receiveEntityMove;
+            this.handlers[Messages.DESTROY ]         = this.receiveEntityDestroy;
+            this.handlers[Messages.ATTACK ]          = this.receiveEntityAttack;
+            this.handlers[Messages.EFFECT ]          = this.receiveEntityEffect;
+            this.handlers[Messages.CHANGING ]        = this.receivePropertyChanging;
+            this.handlers[Messages.TRIGGER ]         = this.receiveEffectTrigger;
+            this.handlers[Messages.ACTIVE]           = this.receivePlayerActive;
+            this.handlers[Messages.DEACTIVE ]        = this.receivePlayerDeactive;
+            this.handlers[Messages.DIE ]             = this.receivePlayerDie;
+            this.handlers[Messages.ROLL ]            = this.receivePlayerRollDice;
+            this.handlers[Messages.PHASE ]           = this.receivePlayerChangePhase;
+            this.handlers[Messages.END ]             = this.receiveGameEnd;
         
             this.useBison = false;
             this.enable();
@@ -100,8 +100,16 @@ define(["ddm"],function(Tsh){
 
         //Messge Handler
         receiveWelcome(data){
-            var playerid = data[0]
-            
+            var playerid = data[0],
+                name     = data[1],
+                contain  = data[2],
+                avatar   = data[3],
+                lp       = data[4],
+                crests   = data[5],
+                matchid  = data[6]
+            if(this._onWelcome){
+                this._onWelcome(playerid,name,contain,avatar,lp,crests,matchid)
+            }
         },
         receiveDispatch(data){
 
@@ -113,10 +121,18 @@ define(["ddm"],function(Tsh){
 
         },
         receiveSpawnEntity(data){
-
+            var kind            = data[0],
+                id              = data[1],
+                x               = data[2],
+                y               = data[3],
+                name            = data[4],
+                controllerid    = data[5],
+                target          = data[6]
+            if(this._onSpawnEntity){
+                this._onSpawnEntity(kind,id,x,y,name,controllerid,target)
+            }
         },
         receiveDespawnEntity(data){
-
         },
         receiveEntityMove(data){
 
@@ -181,4 +197,5 @@ define(["ddm"],function(Tsh){
         onGameEnd           (callback){this._onDisconnected    = callback},
 
     }
+
 })

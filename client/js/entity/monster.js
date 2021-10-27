@@ -3,7 +3,7 @@ define(["entity/piece", "view/views", "animation/animations"], function (Piece, 
         init() {
             this._super()
 
-            this.view = new Views.MonsterView()
+            this.viewtype = Types.Views.MONSTERVIEW
 
             this.attack = 0
             this.defend = 0

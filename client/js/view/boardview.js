@@ -20,77 +20,30 @@ define(["jquery", "view/view", "view/views"], function ($, View, Views) {
                 wTile: 42,
                 hTile: 42,
 
-                wLand: 42,
-                hLand: 42,
-
                 nCol: 13,
                 nRow: 19,
             }
-            this.layers = {}
 
-            this.layers = $.extend(this.layers,{
-                tile:[],
-                land:[],
-                piece:[]
-            })
+            this.imgCell = "#606060"
 
-            this.initViews()
-        },
-        layersName : function(){
-            return Object.keys(this.layers)
-        },
-        forEachLayer : function(callback){
-            var keys = this.layersName()
-            for(var i in keys){
-                var name = keys[i]
-                callback(name,this.layers[name])
-            }
-        },
-        forEachView: function(callback){
-            var keys = this.layersName()
-            for(var i in keys){
-                var name = keys[i]
-                if(this.layers[name] == undefined || this.layers[name].length <= 0)
-                    continue
-                for(var j in this.layers[name]){
-                    var view = this.layers[name][j]
-                    callback(view)
-                }
-            } 
         },
         draw: function (context, mainView) {
             context.save()
-            this.forEachView(function(view){
-                view.draw(context,this)
-            }.bind(this))
-            context.restore()
-        },
-        viewAt: function(coord){
-            var lst = []
-            this.forEachView(function(view){
-                if(view.contain(coord)){
-                    lst.unshift(view)
-                }
-            }.bind(this))
-            return lst;
-        },
-        addViewChild: function (view, layer) {
-            this.forEachLayer(function(name,list){
-                if(name == layer){
-                    this.layers[name].push(view)
-                }
-            }.bind(this))
-            view.childOf(this)
-        },
-        removeViewChild: function (view) {
-            if (view.inArray(this.childs)) {
 
-                view.childOf(null)
-                //Remove View in Layer List
-                this.forEachLayer(function(name,list){
-                    view.removeInArray(this.layers[name])
-                }.bind(this))    
+            context.fillStyle = this.imgCell 
+
+            for (var i = 0; i < this.constant.nRow; i++) {
+                for (var j = 0; j < this.constant.nCol; j++) {
+
+                    var pTile = new Point(j, i)
+                    var cTile = this.pointToCoord(pTile)
+                    var rTile = new Rect(cTile, this.constant.wCell, this.constant.hCell)
+
+                    context.fillRect(rTile.x,rTile.y,rTile.w,rTile.h)
+                }
             }
+
+            context.restore()
         },
         coordToPoint: function (coord) {
             var x = coord.x
@@ -111,28 +64,14 @@ define(["jquery", "view/view", "view/views"], function ($, View, Views) {
             view.bound.x = coord.x
             view.bound.y = coord.y
         },
-        initViews: function () {
-            //Create TileView Layer
-            console.log("initView")
-            for (var i = 0; i < this.constant.nRow; i++) {
-                for (var j = 0; j < this.constant.nCol; j++) {
-                    var pTile = new Point(j, i)
-                    var cTile = this.pointToCoord(pTile)
-                    var rTile = new Rect(cTile, this.constant.wCell, this.constant.hCell)
-                    var opts = { bound: rTile, }
-                    var tileView = new Views.TileView(opts)
-                    this.addViewChild(tileView, "tile")
-                }
-            }
-        },
-        view:function(uuid){
+        view:function(id){
             for (var i in this.childs) {
-                if (this.childs[i].uuid == uuid) {
-                    console.log("FOUND ", uuid, " = ", this.allViews[i])
+                if (this.childs[i].id == id) {
+                    console.log("FOUND ", id, " = ", this.allViews[i])
                     return this.childs[i]
                 }
             }
-            console.log("CANNOT FOUND ", uuid)
+            console.log("CANNOT FOUND ", id)
             return null
         },
 

@@ -50,7 +50,15 @@ define(["ddm","jquery","entity/entityfactory","entity/monster","entity/land","en
                 console.log("Non-exist Entity "+id)
             }
         },
-
+        getEntityByClass(c){
+            var lst = [];
+            this.forEachEntity(function(entity){
+                if(entity instanceof c){
+                    lst.push(entity)
+                }
+            }.bind(this))
+            return lst
+        },
         //For Controlling Entities Grid
         initEntityGrid(map){
             if(this.entityGrid != null){
@@ -146,34 +154,34 @@ define(["ddm","jquery","entity/entityfactory","entity/monster","entity/land","en
         },     
 
         //Creating Entity
-        spawnEntity(kind,id,x,y,name,target){
+        spawnEntity(kind,id,x,y,name,controllerid,target){
             var result;
             if(this.isLand(kind)){
                 var item    = EntityFactory.createEntity(kind,id)
-                result  = this.addLand(item,x,y)
+                result  = this.addLand(item,x,y,controllerid)
                 if(result){
                     if(this._onSpawnLand)
                         this._onSpawnLand(item,x,y)
                 }
             }else if(this.isItem(kind)){
                 var item    = EntityFactory.createEntity(kind,id)
-                result  = this.addItem(item,x,y)
+                result  = this.addItem(item,x,y,controllerid)
                 if(result){
                     if(this._onSpawItem)
                         this._onSpawItem(item,x,y)
                 }
             }else if(this.isMonster(kind)){
                 var item    = EntityFactory.createEntity(kind,id)
-                result  = this.addMonster(item,x,y,target)
+                result  = this.addMonster(item,x,y,controllerid,target)
                 if(result){
-                    if(this._onSpawItem)
+                    if(this._onSpawnMonster)
                         this._onSpawnMonster(item,x,y)
                 }
             }else if(this.isMonsterLord(kind)){
                 var item = EntityFactory.createEntity(kind,id,name)
-                if(this.addMonster(item,x,y,target)){
-                    if(this._onSpawItem)
-                        this._onSpawnMonster(item,x,y,target)
+                if(this.addMonster(item,x,y,controllerid,target)){
+                    if(this._onSpawnMonsterLord)
+                        this._onSpawnMonsterLord(item,x,y,target)
                 }
             }
         },
@@ -186,10 +194,7 @@ define(["ddm","jquery","entity/entityfactory","entity/monster","entity/land","en
         //Handle When Adding Specify Monster to list
         addMonster(entity,x,y,target){
             if(!this.entityIdExists(entity.id)){
-                if(this._onConstructingMonster){
-                    this._onConstructingMonster(entity,x,y)
-                }
-                this.setGridPosition(new Point(x,y))
+                // this.setGridPosition(new Point(x,y))
                 this.addEntity(entity)
                 return true;
             }else{
@@ -197,18 +202,12 @@ define(["ddm","jquery","entity/entityfactory","entity/monster","entity/land","en
             }
         },
         addLand(entity,x,y,target){
-            if(this._onConstructingLand){
-                this._onConstructingLand(entity,x,y)
-            }
-            this.setGridPosition(new Point(x,y))
+            // this.setGridPosition(new Point(x,y))
             this.addEntity(entity)
             return true;
         },
         addItem(entity,x,y){
-            if(this._onConstructingItem){
-                this._onConstructingItem(entity,x,y)
-            }
-            this.setGridPosition(new Point(x,y))
+            // this.setGridPosition(new Point(x,y))
             this.addEntity(entity)
             return true;
 
@@ -216,10 +215,10 @@ define(["ddm","jquery","entity/entityfactory","entity/monster","entity/land","en
 
         //Checking Entity Kind
         isLand(kind){
-            return false
+            return ["NormalLand","PoisonLand","DestroyedLand","GrassLand","PortalLand"].includes(kind)
         },
         isMonster(kind){
-            return true
+            return ["DummyMonster1","DummyMonster2"].includes(kind)
         },
         isMonsterLord(kind){
             return false
@@ -233,7 +232,8 @@ define(["ddm","jquery","entity/entityfactory","entity/monster","entity/land","en
         onRemoveEntity  (callback){ this._onRemoveEntity = callback},
         onUpdateList    (callback){this._onUpdateList = callback},
         
-        onSpawnPiece    (callback){this._onSpawnMonster = callback},
+        onSpawnPiece            (callback){this._onSpawnMonster = callback},
+        onSpawnMonsterLord      (callback){this._onSpawnMonsterLord = callback},
         onSpawnLand(callback){this._onSpawnLand = callback},
         onSpawnItem(callback){this._onSpawItem = callback},
         onDespawnEntity(callback){this._onDespawnEntity = callback},

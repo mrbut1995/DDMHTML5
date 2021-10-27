@@ -75,7 +75,7 @@ define(["ddm","jquery"],function(Tsh,$){
         }
         this.init = function () {
             var DOMBoard = Tsh.Ddm.View.getDOM("board")
-            // this.CreateDebugDOM()
+            this.CreateDebugDOM()
             DOMBoard.addEventListener("itemclicked", onItemClicked, false)
             DOMBoard.addEventListener("boardmousemove", onBoardMouseMove, false)
     
@@ -96,7 +96,17 @@ define(["ddm","jquery"],function(Tsh,$){
             var lRow = document.getElementById("pieceRowId").value
             lCol = Math.max(lCol, 0)
             lRow = Math.max(lRow, 0)
-            Tsh.Ddm.View.createViewMonster(new Point(lCol, lRow), {}, null, () => { })
+
+            var data = []
+            data[0] = "DummyMonster1"
+            data[1] = uuid()
+            data[2] = lCol
+            data[3] = lRow
+            data[4] = ""
+            data[5] = "player1"
+            data[6] = "playe2"
+
+            Tsh.Ddm.Client.receiveSpawnEntity(data)
         }
         this.createViewLand = function () {
             console.log("createViewLand")
@@ -104,8 +114,6 @@ define(["ddm","jquery"],function(Tsh,$){
             var pRow = document.getElementById("landRowId").value
             pCol = Math.max(pCol, 0)
             pRow = Math.max(pRow, 0)
-    
-            Tsh.Ddm.View.createViewLand(new Point(pCol, pRow), {}, null, () => { })
         }
         this.DestroyedSelectedView = function () {
             console.log("DestroyedSelectedView")
@@ -126,7 +134,7 @@ define(["ddm","jquery"],function(Tsh,$){
         this.btnDestroySelectedPiece = function () {
             console.log("btnDestroySelectedPiece")
             if (this.debugPieceSelected != null) {
-                Tsh.Ddm.View.destroyView(this.debugPieceSelected.uuid)
+                Tsh.Ddm.View.destroyView(this.debugPieceSelected.id)
                 this.debugPieceSelected = null
                 this.SetSelectingPiece(this.debugPieceSelected)
             }

@@ -1,18 +1,11 @@
 let start, previousTimeStamp;
+var Tsh = Tsh || {}
+Tsh.Ddm = Tsh.Ddm || {}
 
 //Define Modul
 define(function () {
 
     console.log("LOAD TSH.DDM")
-
-    var Tsh = Tsh || {}
-    Tsh.Ddm = Tsh.Ddm || {}
-
-    Tsh.Ddm.Match = {
-        init(){
-            this.matchid = 0
-        }
-    }
 
     Tsh.Ddm.Game = {
         init: function () {
@@ -27,12 +20,11 @@ define(function () {
             Tsh.Ddm.Player.init()
 
 
-            // var entity = EntityFactory.createEntity("DummyMonster1","00001")
-            // console.log(entity)
-            Tsh.Ddm.Entity.testing()
-
             this.connectModule();
             this.connectServer();
+
+            Tsh.Ddm.Client.receiveWelcome(["","","","","","","",""])
+
         },
         connectServer(){
             var self = this
@@ -56,7 +48,7 @@ define(function () {
                 Tsh.Ddm.Player.lp     = lp;
                 Tsh.Ddm.Player.crests = crests
 
-                Tsh.Ddm.Match.matchid = matchid
+                // Tsh.Ddm.Match.matchid = matchid
                 
                 //Connecting Player Handle
                 Tsh.Ddm.Player.onActive(function(){
@@ -72,8 +64,8 @@ define(function () {
 
                 })
 
-                Tsh.Ddm.Client.onSpawnEntity(function(){
-
+                Tsh.Ddm.Client.onSpawnEntity(function(kind,id,x,y,name,controllerid,target){
+                    Tsh.Ddm.Entity.spawnEntity(kind,id,x,y,name,controllerid,target)
                 });
                 Tsh.Ddm.Client.onDespawnEntity(function(player,id){
                     
@@ -121,9 +113,9 @@ define(function () {
                 });
                 
             })
-            Tsh.Ddm.Client.onWaitingConnecting(function(){
+            // Tsh.Ddm.Client.onWaitingConnecting(function(){
 
-            }.bind(this))
+            // }.bind(this))
             Tsh.Ddm.Client.onSynchronizingData(function(data){
                 console.log("on Synchronizing Data");
 
@@ -143,19 +135,42 @@ define(function () {
 
             }.bind(this))
 
-            Tsh.Ddm.Entity.onSpawnPiece(function(entity,x,y,target){
+            Tsh.Ddm.Entity.onSpawnPiece(function(entity,col,row,controllerid,target){
+                entity.setView(Tsh.Ddm.createView(Types.Views.MONSTERVIEW))
+                entity.setGridPoint(col,row)
                 entity.idle()
+                if(controllerid == Tsh.Ddm.Player.playerid){
+                    
+                }
             }.bind(this))
 
-            Tsh.Ddm.Entity.onSpawnLand(function(entity,x,y){
+            Tsh.Ddm.Entity.onSpawnMonsterLord(function(entity,col,row,controllerid,target){
+                entity.setView(Tsh.Ddm.createView(Types.Views.MONSTERLORDVIEW))
+                entity.setGridPoint(col,row)
 
             }.bind(this))
 
-            Tsh.Ddm.Entity.onSpawnItem(function(entity,x,y){
+            Tsh.Ddm.Entity.onSpawnLand(function(entity,col,row,controllerid){
+                entity.setView(Tsh.Ddm.createView(Types.Views.LANDVIEW))
+                entity.setGridPoint(col,row)
+
+            }.bind(this))
+
+            Tsh.Ddm.Entity.onSpawnItem(function(entity,col,row,controllerid){
 
             }.bind(this))
 
             Tsh.Ddm.Entity.onDespawnEntity(function(){
+
+            }.bind(this))
+
+            Tsh.Ddm.View.onViewCreated(function(view){
+
+            }.bind(this))
+            Tsh.Ddm.View.onViewDestroyed(function(view){
+
+            }.bind(this))
+            Tsh.Ddm.View.onDirty(function(){
 
             }.bind(this))
 

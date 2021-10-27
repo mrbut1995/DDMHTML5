@@ -5,8 +5,8 @@ define(["jquery"],function($){
             this.parent                      = null
             this.childs                      = []
     
-            this.uuid                        = uuid()
-            this.bound                        = new Rect(0,0,0,0) 
+            this.id                          = uuid()
+            this.bound                       = new Rect(0,0,0,0) 
             this.focused                     = false
             this.type                        = ""
             this.view                        = ""
@@ -22,6 +22,7 @@ define(["jquery"],function($){
             this.imgSrcSelect                = ""
             this.imgSrcDisable               = ""
 
+            this.isDirty                     = false
             //Method
             $.extend(this,otps,false)
 
@@ -52,6 +53,9 @@ define(["jquery"],function($){
             for(var i in childs){
                 callback(childs[i])
             }
+        },
+        setDirty(){
+            this.isDirty = this.isDirty || true
         },
 
         //Mouse Handle
@@ -117,7 +121,9 @@ define(["jquery"],function($){
         onMouseCancel(callback){
             this._onMouseCancel = callback
         },
-        
+        onDirty(callback){
+            this._onDirty = callback;
+        },
         draw: function (context, mainView) {
             context.save()
             var style;
@@ -140,18 +146,14 @@ define(["jquery"],function($){
         setPosition : function(point){
             this.bound.x = point.x
             this.bound.y = point.y
-
-            if(this._onPropertyChanged)
-                this._onPropertyChanged()
+            this.setDirty()
         },
         getPosition : function(){
             return new Coord(this.bound.x,this.bound.y)
         },
         setBounding : function(rect){
             this.bound = rect
-
-            if(this._onPropertyChanged)
-                this._onPropertyChanged()
+            this.setDirty()
         },
         getBounding : function(){
             return this.bound
@@ -159,6 +161,7 @@ define(["jquery"],function($){
         setHighlight(value){
             this.highlight = value
             forEachChild(child => this.setHighlight(value));
+            this.setDirty()
         },
         isHighlight(){
             return this.highlight
@@ -166,6 +169,7 @@ define(["jquery"],function($){
         setVisible(value){
             this.visible = value
             forEachChild(child => this.setVisible(value));
+            this.setDirty()
         },
         isVisible(){
             return this.visible
@@ -173,6 +177,7 @@ define(["jquery"],function($){
         setEnable(value){
             this.enable = value
             forEachChild(child => this.setEnable(value));
+            this.setDirty()
         },
         isEnabled(){
             return this.enable
@@ -219,7 +224,7 @@ define(["jquery"],function($){
             this.parent = null
         },
         toString : function(){
-            return this.type+"("+this.uuid+")"
+            return this.type+"("+this.id+")"
         },
         forEachChild: function(callback){
             for(var i in this.childs){

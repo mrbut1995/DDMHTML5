@@ -7,7 +7,7 @@ define(["ddm"],function(Tsh){
            this.crests = {}
            this.avatar = null
            this.avatarSource = ""
-           this.lp = lp
+           this.lp = 0
 
            this.isActive     = true
            this.isLose       = false

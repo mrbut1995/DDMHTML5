@@ -12,6 +12,7 @@ define(["view/view"],function(View){
                 this.canvas.width = maincanvas.width
                 this.canvas.height = maincanvas.height    
             }
+
         },
         registerView(view){
             if(view === null || view === undefined || !(view instanceof View)){
@@ -20,6 +21,7 @@ define(["view/view"],function(View){
             }
             if(this.views[view.id] === undefined){
                 this.views[view.id] = view
+                view.layer = this.name
             }else{
                 console.log("This view already exist")
             }
@@ -27,6 +29,7 @@ define(["view/view"],function(View){
         unregisterView(view){
             if(view.id in this.views){
                 delete this.views[view.id]
+                view.layer = ""
             }
         },
         forEachView(callback){
@@ -61,7 +64,8 @@ define(["view/view"],function(View){
         },
         getView(index){
             return this.views[index]
-        }
+        },
+
     })
     return Layer
 })

@@ -20,6 +20,7 @@ requirejs.config({
     'lib': './lib',
     'util': './util',
     'entity': "./entity",
+    "message":"./message"
   },
   shim:{
     'ddm':[],
@@ -38,7 +39,7 @@ requirejs.config({
 window.onload = function(){
   console.log("window.onLoad")
   var tsh_module = ["ddm-view","ddm-logic","ddm-loader","ddm-input","ddm-animator","ddm-debug","ddm-entity","ddm-player","ddm-client"]
-  var required_lib = ['lib/class','util/util','util/constant','util/struct','util/gametype',"jquery"]
+  var required_lib = ['lib/class','util/util','util/constant','util/struct','util/gametype',"message","jquery"]
   var ddm = ["ddm"]
   ddm.push(...required_lib)
   ddm.push(...tsh_module)

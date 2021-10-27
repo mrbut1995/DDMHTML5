@@ -13,17 +13,6 @@ define(["jquery", "view/pieceview"], function ($,PieceView) {
             }
         }),
 
-        TileView: PieceView.extend({
-            init: function (otps) {
-                this._super(otps)
-                
-                this.type = "tile"
-                this.layer = "tile"
-
-                this.imgSrcNormal =  "#606060",
-                this.imgSrcSelect = "rgb(255, 100, 55, 0.5)"
-            }
-        }),
 
         MonsterView: PieceView.extend({
             init: function (otps) {

@@ -16,7 +16,7 @@ define(["ddm", "jquery", "view/views","view/boardview","view/viewfactory","view/
         /////Property
         //Main View
         layers : {},
-        views : [],        
+        views : {},        
         dirty : true,
 
 
@@ -137,10 +137,17 @@ define(["ddm", "jquery", "view/views","view/boardview","view/viewfactory","view/
                 console.log("[ERROR] View == null");
                 return;
             }
-
+            if(this.views[view.id] === undefined){
+                this.views[view.id] = view
+                this.registerViewIntoLayer(view,view.layer)
+            }else{
+                console.log("This view already exist")
+            }
         },
         removeView(view){
-
+            if(view.id in this.views){
+                this.unregister
+            }
         },
         forEachView(callback){
             this.forEachLayer(function(layer){
@@ -163,7 +170,7 @@ define(["ddm", "jquery", "view/views","view/boardview","view/viewfactory","view/
             }
         },
         viewIdExists(id){
-
+            return id in this.views[id]
         },
         getViewById(id){
 
@@ -182,9 +189,11 @@ define(["ddm", "jquery", "view/views","view/boardview","view/viewfactory","view/
                 console.log("[ERROR] view = null");
                 return;
             }
+            if(layer == undefined || layer == null){
+                layer = view.layer
+            }
             if(layer == "" || layer == null || layer == undefined){
                 layer = "common"
-                // this.layers.common.push(view)
             }
             if(layer in this.layers){
                 this.layers[layer].registerView(view)
@@ -194,8 +203,28 @@ define(["ddm", "jquery", "view/views","view/boardview","view/viewfactory","view/
             }
             view.layer = layer
         },
-        changeViewIntoLayer(view,layer){
-
+        getLayer(layer){
+            if(layer in this.layers){
+                return this.layers[layer]
+            }else{
+                return null
+            }
+        },
+        getLayers(){
+            return this.layers;
+        },
+        unregisterViewFromLayer(view){
+            if(view == null){
+                console.log("[ERROR] view = null");
+                return;
+            }
+            var layer = view.layer
+            if(layer in this.layers){
+                this.layers[layer].unregisterView(view)
+            }else{
+                console.log("[ERROR] Does not contain layer => Abort")
+                return
+            }
         },
         getViewAt(x,y){
             var lst = []
@@ -218,6 +247,7 @@ define(["ddm", "jquery", "view/views","view/boardview","view/viewfactory","view/
                 }
                 this.layers[name] = layer
             }
+            return this.layers[name]
         },
         //////////////////////////////////////// Specify View
         getBoard(){
@@ -249,36 +279,16 @@ define(["ddm", "jquery", "view/views","view/boardview","view/viewfactory","view/
             }
         },
         //////////////////////////////////////// SPECIFY
-        createViewMonster  (point, opts, item, callback) {
-            var rect = new Rect(new Coord(0,0), this.getBoard().constant.wCell, this.getBoard().constant.hCell)
-            var opts = {
-                bound: rect,
-            }
-
-            var view = ViewFactory.createView("MonsterView",opts,this.getBoard())
-            this.getBoard().relocatingView(view,point)
-            this.getBoard().addViewChild(view,"piece")
+        createView(kind){
+            var view = ViewFactory.createView(kind)
+            this.addView(view)
             if(this._onViewCreated){
                 this._onViewCreated(view)
             }
-            this.setDirty()
+            return view
         },
-        createViewLand  (point, opts, item, callback) {
-            var rect = new Rect(new Coord(0,0), this.getBoard().constant.wCell, this.getBoard().constant.hCell)
-            var opts = {
-                bound: rect,
-            }
-            var view = ViewFactory.createView("LandView",opts,this.getBoard())
-            this.getBoard().relocatingView(view,point)
-            this.getBoard().addViewChild(view,"land")
-            if(this._onViewCreated){
-                this._onViewCreated(view)
-            }
-            this.setDirty()
-        },
-        destroyView  (uuid) {
-            var view = this.getBoard().view(uuid);
-
+        destroyView  (id) {
+            var view = this.getBoard().view(id);
             this.getBoard().removeViewChild(view)
             this.setDirty()
         },
@@ -300,8 +310,7 @@ define(["ddm", "jquery", "view/views","view/boardview","view/viewfactory","view/
             this.registerLayer("piece");
             this.registerLayer("common");
 
-            var board =new BoardView();
-            this.registerViewIntoLayer(board,"board")
+            this.registerViewIntoLayer(new BoardView())
         },
         //Mouse Handle
         mouseClickedCanvasHandle  (opts) {
