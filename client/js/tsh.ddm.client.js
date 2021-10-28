@@ -1,12 +1,12 @@
 define(["ddm"],function(Tsh){
     Tsh = Tsh || {}
     Tsh.Ddm = Tsh.Ddm || {}
-
+    
     Tsh.Ddm.Client = {
         init(host,port){
             this.connection = null;
-            this.host = host;
-            this.port = port;
+            // this.host = host;
+            // this.port = port;
 
             this._onConnected = null;
             this._onDisconnected = null;
@@ -34,7 +34,15 @@ define(["ddm"],function(Tsh){
             this.useBison = false;
             this.enable();
         },
-
+        setServerOption(host,port,name){
+            this.host = host;
+            this.port = port;
+            this.username = name;
+        },
+        setup(host,port){
+            this.host = host;
+            this.port = port;
+        },
         enable(){
             this.isListening = true;
         },

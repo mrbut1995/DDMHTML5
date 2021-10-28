@@ -47,7 +47,6 @@ window.onload = function(){
     console.log("onLoaded All Module")
     Tsh.Ddm.Game.init()
     Tsh.Ddm.Game.run()
-
   })
   // require(["tsh"])
 }

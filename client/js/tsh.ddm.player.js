@@ -18,6 +18,12 @@ define(["ddm"],function(Tsh){
            this.isSummoning = false
            this.isRolling   = false
            
+           this.selectedMonster   = null
+
+           this.controlmonster    = {}
+           this.controlland       = {}
+           this.movablemonster    = {}
+           this.monsterlord       = null
        },
 
        getAvatar(){
@@ -51,14 +57,37 @@ define(["ddm"],function(Tsh){
                 this.active()
             }
        },
+       selected(monster){
+            
+       },
+       assignMonster(monster){
+        
+       },
+       resignMonster(monster){
 
+       },
+       assignLand(land){
 
+       },
+       resignLand(land){
+
+       },
+       getControlMonsters(){
+            return this.controlmonster
+       },
+       getControlLands(){
+            return this.controlland
+       },
        //Signal
-       onActive         (callback) {this._onActive          = callback},
-       onDeactive       (callback) {this._onDeactive        = callback},
-       onLose           (callback) {this._onLose            = callback},
-       onConnected      (callback) {this._onConnected       = callback},
-       onDeclareEndPhase(callback) {this._onDeclareEndPhase = callback},
-       onCrestsChanged  (callback) {this._onCrestChanged    = callback},
+       onLoaded         (callback) {this._onLoaded              = callback},
+       onActive         (callback) {this._onActive              = callback},
+       onDeactive       (callback) {this._onDeactive            = callback},
+       onLose           (callback) {this._onLose                = callback},
+       onConnected      (callback) {this._onConnected           = callback},
+       onDeclareEndPhase(callback) {this._onDeclareEndPhase     = callback},
+       onCrestsChanged  (callback) {this._onCrestChanged        = callback},
+
+       onSelectedMonster(callback) {this._onSelectedMonster     = callback},
+       onDeselectedMonster(callback){this._onDeselectedMonster  = callback},
     }
 })

@@ -5,9 +5,6 @@ define(["jquery", "view/view", "view/views"], function ($, View, Views) {
             this._super(opts)
 
             this.constant = {
-                canvasWidth: 633,
-                canvasHeight: 923,
-
                 horMarGrid: 8,
                 verMarGrid: 8,
 
@@ -25,7 +22,8 @@ define(["jquery", "view/view", "view/views"], function ($, View, Views) {
             }
 
             this.imgCell = "#606060"
-
+            this.type = "board"
+            this.layer = "board"
         },
         draw: function (context, mainView) {
             context.save()
@@ -67,7 +65,6 @@ define(["jquery", "view/view", "view/views"], function ($, View, Views) {
         view:function(id){
             for (var i in this.childs) {
                 if (this.childs[i].id == id) {
-                    console.log("FOUND ", id, " = ", this.allViews[i])
                     return this.childs[i]
                 }
             }

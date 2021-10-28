@@ -1,7 +1,7 @@
 define(["entity/piece", "view/views", "animation/animations"], function (Piece, Views, Animations) {
     var Monster = Piece.extend({
-        init() {
-            this._super()
+        init(id,kind) {
+            this._super(id,kind)
 
             this.viewtype = Types.Views.MONSTERVIEW
 
@@ -51,6 +51,13 @@ define(["entity/piece", "view/views", "animation/animations"], function (Piece, 
             this.summonSpeed = 150
             this.effectSpeed = 120
             this.idleSpeed = 450
+
+            //Animation
+            this.animations = {
+                step       : new Animations.PositionAnimation(),
+                attack     : new Animations.PositionAnimation(),
+                idle       : new Animations.SpriteAnimation(),
+            }
         },
         select() {
 

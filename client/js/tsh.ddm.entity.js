@@ -41,6 +41,7 @@ define(["ddm","jquery","entity/entityfactory","entity/monster","entity/land","en
             })
         },
         entityIdExists(id){
+            console.log("check id ",id)
             return id in this.entities
         },
         getEntityById(id){
@@ -71,7 +72,7 @@ define(["ddm","jquery","entity/entityfactory","entity/monster","entity/land","en
                     this.entityGrid[i][j] = {};
                 }
             }
-            log.info("Initialized the entity grid.");
+            console.log("Initialized the entity grid.");
 
         },
 
@@ -194,7 +195,6 @@ define(["ddm","jquery","entity/entityfactory","entity/monster","entity/land","en
         //Handle When Adding Specify Monster to list
         addMonster(entity,x,y,target){
             if(!this.entityIdExists(entity.id)){
-                // this.setGridPosition(new Point(x,y))
                 this.addEntity(entity)
                 return true;
             }else{
@@ -202,15 +202,12 @@ define(["ddm","jquery","entity/entityfactory","entity/monster","entity/land","en
             }
         },
         addLand(entity,x,y,target){
-            // this.setGridPosition(new Point(x,y))
             this.addEntity(entity)
             return true;
         },
         addItem(entity,x,y){
-            // this.setGridPosition(new Point(x,y))
             this.addEntity(entity)
             return true;
-
         },
 
         //Checking Entity Kind
@@ -218,6 +215,7 @@ define(["ddm","jquery","entity/entityfactory","entity/monster","entity/land","en
             return ["NormalLand","PoisonLand","DestroyedLand","GrassLand","PortalLand"].includes(kind)
         },
         isMonster(kind){
+            console.log(kind)
             return ["DummyMonster1","DummyMonster2"].includes(kind)
         },
         isMonsterLord(kind){
@@ -232,7 +230,7 @@ define(["ddm","jquery","entity/entityfactory","entity/monster","entity/land","en
         onRemoveEntity  (callback){ this._onRemoveEntity = callback},
         onUpdateList    (callback){this._onUpdateList = callback},
         
-        onSpawnPiece            (callback){this._onSpawnMonster = callback},
+        onSpawnMonster            (callback){this._onSpawnMonster = callback},
         onSpawnMonsterLord      (callback){this._onSpawnMonsterLord = callback},
         onSpawnLand(callback){this._onSpawnLand = callback},
         onSpawnItem(callback){this._onSpawItem = callback},
@@ -241,5 +239,7 @@ define(["ddm","jquery","entity/entityfactory","entity/monster","entity/land","en
         onConstructingPiece(callback){this._onConstructingPiece = callback},
         onConstructingLand(callback){this._onConstructingLand = callback},
         onConstructingItem(callback){this._onConstructingItem = callback},
+
+        
     }
 })

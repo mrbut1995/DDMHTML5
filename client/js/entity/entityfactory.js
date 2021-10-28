@@ -16,27 +16,27 @@ define(["entity/lands","entity/monsters","entity/items"],function(Lands,Monsters
     EntityFactory.builders = {};
 
     //Monster
-    EntityFactory.builders["DummyMonster1"] = function(id,name){
+    EntityFactory.builders["DummyMonster1"] = function(id){
         return new Monsters.DummyMonster1(id)
     }
-    EntityFactory.builders["DummyMonster2"] = function(id,name){
+    EntityFactory.builders["DummyMonster2"] = function(id){
         return new Monsters.DummyMonster2(id)
     }
 
     //Land
-    EntityFactory.builders["NormalLand"] = function(id,name){
+    EntityFactory.builders["NormalLand"] = function(id){
         return new Lands.NormalLand(id)
     }
-    EntityFactory.builders["PoisonLand"] = function(id,name){
+    EntityFactory.builders["PoisonLand"] = function(id){
         return new Lands.PoisonLand(id)
     }
-    EntityFactory.builders["DestroyedLand"] = function(id,name){
+    EntityFactory.builders["DestroyedLand"] = function(id){
         return new Lands.DestroyedLand(id)
     }
-    EntityFactory.builders["GrassLand"] = function(id,name){
+    EntityFactory.builders["GrassLand"] = function(id){
         return new Lands.GrassLand(id)
     }
-    EntityFactory.builders["PortalLand"] = function(id,name){
+    EntityFactory.builders["PortalLand"] = function(id){
         return new Lands.PortalLand(id)
     }
 

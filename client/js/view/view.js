@@ -9,7 +9,6 @@ define(["jquery"],function($){
             this.bound                       = new Rect(0,0,0,0) 
             this.focused                     = false
             this.type                        = ""
-            this.view                        = ""
 
             //Parent Inheritance Value
             this.visible                     = true
@@ -125,21 +124,6 @@ define(["jquery"],function($){
             this._onDirty = callback;
         },
         draw: function (context, mainView) {
-            context.save()
-            var style;
-            if(!this.enable){
-                style = this.imgSrcDisable
-            }else if(!this.visible){
-                style = this.imgSrcHidden
-            }else if (this.highlight) {
-                style = this.imgSrcSelect
-            } else {
-                style = this.imgSrcNormal
-            }
-            let drawingRect = this.bound
-            context.fillStyle = style
-            context.fillRect(drawingRect.x, drawingRect.y, drawingRect.w, drawingRect.h)
-            context.restore()
         },
         
         //Get Set Property

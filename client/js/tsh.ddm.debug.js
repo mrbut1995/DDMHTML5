@@ -104,8 +104,7 @@ define(["ddm","jquery"],function(Tsh,$){
             data[3] = lRow
             data[4] = ""
             data[5] = "player1"
-            data[6] = "playe2"
-
+            data[6] = "player2"
             Tsh.Ddm.Client.receiveSpawnEntity(data)
         }
         this.createViewLand = function () {
@@ -114,6 +113,17 @@ define(["ddm","jquery"],function(Tsh,$){
             var pRow = document.getElementById("landRowId").value
             pCol = Math.max(pCol, 0)
             pRow = Math.max(pRow, 0)
+
+            var data = []
+            data[0] = "NormalLand"
+            data[1] = uuid()
+            data[2] = pCol
+            data[3] = pRow
+            data[4] = ""
+            data[5] = "player1"
+            data[6] = "player2"
+            Tsh.Ddm.Client.receiveSpawnEntity(data)
+
         }
         this.DestroyedSelectedView = function () {
             console.log("DestroyedSelectedView")

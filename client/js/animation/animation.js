@@ -5,7 +5,6 @@ define(["jquery","ddm-animator"],function($){
                 this.isRunning               = false
                 this.interval                = 0
                 this.time                    = 0
-                        
             },
             onAnimationStart : null,
             onAnimationCompleted : null,
@@ -49,8 +48,7 @@ define(["jquery","ddm-animator"],function($){
                 if(this.interval <= 0)
                     return 0;
                 return 1 - (this.time / this.interval)
-            }            
-    
+            }
         })
         
     

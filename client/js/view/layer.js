@@ -12,7 +12,6 @@ define(["view/view"],function(View){
                 this.canvas.width = maincanvas.width
                 this.canvas.height = maincanvas.height    
             }
-
         },
         registerView(view){
             if(view === null || view === undefined || !(view instanceof View)){
@@ -40,7 +39,6 @@ define(["view/view"],function(View){
             }
         },
         draw(maincanvas){
-
             this.maincanvas  = maincanvas
             this.maincontext = maincanvas.getContext("2d");
             this.canvas.width = maincanvas.width

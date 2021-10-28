@@ -5,12 +5,14 @@ define(["jquery","ddm"],function($,Tsh){
         init(id,kind){
             this.id = id
             this.kind = kind
-            this.animations = []
             this.viewtype = Types.Views.VIEW
             this.view = null            
             this.isLoaded = false
 
             this.point = new Point(0,0)
+
+            this.animations         = {}
+            this.currentAnimation   = null
         },
         setName : function(name){
             this.name = name;
@@ -21,17 +23,49 @@ define(["jquery","ddm"],function($,Tsh){
         setView(view){
             this.view = view
         },
-        setAnimation: function(animations){
-            var self = this
+
+        //Animation
+        setAnimation: function(name){
+            var self = this;
+            if(this.isLoaded){
+                var a = this.getAnimationByName(name)
+
+                if(this.currentAnimation && this.currentAnimation === a){
+                    return;
+                }
+
+                if(a){
+                    this.currentAnimation = a
+                    this.currentAnimation.reset()
+                }
+            }
+        },
+        forEachAnimation(callback){
+            var keys = Object.keys(this.animations)
+            for(var i  in keys){
+                callback(this.animations[keys[i]])
+            }
+        },
+        stopAllAnimation(){
+            this.forEachAnimation(function(animation){
+                animation.stop()
+            })
         },
         animate:function(name,opts,onEndCallback){
-            let defOpts = {
+            opts = $.extend({
                 speed : 0,
                 count : 0,
-            }
-            opts = $.extend(defOpts,opts)
+            },opts)
         },
-
+        getAnimationByName(name){
+            var animation = null;
+            if(name in this.animations){
+                animation = this.animations[name];
+            }else{
+                console.log("No animation called "+name)
+            }
+            return animation
+        },
 
         setGridPosition: function(col,row){
             this.point.col = col
@@ -81,6 +115,12 @@ define(["jquery","ddm"],function($,Tsh){
         //Set Callback
         onReady : function(f){
             this._onReady = f
+        },
+        update(delta){
+            //Playing Animation
+            this.forEachAnimation(function(animation){
+                animation.update(delta)
+            }.bind(this))
         },
 
     })

@@ -2,8 +2,8 @@ define(["entity/entity","view/views"],function(Entity,Views){
     console.log("LOAD ENTITY LAND")
 
     var Land = Entity.extend({
-        init(){
-            this._super()
+        init(id,kind) {
+            this._super(id,kind)
             this.viewtype = Types.Views.LANDVIEW
         },
         destroy(){

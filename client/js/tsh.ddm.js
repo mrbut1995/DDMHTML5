@@ -3,7 +3,7 @@ var Tsh = Tsh || {}
 Tsh.Ddm = Tsh.Ddm || {}
 
 //Define Modul
-define(function () {
+define(function (Entity ) {
 
     console.log("LOAD TSH.DDM")
 
@@ -18,7 +18,7 @@ define(function () {
             Tsh.Ddm.Entity.init()
             Tsh.Ddm.Client.init()
             Tsh.Ddm.Player.init()
-
+            Tsh.Ddm.Match.init()
 
             this.connectModule();
             this.connectServer();
@@ -48,8 +48,13 @@ define(function () {
                 Tsh.Ddm.Player.lp     = lp;
                 Tsh.Ddm.Player.crests = crests
 
-                // Tsh.Ddm.Match.matchid = matchid
+                Tsh.Ddm.Match.matchid = matchid
                 
+                Tsh.Ddm.Entity.initEntityGrid({
+                    width:13,
+                    height:19
+                })
+
                 //Connecting Player Handle
                 Tsh.Ddm.Player.onActive(function(){
 
@@ -58,9 +63,15 @@ define(function () {
 
                 })
                 Tsh.Ddm.Player.onConnected(function(){
-
+                    
                 })
                 Tsh.Ddm.Player.onDeclareEndPhase(function(){
+
+                })
+                Tsh.Ddm.Player.onSelectedMonster(function(monster){
+                    
+                })  
+                Tsh.Ddm.Player.onDeselectedMonster(function(monster){
 
                 })
 
@@ -110,8 +121,7 @@ define(function () {
 
                 Tsh.Ddm.Client.onDisconnected(function(message){
 
-                });
-                
+                });                
             })
             // Tsh.Ddm.Client.onWaitingConnecting(function(){
 
@@ -135,24 +145,62 @@ define(function () {
 
             }.bind(this))
 
-            Tsh.Ddm.Entity.onSpawnPiece(function(entity,col,row,controllerid,target){
-                entity.setView(Tsh.Ddm.createView(Types.Views.MONSTERVIEW))
-                entity.setGridPoint(col,row)
+            Tsh.Ddm.Entity.onSpawnMonster(function(entity,col,row,controllerid,target){
+                console.log("onSpawnMonster ",entity)
+                entity.setView(Tsh.Ddm.View.createView(Types.Views.MONSTERVIEW))
+                entity.setGridPosition(col,row)
                 entity.idle()
                 if(controllerid == Tsh.Ddm.Player.playerid){
                     
                 }
+
+                entity.onDamageTarget(function(target,points){
+
+                })
+                entity.onDamageMultiTarget(function(targets,point){
+
+                })
+                entity.onKillTarget(function(target){
+
+                })
+                entity.onChangeStat(function(stat,val){
+
+                })
+                entity.onChangeHealth(function(points,reason){
+
+                })
+                entity.onKilled(function(reason){
+
+                })
+                entity.onHasMoved(function(reason){
+
+                })
+                entity.onRequestPath(function(col,row){
+
+                })
+                entity.onStopPathing(function(col,row){
+
+                })
+                entity.onStep(function(){
+
+                })
+                entity.onBeforeStep(function(){
+
+                })
+                entity.onStartPathing(function(path){
+
+                })
             }.bind(this))
 
             Tsh.Ddm.Entity.onSpawnMonsterLord(function(entity,col,row,controllerid,target){
-                entity.setView(Tsh.Ddm.createView(Types.Views.MONSTERLORDVIEW))
-                entity.setGridPoint(col,row)
+                entity.setView(Tsh.Ddm.View.createView(Types.Views.MONSTERLORDVIEW))
+                entity.setGridPosition(col,row)
 
             }.bind(this))
 
             Tsh.Ddm.Entity.onSpawnLand(function(entity,col,row,controllerid){
-                entity.setView(Tsh.Ddm.createView(Types.Views.LANDVIEW))
-                entity.setGridPoint(col,row)
+                entity.setView(Tsh.Ddm.View.createView(Types.Views.LANDVIEW))
+                entity.setGridPosition(col,row)
 
             }.bind(this))
 
@@ -165,7 +213,14 @@ define(function () {
             }.bind(this))
 
             Tsh.Ddm.View.onViewCreated(function(view){
-
+                console.log("board == ",Tsh.Ddm.View.getBoard().type)
+                if(view.type == "monster"){
+                    view.setBoard(Tsh.Ddm.View.getBoard())
+                }else if(view.type == "monsterlord"){
+                    view.setBoard(Tsh.Ddm.View.getBoard())
+                }else if(view.type == "land"){
+                    view.setBoard(Tsh.Ddm.View.getBoard())
+                }
             }.bind(this))
             Tsh.Ddm.View.onViewDestroyed(function(view){
 
@@ -206,6 +261,33 @@ define(function () {
             Tsh.Ddm.View.rollDice(1, Math.floor(Math.random() * 6))
             Tsh.Ddm.View.rollDice(2, Math.floor(Math.random() * 6))
         },
+        setCursor(name,orientation){
+
+        },
+        updateCursorLogic(){
+
+        },
+        getMouseGridPosition(){
+
+        },
+        makeMonsterGoTo(monster,x,y){
+            
+        },
+        makeMonsterTeleportTo(monster,x,y){
+            
+        },
+        makePlayerRollDice(){
+
+        },
+        makePlayerSummon(monster,x,y){
+
+        },
+        findPath(monster,x,y,ignorelist){
+
+        },
+        restart(){
+            
+        }
     }
 
     return Tsh

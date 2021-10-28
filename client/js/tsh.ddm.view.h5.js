@@ -23,7 +23,9 @@ define(["ddm", "jquery", "view/views","view/boardview","view/viewfactory","view/
         //Highlight
         isHighlight : false,
         hightlights : [],
-
+        background  : null,
+        foreground  : null,
+        
         //Mouse
         mouseCoord : null,
 
@@ -35,8 +37,12 @@ define(["ddm", "jquery", "view/views","view/boardview","view/viewfactory","view/
             DOMCanvas : null,
         },
 
-        //Event 
-
+        config : {
+            canvas:{
+                width : 633,
+                height: 923
+            },
+        },        
 
         initAudio  () {
             if ($("#ddm-audio").length == 0 || !audio) {
@@ -63,9 +69,8 @@ define(["ddm", "jquery", "view/views","view/boardview","view/viewfactory","view/
                 canvas = document.createElement("canvas");
                 canvas.id = "ddm-canvas";
                 $("#board").append(canvas);
-
-                canvas.width = 633//this.getBoard().constant.canvasWidth;
-                canvas.height = 923//this.getBoard().constant.canvasHeight;
+                canvas.width = this.config.canvas.width
+                canvas.height = this.config.canvas.height
                 canvas.style.background = "white no-repeat 0 0";
 
                 context = canvas.getContext("2d");
@@ -143,11 +148,14 @@ define(["ddm", "jquery", "view/views","view/boardview","view/viewfactory","view/
             }else{
                 console.log("This view already exist")
             }
+            this.setDirty()
+
         },
         removeView(view){
             if(view.id in this.views){
-                this.unregister
+                this.unregisterViewFromLayer(view)
             }
+            this.setDirty()
         },
         forEachView(callback){
             this.forEachLayer(function(layer){
@@ -240,6 +248,9 @@ define(["ddm", "jquery", "view/views","view/boardview","view/viewfactory","view/
                 console.log("Already contain layer ",name)
             }else{
                 var layer = new Layer(name,canvas);
+                layer.onDirty(function(){
+                    this.setDirty()
+                }.bind(this))
                 console.log("regsiter layer ",name," success")
                 views = views | []
                 for(var i in views){
@@ -251,9 +262,9 @@ define(["ddm", "jquery", "view/views","view/boardview","view/viewfactory","view/
         },
         //////////////////////////////////////// Specify View
         getBoard(){
-            this.getViewsByClass(BoardView)[0]
+            return this.getViewsByClass(BoardView)[0]
         },
-
+    
         //////////////////////////////////////// DOM Event
         displayDice(interval){
             var dices = document.getElementById("dicesId");
@@ -307,6 +318,7 @@ define(["ddm", "jquery", "view/views","view/boardview","view/viewfactory","view/
         initBoard(){
             this.registerLayer("board");
             this.registerLayer("land" );
+            this.registerLayer("highlight");
             this.registerLayer("piece");
             this.registerLayer("common");
 
