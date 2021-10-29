@@ -10,17 +10,23 @@ define(function (Entity ) {
     Tsh.Ddm.Game = {
         init: function () {
 
-            Tsh.Ddm.View.init()
-            Tsh.Ddm.Debug.init()
-            Tsh.Ddm.Loader.init()
-            Tsh.Ddm.Animator.init()
-            Tsh.Ddm.Input.init()
-            Tsh.Ddm.Entity.init()
-            Tsh.Ddm.Client.init()
-            Tsh.Ddm.Player.init()
-            Tsh.Ddm.Match.init()
+            this.app = Tsh.Ddm
 
             this.connectModule();
+
+            Tsh.Ddm.View.   init (Tsh.Ddm)
+            Tsh.Ddm.Debug.  init (Tsh.Ddm)
+            Tsh.Ddm.Loader. init (Tsh.Ddm)
+            Tsh.Ddm.Input.  init (Tsh.Ddm)
+            Tsh.Ddm.Entity. init (Tsh.Ddm)
+            Tsh.Ddm.Client. init (Tsh.Ddm)
+            Tsh.Ddm.Player. init (Tsh.Ddm)
+            Tsh.Ddm.Match.  init (Tsh.Ddm)
+
+
+            Tsh.Ddm.Input.registerInputListener(Tsh.Ddm.View.getDOM("board"))
+
+            
             this.connectServer();
 
             Tsh.Ddm.Client.receiveWelcome(["","","","","","","",""])
@@ -134,101 +140,110 @@ define(function (Entity ) {
 
         connectModule(){
             var self = this
+            Tsh.Ddm.Entity.onInitialized(function(){
+                this.onAddEntity(function(){
+                }.bind(this))
 
-            Tsh.Ddm.Entity.onAddEntity(function(){
+                this.onRemoveEntity(function(){
+                }.bind(this))
+                
+                this.onUpdateList(function(){
+                }.bind(this))
+    
+                this.onSpawnMonster(function(entity,col,row,controllerid,target){
+                    console.log("onSpawnMonster ",entity)
+                    entity.setView(Tsh.Ddm.View.createView(Types.Views.MONSTERVIEW))
+                    entity.setGridPosition(col,row)
+                    entity.idle()
+                    if(controllerid == Tsh.Ddm.Player.playerid){
+                        
+                    }
+    
+                    entity.onDamageTarget(function(target,points){
+                    })
+                    entity.onDamageMultiTarget(function(targets,point){
+                    })
+                    entity.onKillTarget(function(target){
+                    })
+                    entity.onChangeStat(function(stat,val){
+                    })
+                    entity.onChangeHealth(function(points,reason){
+                    })
+                    entity.onKilled(function(reason){
+                    })
+                    entity.onHasMoved(function(reason){
+                    })
+                    entity.onRequestPath(function(col,row){
+                    })
+                    entity.onStopPath(function(col,row){
+                    })
+                    entity.onStep(function(){
+                        var board = Tsh.Ddm.View.getBoard();
+                        var coord = board.pointToCoord(entity.nextPoint())
+                    })
+                    entity.onBeforeStep(function(){
+                    })
+                    entity.onStartPath(function(path){
+                    })
+                }.bind(this))
+    
+                this.onSpawnMonsterLord(function(entity,col,row,controllerid,target){
+                    entity.setView(Tsh.Ddm.View.createView(Types.Views.MONSTERLORDVIEW))
+                    entity.setGridPosition(col,row)
+                }.bind(this))
+    
+                this.onSpawnLand(function(entity,col,row,controllerid){
+                    entity.setView(Tsh.Ddm.View.createView(Types.Views.LANDVIEW))
+                    entity.setGridPosition(col,row)
+                }.bind(this))
+    
+                this.onSpawnItem(function(entity,col,row,controllerid){
+                }.bind(this))
+    
+                this.onDespawnEntity(function(){
+                }.bind(this))    
+            }.bind(Tsh.Ddm.Entity))
 
-            }.bind(this))
-            Tsh.Ddm.Entity.onRemoveEntity(function(){
+            Tsh.Ddm.View.onInitialized(function(){
+                Tsh.Ddm.Input.registerInputListener(this.getDOM("board"))
 
-            }.bind(this))
-            Tsh.Ddm.Entity.onUpdateList(function(){
+                this.onViewCreated(function(view){
+                    console.log("board == ",Tsh.Ddm.View.getBoard().type)
+                    if(view.type == "monster"){
+                        view.setBoard(Tsh.Ddm.View.getBoard())
+                    }else if(view.type == "monsterlord"){
+                        view.setBoard(Tsh.Ddm.View.getBoard())
+                    }else if(view.type == "land"){
+                        view.setBoard(Tsh.Ddm.View.getBoard())
+                    }
+                }.bind(this))
+                this.onViewDestroyed(function(view){
+    
+                }.bind(this))
+                this.onDirty(function(){
+    
+                }.bind(this))    
+            }.bind(Tsh.Ddm.View))
 
-            }.bind(this))
-
-            Tsh.Ddm.Entity.onSpawnMonster(function(entity,col,row,controllerid,target){
-                console.log("onSpawnMonster ",entity)
-                entity.setView(Tsh.Ddm.View.createView(Types.Views.MONSTERVIEW))
-                entity.setGridPosition(col,row)
-                entity.idle()
-                if(controllerid == Tsh.Ddm.Player.playerid){
-                    
-                }
-
-                entity.onDamageTarget(function(target,points){
-
+            Tsh.Ddm.Input.onInitialized(function(){
+                this.onCanvasClicked(     function(ev){
+                    Tsh.Ddm.View.mouseClickedCanvasHandle( Tsh.Ddm.Input.mouse)
+                    Tsh.Ddm.Debug.mouseClicked(Tsh.Ddm.Input.mouse)
                 })
-                entity.onDamageMultiTarget(function(targets,point){
-
+                this.onCanvasPressed(     function(ev){
+                     Tsh.Ddm.View.mousePressedCanvasHandle(Tsh.Ddm.Input.mouse)
                 })
-                entity.onKillTarget(function(target){
-
+                this.onCanvasReleased(    function(ev){
+                    Tsh.Ddm.View.mouseReleasedCanvasHandle(Tsh.Ddm.Input.mouse)
                 })
-                entity.onChangeStat(function(stat,val){
-
+                this.onCanvasMove(        function(ev){
                 })
-                entity.onChangeHealth(function(points,reason){
-
+                this.onCanvasOut(         function(ev){
                 })
-                entity.onKilled(function(reason){
-
-                })
-                entity.onHasMoved(function(reason){
-
-                })
-                entity.onRequestPath(function(col,row){
-
-                })
-                entity.onStopPathing(function(col,row){
-
-                })
-                entity.onStep(function(){
-
-                })
-                entity.onBeforeStep(function(){
-
-                })
-                entity.onStartPathing(function(path){
-
-                })
-            }.bind(this))
-
-            Tsh.Ddm.Entity.onSpawnMonsterLord(function(entity,col,row,controllerid,target){
-                entity.setView(Tsh.Ddm.View.createView(Types.Views.MONSTERLORDVIEW))
-                entity.setGridPosition(col,row)
-
-            }.bind(this))
-
-            Tsh.Ddm.Entity.onSpawnLand(function(entity,col,row,controllerid){
-                entity.setView(Tsh.Ddm.View.createView(Types.Views.LANDVIEW))
-                entity.setGridPosition(col,row)
-
-            }.bind(this))
-
-            Tsh.Ddm.Entity.onSpawnItem(function(entity,col,row,controllerid){
-
-            }.bind(this))
-
-            Tsh.Ddm.Entity.onDespawnEntity(function(){
-
-            }.bind(this))
-
-            Tsh.Ddm.View.onViewCreated(function(view){
-                console.log("board == ",Tsh.Ddm.View.getBoard().type)
-                if(view.type == "monster"){
-                    view.setBoard(Tsh.Ddm.View.getBoard())
-                }else if(view.type == "monsterlord"){
-                    view.setBoard(Tsh.Ddm.View.getBoard())
-                }else if(view.type == "land"){
-                    view.setBoard(Tsh.Ddm.View.getBoard())
-                }
-            }.bind(this))
-            Tsh.Ddm.View.onViewDestroyed(function(view){
-
-            }.bind(this))
-            Tsh.Ddm.View.onDirty(function(){
-
-            }.bind(this))
-
+                this.onCanvasPressAndHold(function(ev){
+                    Tsh.Ddm.View.mousePressedAndHoldCanvasHandle(Tsh.Ddm.Input.mouse)
+                })    
+            }.bind(Tsh.Ddm.Input))
         },
         run: function () {
             window.requestAnimationFrame(this.step.bind(this));
@@ -287,6 +302,14 @@ define(function (Entity ) {
         },
         restart(){
             
+        },
+        getEntityAt(x,y){
+            var view = Tsh.Ddm.View.getViewAt(x,y)
+        },
+        getMonsterAt(x,y){
+        },
+        getLandAt(x,y){
+
         }
     }
 

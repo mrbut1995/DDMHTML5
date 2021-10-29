@@ -9,7 +9,15 @@ function isFunction(f) {
   function isInteger(n) {
     return typeof n === 'number' && Math.floor(n) === n && isFinite(n)
   }
-
+  function isNumber(n){
+    return typeof n === 'number'
+  }
+  function isPoint(n){
+    return n.col != undefined && n.row != undefined
+  }
+  function isCoord(n){
+    return n.x != undefined && n.y != undefined
+  }
   var Types = {
       Views : {
           VIEW            : 0,

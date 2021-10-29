@@ -7,23 +7,60 @@ define(["animation/animation"],function(Animation){
                 this.from   = from
                 this.to     = to
             },
-            onAnimationStart : function(){
+            start(from,to){
+                this._super()
                 if(this.target == null)
                     return
+                if(isCoord(from))
+                    this.from = from
+                if(isCoord(to))
+                    this.to   = to
                 this.target.setPosition(this.from)
             },
-            onRunningAnimation:function(delta){
-                if(this.target == null)
-                    return
-                var coord = new Coord(this.from.x,this.from.y);
-                coord.x = (this.to.x - this.from.x) * this.percent() + this.from.x
-                coord.y = (this.to.y - this.from.y) * this.percent() + this.from.y
-                this.target.setPosition(coord)
+            update(delta){
+                this._super(delta)
+                if(this.isRunning){
+                    if(this.target == null)
+                        return
+                    var coord = new Coord(this.from.x,this.from.y);
+                    coord.x = (this.to.x - this.from.x) * this.percent() + this.from.x
+                    coord.y = (this.to.y - this.from.y) * this.percent() + this.from.y
+                    this.target.setPosition(coord)
+                }
             },
-            onAnimationCompleted: function(){}
+            setFrom(from){
+                this.from = from;
+                this.restart()
+            },
+            setTo(to){
+                this.to = to;
+                this.restart()
+            }
+        }),
+        TransitionAnimation: Animation.extend({
+        }),
+        NumberAnimation: Animation.extend({
+            init(from,to){
+                this._super()
+                this.from = from | 0
+                this.to   = to   | 0
+                this.current  = this.from
+            },
+            start(from,to){
+                if(isNumber(from))
+                    this.from = from
+                if(isNumber(to))
+                    this.to   = to
+                this._super()
+            },
+            update(delta){
+                if(this.isRunning){
+                    this.current = (this.to - this.from) * this.percent()
+                }
+                this._super(delta)
+            }
         }),
         SpriteAnimation: Animation.extend({
-
         })
     }
     return Animations

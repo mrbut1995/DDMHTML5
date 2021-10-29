@@ -3,11 +3,11 @@ define(["entity/piece", "view/views", "animation/animations"], function (Piece, 
         init(id,kind) {
             this._super(id,kind)
 
-            this.viewtype = Types.Views.MONSTERVIEW
-
-            this.attack = 0
-            this.defend = 0
-            this.move = 3
+            this.stat = {
+                attack : 0,
+                defend : 0,
+                move   : 3
+            }
             this.movetype = "walk"
             
             //Action
@@ -20,7 +20,6 @@ define(["entity/piece", "view/views", "animation/animations"], function (Piece, 
             this.effectmode = false
 
             //Pathing
-            this.movement = new Animations.PositionAnimation()
             this.path = null
             this.newDestination = null; //Coord
             this.destination = null;    //Point
@@ -28,6 +27,8 @@ define(["entity/piece", "view/views", "animation/animations"], function (Piece, 
             this.step = 0
             this.nextGridCol = -1
             this.nextGridRow = -1
+            this.nextX = 0
+            this.nextY = 0
 
             //Attack
             this.target  = null
@@ -54,12 +55,16 @@ define(["entity/piece", "view/views", "animation/animations"], function (Piece, 
 
             //Animation
             this.animations = {
-                step       : new Animations.PositionAnimation(),
-                attack     : new Animations.PositionAnimation(),
+                move       : new Animations.PositionAnimation(),
+                attack     : new Animations.SpriteAnimation(),
                 idle       : new Animations.SpriteAnimation(),
+                walk       : new Animations.SpriteAnimation(),
             }
         },
         select() {
+
+        },
+        setMoveNext(coord){
 
         },
         engage(monster){
@@ -122,7 +127,9 @@ define(["entity/piece", "view/views", "animation/animations"], function (Piece, 
         useeffect(effect) {
 
         },
-
+        hasMoved(){
+            
+        },
         
 
         //Path Movement
@@ -307,7 +314,30 @@ define(["entity/piece", "view/views", "animation/animations"], function (Piece, 
             }
             return false;
         },
+        //Update
+        update(delta){
+            this._super(delta)
 
+            //Update Monster 
+            this.updateMovingPath();
+        },
+        updateMovingPath(){
+            if(this.isMoving() && this.animations.move.isRunning){
+                this.move.onAnimationStart(function(){
+                    this.hasMoved()
+                }.bind(this))
+                this.move.onRunningAnimation(function(){
+
+                }.bind(this))
+                this.move.onAnimationCompleted(function(){
+                    this.hasMoved()
+                    this.nextStep()
+                }.bind(this))
+                this.setFrom(this.view.getPosition())
+                this.setTo  (new Coord(this.nextX,this.nextY))
+                this.move.start()
+            }
+        },
         //Signal Slot
         onAttack(callback) {
             this._onAttack = callback
@@ -339,6 +369,25 @@ define(["entity/piece", "view/views", "animation/animations"], function (Piece, 
         onRequestPath(callback) {
             this._onRequestPath = callback
         },
+        onDamageTarget(callback){
+            this._onDamageTarget = callback
+        },
+        onDamageMultiTarget(callback){
+            this._onDamageMultiTarget = callback
+        },
+        onKillTarget(callback){
+            this._onKillTarget = callback
+        },
+        onChangeStat(callback){
+            this._onChangeStat = callback
+        },
+        onChangeHealth(callback){
+            this._onChangeHealth = callback
+        },
+        onKilled(callback){
+            this._onKilled = callback
+        },
+        
     })
     return Monster;
 })

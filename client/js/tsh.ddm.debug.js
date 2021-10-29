@@ -76,8 +76,6 @@ define(["ddm","jquery"],function(Tsh,$){
         this.init = function () {
             var DOMBoard = Tsh.Ddm.View.getDOM("board")
             this.CreateDebugDOM()
-            DOMBoard.addEventListener("itemclicked", onItemClicked, false)
-            DOMBoard.addEventListener("boardmousemove", onBoardMouseMove, false)
     
             $("#dbCreateLand").click(this.createViewLand.bind(this))
             $("#dbCreatePiece").click(this.createViewMonster.bind(this))
@@ -235,25 +233,23 @@ define(["ddm","jquery"],function(Tsh,$){
     
         }
         this.onSelectedPiecePositionChanged = function () {
-            console.log("onSelectedPiecePositionChanged")
     
         }
-    
-        var onItemClicked = function (opts) {
-            console.log("debug onItemClicked = ", opts)
+        this.mouseClicked = function(mouse){
             if (Tsh.Ddm.Debug.isSelectingPiece) {
-                if (opts.detail.source.type == "piece") {
-                    Tsh.Ddm.Debug.SetSelectingPiece(opts.detail.source)
-                } else {
-                    Tsh.Ddm.Debug.SetSelectingPiece(null)
-                }
-                Tsh.Ddm.Debug.StopSelectingPiece()
+                var monster = Tsh.Ddm.getMonsterAt(mouse.x,mouse.y)
             }
         }
-        var onBoardMouseMove = function (opts) {
-            if (Tsh.Ddm.Debug.debugHighlightOnMove) {
-            }
-        }
-    
+        // var onItemClicked = function (opts) {
+        //     console.log("debug onItemClicked = ", opts)
+        //     if (Tsh.Ddm.Debug.isSelectingPiece) {
+        //         if (opts.detail.source.type == "piece") {
+        //             Tsh.Ddm.Debug.SetSelectingPiece(opts.detail.source)
+        //         } else {
+        //             Tsh.Ddm.Debug.SetSelectingPiece(null)
+        //         }
+        //         Tsh.Ddm.Debug.StopSelectingPiece()
+        //     }
+        // }
     }
 })

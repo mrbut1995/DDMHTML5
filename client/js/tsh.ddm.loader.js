@@ -9,7 +9,7 @@ define(["ddm"], function (Tsh) {
         totalCount: 0, // Total number of asstes that need loading
         soundFileExtn: ".ogg",
 
-        init: function () {
+        init: function (app) {
             var mp3support, oggsupport;
             var audio = document.createElement("ddm-audio")
 
@@ -22,6 +22,11 @@ define(["ddm"], function (Tsh) {
             }
             // Check for ogg, then mp3, and finally set soundFileExtn to undefined
             Tsh.Ddm.Loader.soundFileExtn = oggsupport ? ".ogg" : mp3support ? ".mp3" : undefined;
+        
+            this.app = app
+            if(this._onInitialized){
+                this._onInitialized()
+            }
         },
         loadImage: function (url) {
             this.loaded = false;
@@ -70,7 +75,10 @@ define(["ddm"], function (Tsh) {
                 image.onload = undefined
             }
             return image;
-        }
+        },
+
+        onInitialized   (callback){this._onInitialized = callback},
+
     }
     
 })

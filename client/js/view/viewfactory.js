@@ -3,7 +3,7 @@ define(["view/views","view/view"],function(Views,View){
 
     ViewsFactory.builders = {};
 
-    ViewsFactory.createView = function(kind,opts,parent){
+    ViewsFactory.createView = function(kind,id,layer,parent){
         if(!kind){
             console.log("kind is undefined",true)
         }
@@ -11,27 +11,29 @@ define(["view/views","view/view"],function(Views,View){
             console.log(kind + " is not a valid Entity type");
             return null;
         }
-        return ViewsFactory.builders[kind](opts,parent);
+        if(id == undefined)
+            id =  uuid()
+        return ViewsFactory.builders[kind](id,layer,parent);
     }
 
-    ViewsFactory.builders[Types.Views.LANDVIEW] = function(opts,parent){
-        var view = new Views.LandView(opts)
+    ViewsFactory.builders[Types.Views.LANDVIEW] = function(id,layer,parent){
+        var view = new Views.LandView(id,parent)
         if(parent instanceof View){
             view.childOf(parent)
         }
         return view
     }
 
-    ViewsFactory.builders[Types.Views.MONSTERVIEW] = function(opts,parent){
-        var view = new Views.MonsterView(opts)
+    ViewsFactory.builders[Types.Views.MONSTERVIEW] = function(id,layer,parent){
+        var view = new Views.MonsterView(id,parent)
         if(parent instanceof View){
             view.childOf(parent)
         }
         return view
     }
 
-    ViewsFactory.builders[Types.Views.MONSTERLORDVIEW] = function(opts,parent){
-        var view = new Views.MonsterLordView(opts)
+    ViewsFactory.builders[Types.Views.MONSTERLORDVIEW] = function(id,layer,parent){
+        var view = new Views.MonsterLordView(id,parent)
         if(parent instanceof View){
             view.childOf(parent)
         }

@@ -1,11 +1,10 @@
-define(["jquery", "view/pieceview"], function ($,PieceView) {
+define(["jquery", "view/pieceview",], function ($,PieceView) {
     var Views = {
         LandView: PieceView.extend({
-            init: function (otps) {
-                this._super(otps)
+            init: function (id,parent) {
+                this._super(id,"land",parent)
 
                 this.type = "land"
-                this.layer = "land"
                 this.bound.w = 43
                 this.bound.h = 43
 
@@ -24,10 +23,9 @@ define(["jquery", "view/pieceview"], function ($,PieceView) {
 
 
         MonsterView: PieceView.extend({
-            init: function (otps) {
-                this._super(otps)
+            init: function (id,parent) {
+                this._super(id,"piece",parent)
                 this.type = "monster"
-                this.layer = "piece"
                 this.bound.w = 43
                 this.bound.h = 43
 
@@ -61,10 +59,9 @@ define(["jquery", "view/pieceview"], function ($,PieceView) {
         }),
 
         MonsterLordView: PieceView.extend({
-            init: function (otps) {
-                this._super(otps)
+            init: function (id,parent) {
+                this._super(id,"piece",parent)
                 this.type = "monsterlord"
-                this.layer = "piece"
                 this.bound.w = 43
                 this.bound.h = 43
 

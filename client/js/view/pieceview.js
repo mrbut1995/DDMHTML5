@@ -1,7 +1,7 @@
 define(["view/view"],function(View){
     var PieceView = View.extend({
-        init(otps){
-            this._super(otps)
+        init(id,layer,parent){
+            this._super(id,layer,parent)
 
             this.boardview = null
             this.iscontrol = false

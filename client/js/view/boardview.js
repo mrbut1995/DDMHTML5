@@ -1,8 +1,8 @@
 define(["jquery", "view/view", "view/views"], function ($, View, Views) {
     console.log("CREATE BOARD VIEW")
     var BoardView = View.extend({
-        init: function (opts) {
-            this._super(opts)
+        init: function (id,parent) {
+            this._super(id,"board",parent)
 
             this.constant = {
                 horMarGrid: 8,
@@ -23,7 +23,6 @@ define(["jquery", "view/view", "view/views"], function ($, View, Views) {
 
             this.imgCell = "#606060"
             this.type = "board"
-            this.layer = "board"
         },
         draw: function (context, mainView) {
             context.save()

@@ -1,6 +1,6 @@
 define(["ddm"],function(Tsh){
     Tsh.Ddm.Player = {
-       init(){
+       init(app){
            this.id = ""
            this.name = ""
            this.contain = []
@@ -24,6 +24,11 @@ define(["ddm"],function(Tsh){
            this.controlland       = {}
            this.movablemonster    = {}
            this.monsterlord       = null
+
+           this.app = app
+           if(this._onInitialized){
+               this._onInitialized()
+           }
        },
 
        getAvatar(){
@@ -89,5 +94,6 @@ define(["ddm"],function(Tsh){
 
        onSelectedMonster(callback) {this._onSelectedMonster     = callback},
        onDeselectedMonster(callback){this._onDeselectedMonster  = callback},
-    }
+       onInitialized   (callback){this._onInitialized = callback},
+     }
 })

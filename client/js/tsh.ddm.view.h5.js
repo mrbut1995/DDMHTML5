@@ -1,6 +1,6 @@
 
 // //Include Module
-define(["ddm", "jquery", "view/views","view/boardview","view/viewfactory","view/layer"], function (Tsh, $, Views,BoardView,ViewFactory,Layer) {
+define(["ddm", "jquery", "view/views","view/boardview","view/viewfactory","view/layer","animation/effect"], function (Tsh, $, Views,BoardView,ViewFactory,Layer,Effect) {
 
 
     Tsh = Tsh || {}
@@ -43,6 +43,25 @@ define(["ddm", "jquery", "view/views","view/boardview","view/viewfactory","view/
                 height: 923
             },
         },        
+
+        //Animation
+        effects : {},
+        animation : {},
+
+        //Popup
+        popup : {},
+        displaypopup : {},
+
+        init (app) {
+            this.initDOM()
+            this.initCanvas()
+            this.initBoard();
+            this.redraw()
+            this.app = app
+            if(this._onInitialized){
+                this._onInitialized()
+            }
+        },
 
         initAudio  () {
             if ($("#ddm-audio").length == 0 || !audio) {
@@ -306,15 +325,6 @@ define(["ddm", "jquery", "view/views","view/boardview","view/viewfactory","view/
 
         //////////////////////////////////////// ANIMATION
         
-        init  () {
-            console.log("DDM.VIEW.INIT")
-            this.initDOM()
-            this.initCanvas()
-            
-            this.initBoard();
-
-            this.redraw()
-        },
         initBoard(){
             this.registerLayer("board");
             this.registerLayer("land" );
@@ -349,6 +359,7 @@ define(["ddm", "jquery", "view/views","view/boardview","view/viewfactory","view/
         onViewCreated   (callback){this._onViewCreated = callback},
         onViewDestroyed (callback){this._onViewDestroyed = callback},
         onDirty         (callback){this._onDirty = callback},
+        onInitialized   (callback){this._onInitialized = callback},
     }
 })
 

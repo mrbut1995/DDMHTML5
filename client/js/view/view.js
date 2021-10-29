@@ -1,15 +1,16 @@
 
-define(["jquery"],function($){
+define(["jquery","ddm"],function($){
     var View = Class.extend({
-        init      : function(otps){
-            this.parent                      = null
+        init      : function(id,layer,parent){
+            this.parent                      = parent
             this.childs                      = []
     
-            this.id                          = uuid()
+            this.id                          = id
             this.bound                       = new Rect(0,0,0,0) 
             this.focused                     = false
             this.type                        = ""
-
+            this.layer                       = layer
+            
             //Parent Inheritance Value
             this.visible                     = true
             this.enable                      = true
@@ -22,11 +23,7 @@ define(["jquery"],function($){
             this.imgSrcDisable               = ""
 
             this.isDirty                     = false
-            //Method
-            $.extend(this,otps,false)
-
-            if(this._onCreated)
-                this._onCreated()
+            
         },
         forEachChild: function(callback){
             for(var i in this.childs){
@@ -89,16 +86,6 @@ define(["jquery"],function($){
             this.forEachChildAt( v => v.mouseCancel(ev))
         },
          
-        //Signal
-        onUpdate (callback){
-            this._onUpdate = callback
-        },
-        onPropertyChanged(callback){
-            this._onPropertyChanged = callback
-        },
-        onCreated(callback){
-            this._onCreated = callback
-        },
         onDestroyed(callback){
             this._onDestroyed = callback
         },
@@ -123,8 +110,7 @@ define(["jquery"],function($){
         onDirty(callback){
             this._onDirty = callback;
         },
-        draw: function (context, mainView) {
-        },
+        draw: function (context, mainView) {},
         
         //Get Set Property
         setPosition : function(point){

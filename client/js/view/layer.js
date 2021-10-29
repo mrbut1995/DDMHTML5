@@ -28,7 +28,6 @@ define(["view/view"],function(View){
         unregisterView(view){
             if(view.id in this.views){
                 delete this.views[view.id]
-                view.layer = ""
             }
         },
         forEachView(callback){

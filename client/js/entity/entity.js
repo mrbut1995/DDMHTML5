@@ -1,4 +1,4 @@
-define(["jquery","ddm"],function($,Tsh){
+define(["jquery"],function($){
     var Entity = Class.extend({
         //Property
         
@@ -23,7 +23,9 @@ define(["jquery","ddm"],function($,Tsh){
         setView(view){
             this.view = view
         },
-
+        containView(view){
+            return view != null && this.view != null && view == this.view
+        },
         //Animation
         setAnimation: function(name){
             var self = this;
@@ -50,12 +52,6 @@ define(["jquery","ddm"],function($,Tsh){
             this.forEachAnimation(function(animation){
                 animation.stop()
             })
-        },
-        animate:function(name,opts,onEndCallback){
-            opts = $.extend({
-                speed : 0,
-                count : 0,
-            },opts)
         },
         getAnimationByName(name){
             var animation = null;

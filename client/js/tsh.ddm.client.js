@@ -3,7 +3,7 @@ define(["ddm"],function(Tsh){
     Tsh.Ddm = Tsh.Ddm || {}
     
     Tsh.Ddm.Client = {
-        init(host,port){
+        init(app){
             this.connection = null;
             // this.host = host;
             // this.port = port;
@@ -33,6 +33,12 @@ define(["ddm"],function(Tsh){
         
             this.useBison = false;
             this.enable();
+
+            this.app = app
+            if(this._onInitialized){
+                this._onInitialized()
+            }
+
         },
         setServerOption(host,port,name){
             this.host = host;
@@ -204,6 +210,7 @@ define(["ddm"],function(Tsh){
 
         onGameEnd           (callback){this._onDisconnected    = callback},
 
+        onInitialized       (callback){this._onInitialized = callback},
     }
 
 })

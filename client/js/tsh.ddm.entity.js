@@ -4,9 +4,14 @@ define(["ddm","jquery","entity/entityfactory","entity/monster","entity/land","en
     Tsh.Ddm = Tsh.Ddm || {}
 
     Tsh.Ddm.Entity = {
-        init(){
+        init(app){
             this.entities = {}
             this.entityGrid = null
+
+            this.app = app
+            if(this._onInitialized){
+                this._onInitialized()
+            }
         },
         addEntity(entity){
             if(this.entities[entity.id] === undefined){
@@ -34,6 +39,14 @@ define(["ddm","jquery","entity/entityfactory","entity/monster","entity/land","en
                 callback(entity)
             }
         },
+        findIfEntity(callback){
+            for(var i in this.entities){
+                var entity = this.entites[i]
+                if(callback(entity))
+                    return entity
+            }
+            return null
+        },
         update(delta){
             forEachEntity((entity)=>{
                 if(isFunction(entity.update))
@@ -50,6 +63,11 @@ define(["ddm","jquery","entity/entityfactory","entity/monster","entity/land","en
             }else{
                 console.log("Non-exist Entity "+id)
             }
+        },
+        getEntityByView(view){
+            return this.findIfEntity(function(entity){
+                return entity.containView(view)
+            })
         },
         getEntityByClass(c){
             var lst = [];
@@ -240,6 +258,7 @@ define(["ddm","jquery","entity/entityfactory","entity/monster","entity/land","en
         onConstructingLand(callback){this._onConstructingLand = callback},
         onConstructingItem(callback){this._onConstructingItem = callback},
 
+        onInitialized   (callback){this._onInitialized = callback},
         
     }
 })
