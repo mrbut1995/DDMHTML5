@@ -200,7 +200,11 @@ define(["ddm", "jquery", "view/views","view/boardview","view/viewfactory","view/
             return id in this.views[id]
         },
         getViewById(id){
-
+            if(this.viewIdExists(id)){
+                return this.views[id];
+            }else{
+                return null;
+            }
         },
         getViewsByClass(c){
             var lst = []
@@ -279,6 +283,14 @@ define(["ddm", "jquery", "view/views","view/boardview","view/viewfactory","view/
             }
             return this.layers[name]
         },
+
+        boardPointFrom(coord){
+            if(!this.getBoard()){
+                console.log("[ERROR] BOARD IS NOT CONSTRUCTED")
+                return new Point(-1,-1)
+            }
+            return this.getBoard().pointFrom(coord)
+        },
         //////////////////////////////////////// Specify View
         getBoard(){
             return this.getViewsByClass(BoardView)[0]
@@ -309,18 +321,16 @@ define(["ddm", "jquery", "view/views","view/boardview","view/viewfactory","view/
             }
         },
         //////////////////////////////////////// SPECIFY
-        createView(kind){
-            var view = ViewFactory.createView(kind)
+        createView(kind,config){
+            var view = ViewFactory.createView(kind,config)
             this.addView(view)
             if(this._onViewCreated){
                 this._onViewCreated(view)
             }
+            console.log("view = ",view)
             return view
         },
         destroyView  (id) {
-            var view = this.getBoard().view(id);
-            this.getBoard().removeViewChild(view)
-            this.setDirty()
         },
 
         //////////////////////////////////////// ANIMATION
@@ -332,27 +342,27 @@ define(["ddm", "jquery", "view/views","view/boardview","view/viewfactory","view/
             this.registerLayer("piece");
             this.registerLayer("common");
 
-            this.registerViewIntoLayer(new BoardView())
+            this.registerViewIntoLayer(new BoardView("0000-0000-0000-0000",viewconfig.board))
         },
         //Mouse Handle
         mouseClickedCanvasHandle  (opts) {
             console.log("mouseClickedCanvasHandle ",opts)
-            this.getBoard().mouseClicked(opts)
+            // this.getBoard().mouseClicked(opts)
         },
          mousePressedCanvasHandle  (opts) {
             console.log("mousePressedCanvasHandle ",opts)
-            this.getBoard().mousePressed(opts)
+            // this.getBoard().mousePressed(opts)
         },
          mousePressedAndHoldCanvasHandle  (opts) {
             console.log("mousePressedAndHoldCanvasHandle ",opts)
-            this.getBoard().mousePressAndHold(opts)
+            // this.getBoard().mousePressAndHold(opts)
         },
          mouseReleasedCanvasHandle  (opts) {
             console.log("mouseReleasedCanvasHandle ",opts)
-            this.getBoard().mouseReleased(opts)
+            // this.getBoard().mouseReleased(opts)
         },
          mouseDragCanvasHandle  (opts) {
-            this.getBoard().mouseDrag(opts)
+            // this.getBoard().mouseDrag(opts)
         },
 
         //Signal Slots

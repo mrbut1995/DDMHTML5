@@ -1,29 +1,36 @@
 
-define(["jquery","ddm"],function($){
+define(["jquery","ddm-view"],function($,Tsh){
     var View = Class.extend({
-        init      : function(id,layer,parent){
-            this.parent                      = parent
-            this.childs                      = []
-    
-            this.id                          = id
-            this.bound                       = new Rect(0,0,0,0) 
-            this.focused                     = false
-            this.type                        = ""
-            this.layer                       = layer
-            
-            //Parent Inheritance Value
-            this.visible                     = true
-            this.enable                      = true
-            this.highlight                   = false
-            
-            //Source For drawing Image
-            this.imgSrcNormal                = ""
-            this.imgSrcHidden                = ""
-            this.imgSrcSelect                = ""
-            this.imgSrcDisable               = ""
+        init      : function(id,config,layer,parent){
+            $.extend(true,this,{
+                parent                      : parent,
+                childs                      : [],
+                view                        : null,
 
-            this.isDirty                     = false
+                id                          : id,
+                point                       : new Point(0,0),
+                size                        : new Size(0,0),
+                focused                     : false,
+                type                        : "",
+                layer                       : layer,
+                
+                visible                     : true,
+                enable                      : true,
+                highlight                   : false,
             
+                imgSrcNormal                : "",
+                imgSrcHidden                : "",
+                imgSrcSelect                : "",
+                imgSrcDisable               : "",
+    
+                isDirty                     : false,
+            
+                scale                       : 1,
+                config                      : config,
+            })
+            
+            if(View._onCreated)
+                View._onCreated(this)
         },
         forEachChild: function(callback){
             for(var i in this.childs){
@@ -50,8 +57,10 @@ define(["jquery","ddm"],function($){
                 callback(childs[i])
             }
         },
-        setDirty(){
+        dirty(){
             this.isDirty = this.isDirty || true
+            if(this._onDirty)
+                this._onDirty()
         },
 
         //Mouse Handle
@@ -114,24 +123,40 @@ define(["jquery","ddm"],function($){
         
         //Get Set Property
         setPosition : function(point){
-            this.bound.x = point.x
-            this.bound.y = point.y
-            this.setDirty()
+            this.point = point
+            this.dirty()
         },
         getPosition : function(){
-            return new Coord(this.bound.x,this.bound.y)
+            return this.point
         },
-        setBounding : function(rect){
-            this.bound = rect
-            this.setDirty()
+        setSize(size){
+            this.size = size
+            this.dirty()
         },
-        getBounding : function(){
-            return this.bound
+        getSize(size){
+            return this.size
+        },
+        setScale(s){
+            this.scale =s;
+            this.dirty()
+        },
+        getScale(s){
+            return this.scale
+        },
+        setBound : function(rect){
+            this.point.x = rect.x
+            this.point.y = rect.y
+            this.size.w  = rect.w
+            this.size.h  = rect.h
+            this.dirty()
+        },
+        getBound : function(){
+            return new Rect(this.point,this.size.w,this.size.h)
         },
         setHighlight(value){
             this.highlight = value
             forEachChild(child => this.setHighlight(value));
-            this.setDirty()
+            this.dirty()
         },
         isHighlight(){
             return this.highlight
@@ -139,7 +164,7 @@ define(["jquery","ddm"],function($){
         setVisible(value){
             this.visible = value
             forEachChild(child => this.setVisible(value));
-            this.setDirty()
+            this.dirty()
         },
         isVisible(){
             return this.visible
@@ -147,7 +172,7 @@ define(["jquery","ddm"],function($){
         setEnable(value){
             this.enable = value
             forEachChild(child => this.setEnable(value));
-            this.setDirty()
+            this.dirty()
         },
         isEnabled(){
             return this.enable
@@ -168,7 +193,7 @@ define(["jquery","ddm"],function($){
         },
 
         contain      : function(coord){
-            return this.bound.contain(coord)
+            return this.getBound().contain(coord)
         },
     
         inArray    : function(a){
@@ -202,6 +227,7 @@ define(["jquery","ddm"],function($){
             }
         }
     })
+    View.onCreated = function(callback){this._onCreated = callback}.bind(View)
 
     return View
 

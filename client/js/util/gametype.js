@@ -18,6 +18,9 @@ function isFunction(f) {
   function isCoord(n){
     return n.x != undefined && n.y != undefined
   }
+  function isSize(n){
+    return n.w != undefined && n.h != undefined
+  }
   var Types = {
       Views : {
           VIEW            : 0,

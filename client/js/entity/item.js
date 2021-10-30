@@ -3,8 +3,9 @@ define(["entity/entity","view/views"],function(Entity,Views){
 
     var Item = Entity.extend({
         init(id,kind) {
-            this._super(id,kind)
             this.views = new Views.LandView()
+
+            this._super(id,kind)
         },
         destroy(){
 

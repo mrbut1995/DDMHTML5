@@ -21,12 +21,14 @@ define(["view/view"],function(View){
             if(this.views[view.id] === undefined){
                 this.views[view.id] = view
                 view.layer = this.name
+                view.onDirty(function(){this.dirty()}.bind(this))
             }else{
                 console.log("This view already exist")
             }
         },
         unregisterView(view){
             if(view.id in this.views){
+                this.views[view.id].onDirty(null)
                 delete this.views[view.id]
             }
         },
@@ -62,7 +64,9 @@ define(["view/view"],function(View){
         getView(index){
             return this.views[index]
         },
-
+        onDirty(callback){
+            this._onDirty = callback
+        }
     })
     return Layer
 })

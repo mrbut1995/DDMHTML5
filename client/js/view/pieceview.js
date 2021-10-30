@@ -1,18 +1,17 @@
 define(["view/view"],function(View){
     var PieceView = View.extend({
-        init(id,layer,parent){
-            this._super(id,layer,parent)
-
+        init(id,config,layer,parent){
+            this._super(id,config,layer,parent)
             this.boardview = null
-            this.iscontrol = false
         },
         setBoard(view){
             this.boardview = view
+            console.log("setted board = ",this.board())
         },
-        board : function(){
+        board(){
             return this.boardview
         },
-        relocatingToPoint : function(point){
+        relocatingToPoint(point){
             if(this.board() == null){
                 console.log("[ERROR] Not belong to any board")
                 return

@@ -24,7 +24,7 @@ define(function (Entity ) {
             Tsh.Ddm.Match.  init (Tsh.Ddm)
 
 
-            Tsh.Ddm.Input.registerInputListener(Tsh.Ddm.View.getDOM("board"))
+            Tsh.Ddm.Input.connectInput(Tsh.Ddm.View.getDOM("board"))
 
             
             this.connectServer();
@@ -205,10 +205,10 @@ define(function (Entity ) {
             }.bind(Tsh.Ddm.Entity))
 
             Tsh.Ddm.View.onInitialized(function(){
-                Tsh.Ddm.Input.registerInputListener(this.getDOM("board"))
+                Tsh.Ddm.Input.connectInput(this.getDOM("ddm-canvas"))
 
                 this.onViewCreated(function(view){
-                    console.log("board == ",Tsh.Ddm.View.getBoard().type)
+                    console.log("board == ",Tsh.Ddm.View.getBoard())
                     if(view.type == "monster"){
                         view.setBoard(Tsh.Ddm.View.getBoard())
                     }else if(view.type == "monsterlord"){
@@ -303,14 +303,6 @@ define(function (Entity ) {
         restart(){
             
         },
-        getEntityAt(x,y){
-            var view = Tsh.Ddm.View.getViewAt(x,y)
-        },
-        getMonsterAt(x,y){
-        },
-        getLandAt(x,y){
-
-        }
     }
 
     return Tsh

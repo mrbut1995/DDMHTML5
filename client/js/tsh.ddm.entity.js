@@ -6,7 +6,9 @@ define(["ddm","jquery","entity/entityfactory","entity/monster","entity/land","en
     Tsh.Ddm.Entity = {
         init(app){
             this.entities = {}
-            this.entityGrid = null
+            this.entityGrid     = null
+            this.pathingGrid    = null
+            this.map            = null
 
             this.app = app
             if(this._onInitialized){
@@ -93,8 +95,6 @@ define(["ddm","jquery","entity/entityfactory","entity/monster","entity/land","en
             console.log("Initialized the entity grid.");
 
         },
-
-
         removeFromEntityGrid(entity,col,row){
             if(this.entityGrid[row][col][entity.id]){
                 delete this.entityGrid[row][col][entity.id]
@@ -140,7 +140,13 @@ define(["ddm","jquery","entity/entityfactory","entity/monster","entity/land","en
             }
             return entity
         },
+        //For Pathing
+        initPathingGrid(map){
+        },
+        findPath(entity,x,y,ignoreList){
 
+        },
+        
         //SPECIFY ENTITY
         isMonsterOnSameTile(monster,col,row){
             var Col = col || monster.point.col,

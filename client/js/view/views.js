@@ -1,19 +1,19 @@
 define(["jquery", "view/pieceview",], function ($,PieceView) {
     var Views = {
         LandView: PieceView.extend({
-            init: function (id,parent) {
-                this._super(id,"land",parent)
+            init(id,config,parent) {
+                this._super(id,config,"land",parent)
 
                 this.type = "land"
-                this.bound.w = 43
-                this.bound.h = 43
+                this.size = new Size(43,43)
 
                 this.imgSrcNormal = "#F0F0F0",
                 this.imgSrcSelect = "rgb(255, 100, 55, 0.5)"
+                
             },
             draw(context,mainView){
                 context.save()
-                let drawingRect = this.bound
+                let drawingRect = this.getBound()
                 var style;
                 context.fillStyle = this.imgSrcNormal
                 context.fillRect(drawingRect.x, drawingRect.y , drawingRect.w , drawingRect.h )
@@ -23,18 +23,18 @@ define(["jquery", "view/pieceview",], function ($,PieceView) {
 
 
         MonsterView: PieceView.extend({
-            init: function (id,parent) {
-                this._super(id,"piece",parent)
+            init(id,config,parent) {
+                this._super(id,config,"piece",parent)
+
                 this.type = "monster"
-                this.bound.w = 43
-                this.bound.h = 43
+                this.size = new Size(43,43)
 
                 this.imgSrcNormal =  "red",
                 this.imgSrcSelect = "rgb(255, 100, 55, 0.5)"
             },
             draw(context,mainView){
                 context.save()
-                let drawingRect = this.bound
+                let drawingRect = this.getBound()
                 var style;
                 if(!this.enable){
                     style = this.imgSrcDisable
@@ -59,18 +59,19 @@ define(["jquery", "view/pieceview",], function ($,PieceView) {
         }),
 
         MonsterLordView: PieceView.extend({
-            init: function (id,parent) {
-                this._super(id,"piece",parent)
+            init(id,config,parent) {
+                this._super(id,config,"piece",parent)
+
                 this.type = "monsterlord"
-                this.bound.w = 43
-                this.bound.h = 43
+                this.size = new Size(43,43)
 
                 this.imgSrcNormal =  "green",
                 this.imgSrcSelect = "rgb(255, 100, 55, 0.5)"
+                
             },
             draw(context,mainView){
                 context.save()
-                let drawingRect = this.bound
+                let drawingRect = this.getBound()
                 var style;
                 context.fillStyle = this.imgSrcNormal
                 if(this.iscontrol){

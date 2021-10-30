@@ -1,18 +1,25 @@
 define(["jquery"],function($){
     var Entity = Class.extend({
         //Property
-        
         init(id,kind){
-            this.id = id
-            this.kind = kind
-            this.viewtype = Types.Views.VIEW
-            this.view = null            
-            this.isLoaded = false
+            var def = {
+                id : id,
+                kind : kind,
+                viewtype : Types.Views.VIEW,
+                viewClass: null,
+                view     : null,
+                isLoaded : false,
+                point    : new Point(0,0),
+                animations: {},
+                currentAnimation: null
+            }
+            $.extend(true,this,def)
+            if(Entity._onCreated){
+                Entity._onCreated(this)
+            }
+        },
+        animate(){
 
-            this.point = new Point(0,0)
-
-            this.animations         = {}
-            this.currentAnimation   = null
         },
         setName : function(name){
             this.name = name;
@@ -118,7 +125,8 @@ define(["jquery"],function($){
                 animation.update(delta)
             }.bind(this))
         },
-
     })
+    //Construct Proto DAta
+    Entity.onCreated = function(callback){this._onCreated = callback}.bind(Entity)
     return Entity
 })

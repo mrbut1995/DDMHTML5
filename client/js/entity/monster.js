@@ -1,7 +1,6 @@
 define(["entity/piece", "view/views", "animation/animations"], function (Piece, Views, Animations) {
     var Monster = Piece.extend({
         init(id,kind) {
-            this._super(id,kind)
 
             this.stat = {
                 attack : 0,
@@ -9,7 +8,10 @@ define(["entity/piece", "view/views", "animation/animations"], function (Piece, 
                 move   : 3
             }
             this.movetype = "walk"
-            
+
+            //View
+            this.viewClass = Views.MonsterView
+
             //Action
             this.canAction = true
 
@@ -60,6 +62,9 @@ define(["entity/piece", "view/views", "animation/animations"], function (Piece, 
                 idle       : new Animations.SpriteAnimation(),
                 walk       : new Animations.SpriteAnimation(),
             }
+
+            this._super(id,kind)
+
         },
         select() {
 

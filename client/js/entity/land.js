@@ -3,8 +3,13 @@ define(["entity/entity","view/views"],function(Entity,Views){
 
     var Land = Entity.extend({
         init(id,kind) {
-            this._super(id,kind)
+            
+            //View
+            this.viewClass = Views.MonsterView
+
             this.viewtype = Types.Views.LANDVIEW
+
+            this._super(id,kind)
         },
         destroy(){
 

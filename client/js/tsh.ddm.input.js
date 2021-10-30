@@ -20,8 +20,8 @@ define(["ddm", "jquery"], function(Tsh,$){
                 this._onInitialized()
             }
         },
-
-        registerInputListener($canvas){
+        
+        connectInput($canvas){
             $canvas.addEventListener("click",     this.oncanvasmouseclicked.bind(this),   false);
             $canvas.addEventListener("mousedown", this.oncanvasmousedown.bind(this),      false);
             $canvas.addEventListener("mouseup",   this.oncanvasmouseup.bind(this),        false);
@@ -29,6 +29,15 @@ define(["ddm", "jquery"], function(Tsh,$){
             $canvas.addEventListener("mouseout",  this.oncanvasmouseout.bind(this),       false);
         },
 
+        registerInputListener(){
+
+        },
+        unregisterInputListener(){
+
+        },
+        forEachInputListener(){
+
+        },
         //Listener
         oncanvasmouseclicked:function(ev){
             if(this._onMouseClicked){
@@ -63,6 +72,7 @@ define(["ddm", "jquery"], function(Tsh,$){
             if(isCoord(coord)){
                 this.mouse.x = coord.x
                 this.mouse.y = coord.y
+                this._updateGridMousePosition()
             }
             if (this.mouse.down) {
                 this.mouse.dragging = true;
@@ -88,8 +98,14 @@ define(["ddm", "jquery"], function(Tsh,$){
         _requestCanvasCoord(e){
             return this.app.View.getCanvasCoord(e)
         },
-        _requestGridPosition(x,y){
-            return {col:0,row:0}
+        _updateGridMousePosition(){
+            //TODO: Translate Mouse Position into Col Row
+            var mx = this.mouse.x,
+                my = this.mouse.y,
+                mCol =  Math.floor((mx - viewconfig.board.margin.horizontal) / (viewconfig.board.cell.size.width  + viewconfig.board.cell.padding.horizontal)),
+                mRow = Math.floor ((my - viewconfig.board.margin.vertical)   / (viewconfig.board.cell.size.height + viewconfig.board.cell.padding.vertical))
+            this.mouse.col = mCol
+            this.mouse.row = mRow
         },
 
         onCanvasClicked(callback)     {this._onMouseClicked = callback},

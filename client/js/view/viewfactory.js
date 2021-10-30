@@ -3,7 +3,7 @@ define(["view/views","view/view"],function(Views,View){
 
     ViewsFactory.builders = {};
 
-    ViewsFactory.createView = function(kind,id,layer,parent){
+    ViewsFactory.createView = function(kind,id,config,layer,parent){
         if(!kind){
             console.log("kind is undefined",true)
         }
@@ -13,27 +13,27 @@ define(["view/views","view/view"],function(Views,View){
         }
         if(id == undefined)
             id =  uuid()
-        return ViewsFactory.builders[kind](id,layer,parent);
+        return ViewsFactory.builders[kind](id,config,layer,parent);
     }
 
-    ViewsFactory.builders[Types.Views.LANDVIEW] = function(id,layer,parent){
-        var view = new Views.LandView(id,parent)
+    ViewsFactory.builders[Types.Views.LANDVIEW] = function(id,config,layer,parent){
+        var view = new Views.LandView(id,config,parent)
         if(parent instanceof View){
             view.childOf(parent)
         }
         return view
     }
 
-    ViewsFactory.builders[Types.Views.MONSTERVIEW] = function(id,layer,parent){
-        var view = new Views.MonsterView(id,parent)
+    ViewsFactory.builders[Types.Views.MONSTERVIEW] = function(id,config,layer,parent){
+        var view = new Views.MonsterView(id,config,parent)
         if(parent instanceof View){
             view.childOf(parent)
         }
         return view
     }
 
-    ViewsFactory.builders[Types.Views.MONSTERLORDVIEW] = function(id,layer,parent){
-        var view = new Views.MonsterLordView(id,parent)
+    ViewsFactory.builders[Types.Views.MONSTERLORDVIEW] = function(id,config,layer,parent){
+        var view = new Views.MonsterLordView(id,config,parent)
         if(parent instanceof View){
             view.childOf(parent)
         }

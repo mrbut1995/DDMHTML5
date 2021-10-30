@@ -19,6 +19,7 @@ Class.extend = function(prop) {
     var prototype = new this();
     initializing = false;
     
+
     // Copy the properties over onto the new prototype
     for (var name in prop) {
         // Check if we're overwriting an existing function
@@ -45,7 +46,6 @@ Class.extend = function(prop) {
     
     // The dummy class constructor
     Class = function () {
-        // All construction is actually done in the init method
         if ( !initializing && this.init )
             this.init.apply(this, arguments);
     }
