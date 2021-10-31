@@ -1,6 +1,6 @@
 
 // //Include Module
-define(["ddm", "jquery", "view/views","view/boardview","view/viewfactory","view/layer","animation/effect"], function (Tsh, $, Views,BoardView,ViewFactory,Layer,Effect) {
+define(["ddm", "jquery", "view/view","view/boardview","view/viewfactory","view/layer","animation/effect"], function (Tsh, $, View,BoardView,ViewFactory,Layer,Effect) {
 
 
     Tsh = Tsh || {}
@@ -127,22 +127,19 @@ define(["ddm", "jquery", "view/views","view/boardview","view/viewfactory","view/
             return new Coord(x, y);
         },
 
-        update  (opts) {
-            var defOpts = {
-                delta: 0
-            }
-            opts = $.extend(defOpts, opts)
+        update  (delta) {
+            if (!this.dirty)
+                return
             this.redraw(true)
+            this.dirty = false
         },
+
         redraw  (canvasElement) {
             if (!canvasElement) {
                 this.initCanvas()
                 this.initAudio()
             }
-            if (!this.dirty)
-                return
             this.draw();
-            this.dirty = false
         },
         destroyView(view){
             if(this._onViewDestroyed){
@@ -322,7 +319,28 @@ define(["ddm", "jquery", "view/views","view/boardview","view/viewfactory","view/
         },
         //////////////////////////////////////// SPECIFY
         createView(kind,config){
-            var view = ViewFactory.createView(kind,config)
+            console.log(this)
+            if(isViewKind(kind)){
+                return this.createViewFromKind(kind,config)
+            }else if(isViewPrototype(kind)){
+                return this.createViewFromPrototype(kind,config)
+            }else{
+                console.log("[ERROR] value ",kind," is Not Type that can Create View")
+            }
+        },
+        createViewFromKind(kind,config){
+            var id =  uuid()
+            var view = ViewFactory.createView(kind,id,config)
+            this.addView(view)
+            if(this._onViewCreated){
+                this._onViewCreated(view)
+            }
+            console.log("view = ",view)
+            return view
+        },
+        createViewFromPrototype(_class,config){
+            var id = uuid()
+            var view = new _class(id,config)
             this.addView(view)
             if(this._onViewCreated){
                 this._onViewCreated(view)

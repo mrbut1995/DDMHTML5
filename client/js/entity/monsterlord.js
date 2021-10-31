@@ -1,12 +1,9 @@
 define(["entity/piece","view/views"],function(Piece){
     var MonsterLord = Piece.extend({
         init(id,kind) {
-
             //View
-            this.viewClass = Views.MonsterView
-
+            this.view = Views.MonsterView
             this.lifepoint = 0
-
             this._super(id,kind)
         },
         attacked(){

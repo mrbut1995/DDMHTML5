@@ -1,5 +1,8 @@
 
-
+var View;
+require(["view/view"],function(view){
+  View = view
+})
 function isFunction(f) {
     return typeof f === 'function'
   }
@@ -20,6 +23,12 @@ function isFunction(f) {
   }
   function isSize(n){
     return n.w != undefined && n.h != undefined
+  }
+  function isViewKind(n){
+    return isNumber(n)
+  }
+  function isViewPrototype(n){
+    return isFunction(n) 
   }
   var Types = {
       Views : {

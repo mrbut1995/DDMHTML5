@@ -60,8 +60,10 @@ define(["jquery", "view/view"], function ($, View) {
         },
         
         relocatingView: function (view, point) {
-            var coord = this.pointFrom(point)
+            var coord = this.coordFrom(point)
+            console.log("new coord = ",coord)
             view.setPosition(coord)
+            view.dirty()
         },
     })
     return BoardView

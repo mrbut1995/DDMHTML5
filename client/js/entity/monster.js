@@ -10,7 +10,7 @@ define(["entity/piece", "view/views", "animation/animations"], function (Piece, 
             this.movetype = "walk"
 
             //View
-            this.viewClass = Views.MonsterView
+            this.view = Views.MonsterView
 
             //Action
             this.canAction = true
@@ -213,7 +213,7 @@ define(["entity/piece", "view/views", "animation/animations"], function (Piece, 
                             this._onStep()
 
                         if (this.hasChangedItsPath()) {
-                            this.view.setPosition(this.newDestination)
+                            this.getView().setPosition(this.newDestination)
                             path = this.requestPathfindingTo(this.newDestination)
                             this.newDestination = null
                             if(path.length < 2){
@@ -338,7 +338,7 @@ define(["entity/piece", "view/views", "animation/animations"], function (Piece, 
                     this.hasMoved()
                     this.nextStep()
                 }.bind(this))
-                this.setFrom(this.view.getPosition())
+                this.setFrom(this.getView().getPosition())
                 this.setTo  (new Coord(this.nextX,this.nextY))
                 this.move.start()
             }
@@ -394,5 +394,9 @@ define(["entity/piece", "view/views", "animation/animations"], function (Piece, 
         },
         
     })
+    var keys = Object.keys(Monster)
+    for(var i in keys){
+        console.log("=== ",keys[i])
+    }
     return Monster;
 })

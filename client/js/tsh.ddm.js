@@ -3,7 +3,7 @@ var Tsh = Tsh || {}
 Tsh.Ddm = Tsh.Ddm || {}
 
 //Define Modul
-define(function (Entity ) {
+define(function (Entity) {
 
     console.log("LOAD TSH.DDM")
 
@@ -14,241 +14,241 @@ define(function (Entity ) {
 
             this.connectModule();
 
-            Tsh.Ddm.View.   init (Tsh.Ddm)
-            Tsh.Ddm.Debug.  init (Tsh.Ddm)
-            Tsh.Ddm.Loader. init (Tsh.Ddm)
-            Tsh.Ddm.Input.  init (Tsh.Ddm)
-            Tsh.Ddm.Entity. init (Tsh.Ddm)
-            Tsh.Ddm.Client. init (Tsh.Ddm)
-            Tsh.Ddm.Player. init (Tsh.Ddm)
-            Tsh.Ddm.Match.  init (Tsh.Ddm)
+            Tsh.Ddm.View.init(Tsh.Ddm)
+            Tsh.Ddm.Debug.init(Tsh.Ddm)
+            Tsh.Ddm.Loader.init(Tsh.Ddm)
+            Tsh.Ddm.Input.init(Tsh.Ddm)
+            Tsh.Ddm.Entity.init(Tsh.Ddm)
+            Tsh.Ddm.Client.init(Tsh.Ddm)
+            Tsh.Ddm.Player.init(Tsh.Ddm)
+            Tsh.Ddm.Match.init(Tsh.Ddm)
 
 
             Tsh.Ddm.Input.connectInput(Tsh.Ddm.View.getDOM("board"))
 
-            
+
             this.connectServer();
 
-            Tsh.Ddm.Client.receiveWelcome(["","","","","","","",""])
+            Tsh.Ddm.Client.receiveWelcome(["", "", "", "", "", "", "", ""])
 
         },
-        connectServer(){
+        connectServer() {
             var self = this
-            Tsh.Ddm.Client.onDispatch(function(host,port){
-                console.log("Dispatched to game server "+host+ ":"+port);
+            Tsh.Ddm.Client.onDispatch(function (host, port) {
+                console.log("Dispatched to game server " + host + ":" + port);
             })
-            Tsh.Ddm.Client.onConnected(function(){
+            Tsh.Ddm.Client.onConnected(function () {
                 console.log("on Connected To Server");
 
             })
-            Tsh.Ddm.Client.onEntityList(function(list){
+            Tsh.Ddm.Client.onEntityList(function (list) {
 
             })
-            Tsh.Ddm.Client.onWelcome(function(id,name,contain,avatar,lp,crests,matchid){
+            Tsh.Ddm.Client.onWelcome(function (id, name, contain, avatar, lp, crests, matchid) {
                 console.log("Successfull Connect to server => Init handle")
-                
+
                 Tsh.Ddm.Player.id = id
                 Tsh.Ddm.Player.name = name;
                 Tsh.Ddm.Player.contain = contain;
                 Tsh.Ddm.Player.avatar = avatar;
-                Tsh.Ddm.Player.lp     = lp;
+                Tsh.Ddm.Player.lp = lp;
                 Tsh.Ddm.Player.crests = crests
 
                 Tsh.Ddm.Match.matchid = matchid
-                
+
                 Tsh.Ddm.Entity.initEntityGrid({
-                    width:13,
-                    height:19
+                    width: 13,
+                    height: 19
                 })
 
                 //Connecting Player Handle
-                Tsh.Ddm.Player.onActive(function(){
+                Tsh.Ddm.Player.onActive(function () {
 
                 })
-                Tsh.Ddm.Player.onLose(function(){
+                Tsh.Ddm.Player.onLose(function () {
 
                 })
-                Tsh.Ddm.Player.onConnected(function(){
-                    
-                })
-                Tsh.Ddm.Player.onDeclareEndPhase(function(){
+                Tsh.Ddm.Player.onConnected(function () {
 
                 })
-                Tsh.Ddm.Player.onSelectedMonster(function(monster){
-                    
-                })  
-                Tsh.Ddm.Player.onDeselectedMonster(function(monster){
+                Tsh.Ddm.Player.onDeclareEndPhase(function () {
+
+                })
+                Tsh.Ddm.Player.onSelectedMonster(function (monster) {
+
+                })
+                Tsh.Ddm.Player.onDeselectedMonster(function (monster) {
 
                 })
 
-                Tsh.Ddm.Client.onSpawnEntity(function(kind,id,x,y,name,controllerid,target){
-                    Tsh.Ddm.Entity.spawnEntity(kind,id,x,y,name,controllerid,target)
+                Tsh.Ddm.Client.onSpawnEntity(function (kind, id, x, y, name, controllerid, target) {
+                    Tsh.Ddm.Entity.spawnEntity(kind, id, x, y, name, controllerid, target)
                 });
-                Tsh.Ddm.Client.onDespawnEntity(function(player,id){
-                    
+                Tsh.Ddm.Client.onDespawnEntity(function (player, id) {
+
                 })
 
-                Tsh.Ddm.Client.onEntityMove(function(player,id,x,y){
+                Tsh.Ddm.Client.onEntityMove(function (player, id, x, y) {
 
                 });
-                Tsh.Ddm.Client.onEntityDestroy(function(player,id,x,y){
+                Tsh.Ddm.Client.onEntityDestroy(function (player, id, x, y) {
 
                 });
-                Tsh.Ddm.Client.onEntityAttack(function(player,id,x,y){
+                Tsh.Ddm.Client.onEntityAttack(function (player, id, x, y) {
 
                 });
-                Tsh.Ddm.Client.onEntityEffect(function(player,id,x,y){
+                Tsh.Ddm.Client.onEntityEffect(function (player, id, x, y) {
 
                 });
-                Tsh.Ddm.Client.onPropertyChanging(function(id,property,value){
+                Tsh.Ddm.Client.onPropertyChanging(function (id, property, value) {
 
                 });
-                Tsh.Ddm.Client.onEffectTrigger(function(player,id,x,y){
+                Tsh.Ddm.Client.onEffectTrigger(function (player, id, x, y) {
 
                 });
-                Tsh.Ddm.Client.onPlayerActive(function(playerid){
+                Tsh.Ddm.Client.onPlayerActive(function (playerid) {
 
                 });
-                Tsh.Ddm.Client.onPlayerDeactive(function(playerid){
+                Tsh.Ddm.Client.onPlayerDeactive(function (playerid) {
 
                 });
-                Tsh.Ddm.Client.onPlayerDie(function(playerid,result){
+                Tsh.Ddm.Client.onPlayerDie(function (playerid, result) {
 
                 });
-                Tsh.Ddm.Client.onPlayerRollDice(function(playerid,dice,result){
+                Tsh.Ddm.Client.onPlayerRollDice(function (playerid, dice, result) {
 
                 });
-                Tsh.Ddm.Client.onPlayerChangePhase(function(playerid,changephase){
+                Tsh.Ddm.Client.onPlayerChangePhase(function (playerid, changephase) {
 
                 });
-                Tsh.Ddm.Client.onGameEnd(function(state,playerid){
+                Tsh.Ddm.Client.onGameEnd(function (state, playerid) {
 
                 });
 
-                Tsh.Ddm.Client.onDisconnected(function(message){
+                Tsh.Ddm.Client.onDisconnected(function (message) {
 
-                });                
+                });
             })
             // Tsh.Ddm.Client.onWaitingConnecting(function(){
 
             // }.bind(this))
-            Tsh.Ddm.Client.onSynchronizingData(function(data){
+            Tsh.Ddm.Client.onSynchronizingData(function (data) {
                 console.log("on Synchronizing Data");
 
             }.bind(this))
         },
 
-        connectModule(){
+        connectModule() {
             var self = this
-            Tsh.Ddm.Entity.onInitialized(function(){
-                this.onAddEntity(function(){
+            Tsh.Ddm.Entity.onInitialized(function () {
+                this.onAddEntity(function () {
                 }.bind(this))
 
-                this.onRemoveEntity(function(){
+                this.onRemoveEntity(function () {
                 }.bind(this))
-                
-                this.onUpdateList(function(){
+
+                this.onUpdateList(function () {
                 }.bind(this))
-    
-                this.onSpawnMonster(function(entity,col,row,controllerid,target){
-                    console.log("onSpawnMonster ",entity)
-                    entity.setView(Tsh.Ddm.View.createView(Types.Views.MONSTERVIEW))
-                    entity.setGridPosition(col,row)
+
+                this.onSpawnMonster(function (entity, col, row, controllerid, target) {
+                    console.log("onSpawnMonster ")
+                    entity.constructView    (Tsh.Ddm.View.createView.bind(Tsh.Ddm.View))
+                    
+                    entity.setGridPosition(col, row)
                     entity.idle()
-                    if(controllerid == Tsh.Ddm.Player.playerid){
-                        
+                    if (controllerid == Tsh.Ddm.Player.playerid) {
                     }
-    
-                    entity.onDamageTarget(function(target,points){
+                    entity.onDamageTarget(function (target, points) {
                     })
-                    entity.onDamageMultiTarget(function(targets,point){
+                    entity.onDamageMultiTarget(function (targets, point) {
                     })
-                    entity.onKillTarget(function(target){
+                    entity.onKillTarget(function (target) {
                     })
-                    entity.onChangeStat(function(stat,val){
+                    entity.onChangeStat(function (stat, val) {
                     })
-                    entity.onChangeHealth(function(points,reason){
+                    entity.onChangeHealth(function (points, reason) {
                     })
-                    entity.onKilled(function(reason){
+                    entity.onKilled(function (reason) {
                     })
-                    entity.onHasMoved(function(reason){
+                    entity.onHasMoved(function (reason) {
                     })
-                    entity.onRequestPath(function(col,row){
+                    entity.onRequestPath(function (col, row) {
                     })
-                    entity.onStopPath(function(col,row){
+                    entity.onStopPath(function (col, row) {
                     })
-                    entity.onStep(function(){
+                    entity.onStep(function () {
                         var board = Tsh.Ddm.View.getBoard();
                         var coord = board.pointToCoord(entity.nextPoint())
                     })
-                    entity.onBeforeStep(function(){
+                    entity.onBeforeStep(function () {
                     })
-                    entity.onStartPath(function(path){
+                    entity.onStartPath(function (path) {
                     })
                 }.bind(this))
-    
-                this.onSpawnMonsterLord(function(entity,col,row,controllerid,target){
-                    entity.setView(Tsh.Ddm.View.createView(Types.Views.MONSTERLORDVIEW))
-                    entity.setGridPosition(col,row)
+
+                this.onSpawnMonsterLord(function (entity, col, row, controllerid, target) {
+                    var _view = Tsh.Ddm.View.createView(entity.view)
+                    entity.setView(_view)
+                    entity.setGridPosition(col, row)
                 }.bind(this))
-    
-                this.onSpawnLand(function(entity,col,row,controllerid){
-                    entity.setView(Tsh.Ddm.View.createView(Types.Views.LANDVIEW))
-                    entity.setGridPosition(col,row)
+
+                this.onSpawnLand(function (entity, col, row, controllerid) {
+                    var _view = Tsh.Ddm.View.createView(entity.view)
+                    entity.setView(_view)
+                    entity.setGridPosition(col, row)
                 }.bind(this))
-    
-                this.onSpawnItem(function(entity,col,row,controllerid){
+
+                this.onSpawnItem(function (entity, col, row, controllerid) {
                 }.bind(this))
-    
-                this.onDespawnEntity(function(){
-                }.bind(this))    
+
+                this.onDespawnEntity(function () {
+                }.bind(this))
             }.bind(Tsh.Ddm.Entity))
 
-            Tsh.Ddm.View.onInitialized(function(){
+            Tsh.Ddm.View.onInitialized(function () {
                 Tsh.Ddm.Input.connectInput(this.getDOM("ddm-canvas"))
 
-                this.onViewCreated(function(view){
-                    console.log("board == ",Tsh.Ddm.View.getBoard())
-                    if(view.type == "monster"){
+                this.onViewCreated(function (view) {
+                    if (view.type == "monster") {
                         view.setBoard(Tsh.Ddm.View.getBoard())
-                    }else if(view.type == "monsterlord"){
+                    } else if (view.type == "monsterlord") {
                         view.setBoard(Tsh.Ddm.View.getBoard())
-                    }else if(view.type == "land"){
+                    } else if (view.type == "land") {
                         view.setBoard(Tsh.Ddm.View.getBoard())
                     }
                 }.bind(this))
-                this.onViewDestroyed(function(view){
-    
+                this.onViewDestroyed(function (view) {
+
                 }.bind(this))
-                this.onDirty(function(){
-    
-                }.bind(this))    
+                this.onDirty(function () {
+
+                }.bind(this))
             }.bind(Tsh.Ddm.View))
 
-            Tsh.Ddm.Input.onInitialized(function(){
-                this.onCanvasClicked(     function(ev){
-                    Tsh.Ddm.View.mouseClickedCanvasHandle( Tsh.Ddm.Input.mouse)
+            Tsh.Ddm.Input.onInitialized(function () {
+                this.onCanvasClicked(function (ev) {
+                    Tsh.Ddm.View.mouseClickedCanvasHandle(Tsh.Ddm.Input.mouse)
                     Tsh.Ddm.Debug.mouseClicked(Tsh.Ddm.Input.mouse)
                 })
-                this.onCanvasPressed(     function(ev){
-                     Tsh.Ddm.View.mousePressedCanvasHandle(Tsh.Ddm.Input.mouse)
+                this.onCanvasPressed(function (ev) {
+                    Tsh.Ddm.View.mousePressedCanvasHandle(Tsh.Ddm.Input.mouse)
                 })
-                this.onCanvasReleased(    function(ev){
+                this.onCanvasReleased(function (ev) {
                     Tsh.Ddm.View.mouseReleasedCanvasHandle(Tsh.Ddm.Input.mouse)
                 })
-                this.onCanvasMove(        function(ev){
+                this.onCanvasMove(function (ev) {
                 })
-                this.onCanvasOut(         function(ev){
+                this.onCanvasOut(function (ev) {
                 })
-                this.onCanvasPressAndHold(function(ev){
+                this.onCanvasPressAndHold(function (ev) {
                     Tsh.Ddm.View.mousePressedAndHoldCanvasHandle(Tsh.Ddm.Input.mouse)
-                })    
+                })
             }.bind(Tsh.Ddm.Input))
         },
         run: function () {
             window.requestAnimationFrame(this.step.bind(this));
         },
-        step: function (timestamp) {
+        step (timestamp) {
             if (start === undefined)
                 start = timestamp;
             const elapsed = timestamp - start;
@@ -256,12 +256,16 @@ define(function (Entity ) {
             var delta = timestamp - previousTimeStamp;
 
             if (previousTimeStamp !== timestamp) {
-                Tsh.Ddm.View.update({ delta: delta })
+                this.update(delta)   
             }
-
             previousTimeStamp = timestamp
             var cb = this.step.bind(this)
             window.requestAnimationFrame(cb);
+
+        },
+        update(delta) {
+            Tsh.Ddm.View.update  (delta)
+            Tsh.Ddm.Entity.update(delta)
         },
         hideScreen: function (id) {
         },
@@ -276,32 +280,11 @@ define(function (Entity ) {
             Tsh.Ddm.View.rollDice(1, Math.floor(Math.random() * 6))
             Tsh.Ddm.View.rollDice(2, Math.floor(Math.random() * 6))
         },
-        setCursor(name,orientation){
+        updateCursorLogic() {
 
         },
-        updateCursorLogic(){
+        restart() {
 
-        },
-        getMouseGridPosition(){
-
-        },
-        makeMonsterGoTo(monster,x,y){
-            
-        },
-        makeMonsterTeleportTo(monster,x,y){
-            
-        },
-        makePlayerRollDice(){
-
-        },
-        makePlayerSummon(monster,x,y){
-
-        },
-        findPath(monster,x,y,ignorelist){
-
-        },
-        restart(){
-            
         },
     }
 

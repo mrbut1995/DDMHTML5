@@ -11,8 +11,6 @@ define(["view/views","view/view"],function(Views,View){
             console.log(kind + " is not a valid Entity type");
             return null;
         }
-        if(id == undefined)
-            id =  uuid()
         return ViewsFactory.builders[kind](id,config,layer,parent);
     }
 

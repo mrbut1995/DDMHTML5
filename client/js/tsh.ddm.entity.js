@@ -50,7 +50,7 @@ define(["ddm","jquery","entity/entityfactory","entity/monster","entity/land","en
             return null
         },
         update(delta){
-            forEachEntity((entity)=>{
+            this.forEachEntity((entity)=>{
                 if(isFunction(entity.update))
                     entity.update(delta)
             })

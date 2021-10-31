@@ -3,17 +3,22 @@ define(["jquery"],function($){
         //Property
         init(id,kind){
             var def = {
-                id : id,
-                kind : kind,
-                viewtype : Types.Views.VIEW,
-                viewClass: null,
-                view     : null,
-                isLoaded : false,
-                point    : new Point(0,0),
-                animations: {},
+                id           : id,
+                kind         : kind,
+                viewprototype: null,
+                view         : null,
+                isLoaded     : false,
+                point        : new Point(0,0),
+                animations   : {},
                 currentAnimation: null
             }
-            $.extend(true,this,def)
+            
+            var otps = $.extend({},def,this)
+            $.extend(this,otps)
+
+            this._viewInstance = null,
+            this._animationsInstance = {}
+
             if(Entity._onCreated){
                 Entity._onCreated(this)
             }
@@ -25,13 +30,27 @@ define(["jquery"],function($){
             this.name = name;
         },
         getView(){
-            return this.view;
+            return this._viewInstance;
         },
+        getAnimation(){
+            return this._animationsInstance
+        },
+
         setView(view){
-            this.view = view
+            this._viewInstance = view
+        },
+
+        constructView(callback){
+            this._viewInstance = callback(this.view)
+        },
+        constructAnimation(callback){
+            var keys = Object.keys(this.animations)
+            for(var i in keys){
+                this._animationsInstance[keys[i]] = callback(this.animations[keys[i]])
+            }
         },
         containView(view){
-            return view != null && this.view != null && view == this.view
+            return view != null && this.getView() != null && view == this.getView()
         },
         //Animation
         setAnimation: function(name){
@@ -50,9 +69,9 @@ define(["jquery"],function($){
             }
         },
         forEachAnimation(callback){
-            var keys = Object.keys(this.animations)
+            var keys = Object.keys(this.getAnimation())
             for(var i  in keys){
-                callback(this.animations[keys[i]])
+                callback(this.getAnimation()[keys[i]])
             }
         },
         stopAllAnimation(){
@@ -62,8 +81,8 @@ define(["jquery"],function($){
         },
         getAnimationByName(name){
             var animation = null;
-            if(name in this.animations){
-                animation = this.animations[name];
+            if(name in this.getAnimation()){
+                animation = this.getAnimation()[name];
             }else{
                 console.log("No animation called "+name)
             }
@@ -73,8 +92,8 @@ define(["jquery"],function($){
         setGridPosition: function(col,row){
             this.point.col = col
             this.point.row = row
-            if(this.view != null){
-                this.view.relocatingToPoint(this.point)
+            if(this.getView() != null){
+                this.getView().relocatingToPoint(this.point)
             }
         },
         getDistanceToEntity: function(entity){
@@ -127,6 +146,8 @@ define(["jquery"],function($){
         },
     })
     //Construct Proto DAta
-    Entity.onCreated = function(callback){this._onCreated = callback}.bind(Entity)
+    Entity.onCreated = function(callback)           {this._onCreated            = callback}.bind(Entity)
+    Entity.onConstructView = function(callback)     {this._onConstructView      = callback}.bind(Entity)
+    Entity.onConstructAnimation = function(callback){this._onConstructAnimation = callback}.bind(Entity)
     return Entity
 })
