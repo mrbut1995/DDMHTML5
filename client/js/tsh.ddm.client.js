@@ -147,12 +147,26 @@ define(["ddm"],function(Tsh){
             }
         },
         receiveDespawnEntity(data){
+            var id = data[0]
+            if(this._onDespawnEntity){
+                this._onDespawnEntity(id)
+            }
         },
         receiveEntityMove(data){
-
+            var playerid = data[0],
+                id = data[1],
+                x  = data[2],
+                y  = data[3],
+                type = data[4]
+            if(this._onEntityMove){
+                this._onEntityMove(playerid,id,x,y,type)
+            }
         },
         receiveEntityDestroy(data){
-
+            var id = data[0]
+            if(this._onEntityDestroy){
+                this._onEntityDestroy(id)
+            }
         },
         receiveEntityAttack     (data){
 

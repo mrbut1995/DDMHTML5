@@ -71,7 +71,7 @@ define(["ddm","jquery","entity/entityfactory","entity/monster","entity/land","en
                 return entity.containView(view)
             })
         },
-        getEntityByClass(c){
+        getEntitiesByClass(c){
             var lst = [];
             this.forEachEntity(function(entity){
                 if(entity instanceof c){

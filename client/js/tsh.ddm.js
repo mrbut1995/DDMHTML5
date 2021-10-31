@@ -85,8 +85,21 @@ define(function (Entity) {
 
                 })
 
-                Tsh.Ddm.Client.onEntityMove(function (player, id, x, y) {
+                Tsh.Ddm.Client.onEntityMove(function (playerid, id, x, y,type) {
+                    var entity = null;
+                    if(playerid === Tsh.Ddm.Player.playerid){
+                        console.log("By client Player Control")
+                    }else{
+                        console.log("Not by client Player Control")
+                        entity = Tsh.Ddm.Entity.getEntityById(id)
 
+                        if(entity){
+                            entity.idle()
+                            self.makeEntityGoTo(entity,x,y)
+                        }else{
+                            console.log("CANNOT FIND ENTITY ",id)
+                        }
+                    }
                 });
                 Tsh.Ddm.Client.onEntityDestroy(function (player, id, x, y) {
 
@@ -312,6 +325,17 @@ define(function (Entity) {
         restart() {
 
         },
+
+        /**
+         * Moves a entity into a given point in board
+         * 
+         * @param {Number} x The x coordinate of target location
+         * @param {Number} y The y coordinate of target location
+         * @param {String} type The Type of moving to target location
+         */
+        makeEntityGoTo(entity,x,y,type){
+            entity.go(new Point(x,y),type)
+        }
     }
 
     return Tsh
