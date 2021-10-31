@@ -257,11 +257,14 @@ define(["ddm", "jquery", "view/view","view/boardview","view/viewfactory","view/l
         getViewAt(x,y){
             var lst = []
             this.forEachView(function(view){
-                if(view.contain(coord)){
+                if(view.contain(new Coord(x,y))){
                     lst.unshift(view)
                 }
             }.bind(this))
             return lst;
+        },
+        requestViewsAt(x,y,callback){
+            callback(this.getViewAt(x,y))
         },
         registerLayer(name,views){
             if(name in this.layers){
@@ -365,11 +368,9 @@ define(["ddm", "jquery", "view/view","view/boardview","view/viewfactory","view/l
         //Mouse Handle
         mouseClickedCanvasHandle  (opts) {
             console.log("mouseClickedCanvasHandle ",opts)
-            // this.getBoard().mouseClicked(opts)
         },
          mousePressedCanvasHandle  (opts) {
             console.log("mousePressedCanvasHandle ",opts)
-            // this.getBoard().mousePressed(opts)
         },
          mousePressedAndHoldCanvasHandle  (opts) {
             console.log("mousePressedAndHoldCanvasHandle ",opts)

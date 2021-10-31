@@ -17,7 +17,6 @@ define(["ddm","jquery"],function(Tsh,$){
             var pieceDebugDOM = document.createElement('div');
             $(pieceDebugDOM)
                 .append('<div>Piece View Changing</div>')
-                .append('<button id = "selPieceBtn" id="dbSelectPiece" class="button">Select Piece</button><br>')
                 .append('<label for="selPieceInfo">Piece:</label><div id = "selPieceInfo">None</div>')
                 .append(
                     $('<div id="selectedPieceController"></div>')
@@ -38,6 +37,7 @@ define(["ddm","jquery"],function(Tsh,$){
                                                 .append('<label>Position:</label>')
                                                 .append('<span><label for="moveToCol">Col:</label><input type="number" id="moveToCol" class = "coord_input"></span>')
                                                 .append('<span><label for="moveToRow">Row:</label><input type="number" id="moveToRow" class = "coord_input"></span>')
+                                                .append('<span><button class="button" id="dbPieceChangePosition"> Move To </button></span>')
                                         )
                                         .append('<div class="action"><label>Destroy</label><button class="button" id="dbPieceDestroy">Destory Object</button></div>	')
                                         .append('<div class="action"><label>Display Action Popup</label><button class="button" id="dbDisplayAction">Display</button></div>	')
@@ -73,13 +73,12 @@ define(["ddm","jquery"],function(Tsh,$){
                 .appendTo('#devActions')
 
         }
-        this.init = function () {
+        this.init = function (app) {
             var DOMBoard = Tsh.Ddm.View.getDOM("board")
             this.CreateDebugDOM()
     
             $("#dbCreateLand").click(this.createViewLand.bind(this))
             $("#dbCreatePiece").click(this.createViewMonster.bind(this))
-            $("#dbSelectPiece").click(this.btnSelectPieceClicked.bind(this))
             $("#pieceHighlight").click(this.onSelectedPieceHighlightChanged.bind(this))
             $("#pieceFocus").click(this.onSelectedPieceFocusChanged.bind(this))
             $("#pieceVisible").click(this.onSelectedPieceVisibleChanged.bind(this))
@@ -131,14 +130,6 @@ define(["ddm","jquery"],function(Tsh,$){
             console.log("DrawPieceSelectedInfo")
 
         }
-        this.btnSelectPieceClicked = function () {
-            console.log("btnSelectPieceClicked")
-            if (this.isSelectingPiece) {
-                this.StopSelectingPiece()
-            } else {
-                this.StartSelectingPiece()
-            }
-        }
         this.btnDestroySelectedPiece = function () {
             console.log("btnDestroySelectedPiece")
             if (this.debugPieceSelected != null) {
@@ -157,7 +148,9 @@ define(["ddm","jquery"],function(Tsh,$){
             var mRow = document.getElementById("moveToRow").value
             mCol = Math.min(Math.max(mCol, 0), 12)
             mRow = Math.min(Math.max(mRow, 0), 18)
-    
+            var data = []
+            
+            Tsh.Ddm.Client.receiveEntityMove(data)
         }
         this.btnDisplayActionPopup = function () {
             console.log("btnDisplayActionPopup")
@@ -173,19 +166,6 @@ define(["ddm","jquery"],function(Tsh,$){
                 this.debugHighlightOnMove = true
             } else {
                 this.debugHighlightOnMove = false
-            }
-        }
-        this.StartSelectingPiece = function () {
-            console.log("started selecting")
-            this.isSelectingPiece = true
-            document.getElementById("selPieceBtn").innerHTML = "Stop Selecting"
-            document.getElementById("selPieceInfo").innerHTML = "Selecting"
-        }
-        this.StopSelectingPiece = function () {
-            this.isSelectingPiece = false
-            document.getElementById("selPieceBtn").innerHTML = "Select Piece"
-            if (this.debugPieceSelected == null) {
-                document.getElementById("selPieceInfo").innerHTML = "None"
             }
         }
         this.SetSelectingPiece = function (piece) {
@@ -235,21 +215,14 @@ define(["ddm","jquery"],function(Tsh,$){
         this.onSelectedPiecePositionChanged = function () {
     
         }
-        this.mouseClicked = function(mouse){
-            if (Tsh.Ddm.Debug.isSelectingPiece) {
-                var monster = Tsh.Ddm.getMonsterAt(mouse.x,mouse.y)
+        this.mouseClicked = function(mouse){}
+        this.onMonsterClickedDebug = function(monster){
+            console.log("monster =",monster," this.debugPieceSelected ",this.debugPieceSelected," this.debugPieceSelected == monster",this.debugPieceSelected == monster)
+            if(monster == this.debugPieceSelected){
+                Tsh.Ddm.Debug.SetSelectingPiece(null)
+            }else{
+                Tsh.Ddm.Debug.SetSelectingPiece(monster)
             }
         }
-        // var onItemClicked = function (opts) {
-        //     console.log("debug onItemClicked = ", opts)
-        //     if (Tsh.Ddm.Debug.isSelectingPiece) {
-        //         if (opts.detail.source.type == "piece") {
-        //             Tsh.Ddm.Debug.SetSelectingPiece(opts.detail.source)
-        //         } else {
-        //             Tsh.Ddm.Debug.SetSelectingPiece(null)
-        //         }
-        //         Tsh.Ddm.Debug.StopSelectingPiece()
-        //     }
-        // }
     }
 })

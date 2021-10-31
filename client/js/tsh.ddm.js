@@ -14,6 +14,7 @@ define(function (Entity) {
 
             this.connectModule();
 
+            Tsh.Ddm.Animator.init(Tsh.Ddm)
             Tsh.Ddm.View.init(Tsh.Ddm)
             Tsh.Ddm.Debug.init(Tsh.Ddm)
             Tsh.Ddm.Loader.init(Tsh.Ddm)
@@ -22,10 +23,6 @@ define(function (Entity) {
             Tsh.Ddm.Client.init(Tsh.Ddm)
             Tsh.Ddm.Player.init(Tsh.Ddm)
             Tsh.Ddm.Match.init(Tsh.Ddm)
-
-
-            Tsh.Ddm.Input.connectInput(Tsh.Ddm.View.getDOM("board"))
-
 
             this.connectServer();
 
@@ -152,9 +149,10 @@ define(function (Entity) {
 
                 this.onSpawnMonster(function (entity, col, row, controllerid, target) {
                     console.log("onSpawnMonster ")
-                    entity.constructView    (Tsh.Ddm.View.generateView.bind(Tsh.Ddm.View))
-                    
+                    entity.constructView        (Tsh.Ddm.View.generateView.bind(Tsh.Ddm.View))
+                    entity.constructAnimation   (Tsh.Ddm.Animator.generateAnimation.bind(Tsh.Ddm.Animator))
                     entity.setGridPosition(col, row)
+                    console.log("entity = ",entity)
                     entity.idle()
                     if (controllerid == Tsh.Ddm.Player.playerid) {
                     }
@@ -227,21 +225,48 @@ define(function (Entity) {
 
             Tsh.Ddm.Input.onInitialized(function () {
                 this.onCanvasClicked(function (ev) {
-                    Tsh.Ddm.View.mouseClickedCanvasHandle(Tsh.Ddm.Input.mouse)
-                    Tsh.Ddm.Debug.mouseClicked(Tsh.Ddm.Input.mouse)
+                    let mouse = Tsh.Ddm.Input.mouse
+                    console.log("onCanvasClicked")
+                    Tsh.Ddm.View.requestViewsAt(mouse.x,mouse.y,function(views){
+                        for(var i in views){
+                            if(views[i].type == "monster"){
+                                Tsh.Ddm.Debug.onMonsterClickedDebug(views[i])
+                                return;
+                            }else{
+                                console.log("NOT MONSTER TYPE => SKIP")
+                            }
+                        }
+                    }.bind(this))
                 })
                 this.onCanvasPressed(function (ev) {
-                    Tsh.Ddm.View.mousePressedCanvasHandle(Tsh.Ddm.Input.mouse)
+                    let mouse = Tsh.Ddm.Input.mouse
+                    Tsh.Ddm.View.requestViewsAt(mouse.x,mouse.y,function(views){
+                        
+                    }.bind(this))
                 })
                 this.onCanvasReleased(function (ev) {
-                    Tsh.Ddm.View.mouseReleasedCanvasHandle(Tsh.Ddm.Input.mouse)
+                    let mouse = Tsh.Ddm.Input.mouse
+                    Tsh.Ddm.View.requestViewsAt(mouse.x,mouse.y,function(views){
+                        
+                    }.bind(this))
                 })
                 this.onCanvasMove(function (ev) {
+                    let mouse = Tsh.Ddm.Input.mouse
+                    Tsh.Ddm.View.requestViewsAt(mouse.x,mouse.y,function(views){
+                        
+                    }.bind(this))
                 })
                 this.onCanvasOut(function (ev) {
+                    let mouse = Tsh.Ddm.Input.mouse
+                    Tsh.Ddm.View.requestViewsAt(mouse.x,mouse.y,function(views){
+                        
+                    }.bind(this))
                 })
                 this.onCanvasPressAndHold(function (ev) {
-                    Tsh.Ddm.View.mousePressedAndHoldCanvasHandle(Tsh.Ddm.Input.mouse)
+                    let mouse = Tsh.Ddm.Input.mouse
+                    Tsh.Ddm.View.requestViewsAt(mouse.x,mouse.y,function(views){
+                        
+                    }.bind(this))
                 })
             }.bind(Tsh.Ddm.Input))
         },
@@ -264,8 +289,9 @@ define(function (Entity) {
 
         },
         update(delta) {
-            Tsh.Ddm.View.update  (delta)
-            Tsh.Ddm.Entity.update(delta)
+            Tsh.Ddm.View    .update  (delta)
+            Tsh.Ddm.Entity  .update(delta)
+            Tsh.Ddm.Animator.update(delta)
         },
         hideScreen: function (id) {
         },

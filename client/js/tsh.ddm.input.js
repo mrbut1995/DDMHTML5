@@ -40,6 +40,7 @@ define(["ddm", "jquery"], function(Tsh,$){
         },
         //Listener
         oncanvasmouseclicked:function(ev){
+            console.log("oncanvasmouseclicked")
             if(this._onMouseClicked){
                 this._onMouseClicked(ev)
             }

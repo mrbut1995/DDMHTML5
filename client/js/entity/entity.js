@@ -83,9 +83,9 @@ define(["jquery"],function($){
             }
         },
         forEachAnimation(callback){
-            var keys = Object.keys(this.getAnimation())
+            var keys = Object.keys(this.getAnimations())
             for(var i  in keys){
-                callback(this.getAnimation()[keys[i]])
+                callback(this.getAnimations()[keys[i]])
             }
         },
         stopAllAnimation(){
@@ -95,8 +95,8 @@ define(["jquery"],function($){
         },
         getAnimationByName(name){
             var animation = null;
-            if(name in this.getAnimation()){
-                animation = this.getAnimation()[name];
+            if(name in this.getAnimations()){
+                animation = this.getAnimations()[name];
             }else{
                 console.log("No animation called "+name)
             }
@@ -153,10 +153,6 @@ define(["jquery"],function($){
             this._onReady = f
         },
         update(delta){
-            //Playing Animation
-            this.forEachAnimation(function(animation){
-                animation.update(delta)
-            }.bind(this))
         },
     })
     //Construct Proto DAta

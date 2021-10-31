@@ -16,13 +16,14 @@ define(["ddm"],function(Tsh){
         },
         generateAnimation(prototype){
             if(isAnimationPrototype(prototype)){
-                return this.generateAnimation(prototype)
+                return this.generateAnimationFromPrototype(prototype)
             }else{
+                console.log(prototype,"Is not Animation Prototype")
                 return null;
             }
         },
         generateAnimationFromPrototype(prototype){
-            var animation = new prototype(),
+            var animation = new prototype()
             this.addAnimations(animation);
             if(this._onAnimationCreated)
                 this._onAnimationCreated(animation)

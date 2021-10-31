@@ -57,10 +57,10 @@ define(["entity/piece", "view/views", "animation/animations"], function (Piece, 
 
             //Animation
             this.animations = {
-                move       : new Animations.PositionAnimation(),
-                attack     : new Animations.SpriteAnimation(),
-                idle       : new Animations.SpriteAnimation(),
-                walk       : new Animations.SpriteAnimation(),
+                move       :  Animations.PositionAnimation,
+                attack     :  Animations.SpriteAnimation,
+                idle       :  Animations.SpriteAnimation,
+                walk       :  Animations.SpriteAnimation,
             }
 
             this._super(id,kind)
