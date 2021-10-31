@@ -318,17 +318,17 @@ define(["ddm", "jquery", "view/view","view/boardview","view/viewfactory","view/l
             }
         },
         //////////////////////////////////////// SPECIFY
-        createView(kind,config){
+        generateView(kind,config){
             console.log(this)
             if(isViewKind(kind)){
-                return this.createViewFromKind(kind,config)
+                return this.generateViewFromKind(kind,config)
             }else if(isViewPrototype(kind)){
-                return this.createViewFromPrototype(kind,config)
+                return this.generateViewFromPrototype(kind,config)
             }else{
                 console.log("[ERROR] value ",kind," is Not Type that can Create View")
             }
         },
-        createViewFromKind(kind,config){
+        generateViewFromKind(kind,config){
             var id =  uuid()
             var view = ViewFactory.createView(kind,id,config)
             this.addView(view)
@@ -338,7 +338,7 @@ define(["ddm", "jquery", "view/view","view/boardview","view/viewfactory","view/l
             console.log("view = ",view)
             return view
         },
-        createViewFromPrototype(_class,config){
+        generateViewFromPrototype(_class,config){
             var id = uuid()
             var view = new _class(id,config)
             this.addView(view)

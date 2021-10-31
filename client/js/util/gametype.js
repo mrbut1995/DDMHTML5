@@ -30,6 +30,9 @@ function isFunction(f) {
   function isViewPrototype(n){
     return isFunction(n) 
   }
+  function isAnimationPrototype(n){
+    return isFunction(n)
+  }
   var Types = {
       Views : {
           VIEW            : 0,

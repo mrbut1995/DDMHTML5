@@ -152,7 +152,7 @@ define(function (Entity) {
 
                 this.onSpawnMonster(function (entity, col, row, controllerid, target) {
                     console.log("onSpawnMonster ")
-                    entity.constructView    (Tsh.Ddm.View.createView.bind(Tsh.Ddm.View))
+                    entity.constructView    (Tsh.Ddm.View.generateView.bind(Tsh.Ddm.View))
                     
                     entity.setGridPosition(col, row)
                     entity.idle()
@@ -187,13 +187,13 @@ define(function (Entity) {
                 }.bind(this))
 
                 this.onSpawnMonsterLord(function (entity, col, row, controllerid, target) {
-                    var _view = Tsh.Ddm.View.createView(entity.view)
+                    var _view = Tsh.Ddm.View.generateView(entity.view)
                     entity.setView(_view)
                     entity.setGridPosition(col, row)
                 }.bind(this))
 
                 this.onSpawnLand(function (entity, col, row, controllerid) {
-                    var _view = Tsh.Ddm.View.createView(entity.view)
+                    var _view = Tsh.Ddm.View.generateView(entity.view)
                     entity.setView(_view)
                     entity.setGridPosition(col, row)
                 }.bind(this))

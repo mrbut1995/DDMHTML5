@@ -32,22 +32,36 @@ define(["jquery"],function($){
         getView(){
             return this._viewInstance;
         },
-        getAnimation(){
+        getAnimations(){
             return this._animationsInstance
         },
 
         setView(view){
             this._viewInstance = view
         },
-
+        setAnimations(animations){
+            this._animationsInstance = animations
+        },
         constructView(callback){
             this._viewInstance = callback(this.view)
+        },
+        destructView(callback){
+            callback(this._viewInstance)
+            delete this._viewInstance
         },
         constructAnimation(callback){
             var keys = Object.keys(this.animations)
             for(var i in keys){
                 this._animationsInstance[keys[i]] = callback(this.animations[keys[i]])
             }
+        },
+        destrucAnimation(callback){
+            var keys = Object.keys(this.animations)
+            for(var i in keys){
+                callback(this.animations[keys[i]])
+                delete this.animations[keys[i]]
+            }
+            delete this.animations
         },
         containView(view){
             return view != null && this.getView() != null && view == this.getView()
