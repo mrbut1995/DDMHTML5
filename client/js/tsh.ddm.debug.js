@@ -149,7 +149,11 @@ define(["ddm","jquery"],function(Tsh,$){
             mCol = Math.min(Math.max(mCol, 0), 12)
             mRow = Math.min(Math.max(mRow, 0), 18)
             var data = []
-            
+            data[0] = ""
+            data[1] = this.debugPieceSelected.id
+            data[2] = mCol
+            data[3] = mRow
+            data[4] = "walk"
             Tsh.Ddm.Client.receiveEntityMove(data)
         }
         this.btnDisplayActionPopup = function () {

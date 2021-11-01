@@ -1,6 +1,11 @@
 define(["jquery"],function($){
-    var Entity = Class.extend({
-        //Property
+    Entity = Class.extend(
+    {
+        /**
+         * @constructs
+         * @param {number} id 
+         * @param {string} kind 
+         */
         init(id,kind){
             var def = {
                 id           : id,
@@ -35,7 +40,10 @@ define(["jquery"],function($){
         getAnimations(){
             return this._animationsInstance
         },
-
+        /**
+         * 
+         * @param {Entity} view 
+         */
         setView(view){
             this._viewInstance = view
         },

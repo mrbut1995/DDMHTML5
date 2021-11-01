@@ -23,7 +23,8 @@ define(function (Entity) {
             Tsh.Ddm.Client.init(Tsh.Ddm)
             Tsh.Ddm.Player.init(Tsh.Ddm)
             Tsh.Ddm.Match.init(Tsh.Ddm)
-
+            Tsh.Ddm.Path.init(Tsh.Ddm)
+            
             this.connectServer();
 
             Tsh.Ddm.Client.receiveWelcome(["", "", "", "", "", "", "", ""])
@@ -57,7 +58,10 @@ define(function (Entity) {
                     width: 13,
                     height: 19
                 })
-
+                Tsh.Ddm.Path.initPathingGrid({
+                    width: 13,
+                    height: 19
+                })
                 //Connecting Player Handle
                 Tsh.Ddm.Player.onActive(function () {
 
@@ -79,6 +83,7 @@ define(function (Entity) {
                 })
 
                 Tsh.Ddm.Client.onSpawnEntity(function (kind, id, x, y, name, controllerid, target) {
+                    console.log("Spawn entity ",id)
                     Tsh.Ddm.Entity.spawnEntity(kind, id, x, y, name, controllerid, target)
                 });
                 Tsh.Ddm.Client.onDespawnEntity(function (player, id) {
@@ -88,7 +93,15 @@ define(function (Entity) {
                 Tsh.Ddm.Client.onEntityMove(function (playerid, id, x, y,type) {
                     var entity = null;
                     if(playerid === Tsh.Ddm.Player.playerid){
-                        console.log("By client Player Control")
+                        console.log("By client Player Control ",id)
+                        entity = Tsh.Ddm.Entity.getEntityById(id)
+
+                        if(entity){
+                            entity.idle()
+                            self.makeEntityGoTo(entity,x,y)
+                        }else{
+                            console.log("CANNOT FIND ENTITY ",id)
+                        }
                     }else{
                         console.log("Not by client Player Control")
                         entity = Tsh.Ddm.Entity.getEntityById(id)
@@ -165,6 +178,7 @@ define(function (Entity) {
                     entity.constructView        (Tsh.Ddm.View.generateView.bind(Tsh.Ddm.View))
                     entity.constructAnimation   (Tsh.Ddm.Animator.generateAnimation.bind(Tsh.Ddm.Animator))
                     entity.setGridPosition(col, row)
+                    
                     console.log("entity = ",entity)
                     entity.idle()
                     if (controllerid == Tsh.Ddm.Player.playerid) {
@@ -183,7 +197,10 @@ define(function (Entity) {
                     })
                     entity.onHasMoved(function (reason) {
                     })
-                    entity.onRequestPath(function (col, row) {
+                    entity.onRequestPath(function (point) {
+                        var path = self.findPath(entity,point.col,point.row)
+                        console.log("path = ",path)
+                        return path
                     })
                     entity.onStopPath(function (col, row) {
                     })
@@ -243,7 +260,8 @@ define(function (Entity) {
                     Tsh.Ddm.View.requestViewsAt(mouse.x,mouse.y,function(views){
                         for(var i in views){
                             if(views[i].type == "monster"){
-                                Tsh.Ddm.Debug.onMonsterClickedDebug(views[i])
+                                var monster = Tsh.Ddm.Entity.getEntityByView(views[i])
+                                Tsh.Ddm.Debug.onMonsterClickedDebug(monster)
                                 return;
                             }else{
                                 console.log("NOT MONSTER TYPE => SKIP")
@@ -335,6 +353,14 @@ define(function (Entity) {
          */
         makeEntityGoTo(entity,x,y,type){
             entity.go(new Point(x,y),type)
+        },
+        findPath(entity,x,y){
+            var self = this,
+                path = []
+            if(entity){
+                path = Tsh.Ddm.Path.findMovingPath("",entity,x,y)
+            }
+            return path;
         }
     }
 
