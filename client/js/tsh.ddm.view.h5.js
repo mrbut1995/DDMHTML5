@@ -332,7 +332,7 @@ define(["ddm", "jquery", "view/view","view/boardview","view/viewfactory","view/l
             }
         },
         generateViewFromKind(kind,config){
-            var id =  uuid()
+            var id =  viewid()
             var view = ViewFactory.createView(kind,id,config)
             this.addView(view)
             if(this._onViewCreated){
@@ -342,7 +342,7 @@ define(["ddm", "jquery", "view/view","view/boardview","view/viewfactory","view/l
             return view
         },
         generateViewFromPrototype(_class,config){
-            var id = uuid()
+            var id = viewid()
             var view = new _class(id,config)
             this.addView(view)
             if(this._onViewCreated){

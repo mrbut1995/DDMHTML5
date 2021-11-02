@@ -88,19 +88,19 @@ define(["jquery","ddm","lib/astar"],function($,Tsh,Astar){
          * @param {int} row Row Index of value need to remove from Pathing Grid 
          */
         removeFromPathingGrid(entity,col,row){
-            if(isLandView(kind)){
+            if(isLandView(entity)){
                 this.pathingGrid[row][col] = this.constant.NONMOVEABLE_CELL
                 this.walkingGrid[row][col] = this.constant.NONMOVEABLE_CELL
-            }else if(isMonsterView(kind) || isMonsterLordView(kind)){
+            }else if(isMonsterView(entity) || isMonsterLordView(entity)){
                 this.pathingGrid[row][col] = this.constant.MOVEABLE_CELL
                 this.walkingGrid[row][col] = this.constant.MOVEABLE_CELL
             }
         },
         registerToPathingGrid(entity,col,row){
-            if(isLandView(kind)){
+            if(isLandView(entity)){
                 this.pathingGrid[row][col] = this.constant.MOVEABLE_CELL
                 this.walkingGrid[row][col] = this.constant.MOVEABLE_CELL
-            }else if(isMonsterView(kind) || isMonsterLordView(kind)){
+            }else if(isMonsterView(entity) || isMonsterLordView(entity)){
                 this.pathingGrid[row][col] = this.constant.NONMOVEABLE_CELL
                 this.walkingGrid[row][col] = this.constant.NONMOVEABLE_CELL
             }

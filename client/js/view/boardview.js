@@ -53,9 +53,17 @@ define(["jquery", "view/view"], function ($, View) {
         },
 
         pointFrom(coord){
+            if(!coord){
+                console.log("ERROR coord = ",coord)
+                return new Point(-1,-1)
+            }
             return this.coordToPoint(coord)
         },
         coordFrom(point){
+            if(!point){
+                console.log("ERROR point = ",point)
+                return new Coord(-1,-1)
+            }
             return this.pointToCoord(point)
         },
         

@@ -18,7 +18,6 @@ define(["ddm","jquery","entity/entityfactory","entity/monster","entity/land","en
         addEntity(entity){
             if(this.entities[entity.id] === undefined){
                 this.entities[entity.id] = entity
-                this.registerToEntityGrid(entity)
 
                 if(this._onAddEntity){
                     this._onAddEntity(entity)
@@ -31,21 +30,21 @@ define(["ddm","jquery","entity/entityfactory","entity/monster","entity/land","en
             if(entity.id in this.entities){
                 if(this._onRemoveEntity)
                     this._onRemoveEntity(entity)
-                this.unregisterEntityPosition(entity)
                 delete this.entities[entities.id]
             }   
         },
+        
         forEachEntity(callback){
-            for(var i in this.entities){
-                var entity = this.entities[i]
+            var keys = Object.keys(this.entities)
+            for(var i in keys){
+                var entity = this.entities[keys[i]]
                 callback(entity)
             }
         },
         findIfEntity(callback){
-            console.log("this.entities =",this.entities)
-            for(var i in this.entities){
-                console.log("key = ",i)
-                var entity = this.entities[i]
+            var keys = Object.keys(this.entities)
+            for(var i in keys){
+                var entity = this.entities[keys[i]]
                 if(callback(entity))
                     return entity
             }
@@ -53,8 +52,7 @@ define(["ddm","jquery","entity/entityfactory","entity/monster","entity/land","en
         },
         update(delta){
             this.forEachEntity((entity)=>{
-                if(isFunction(entity.update))
-                    entity.update(delta)
+                entity.update(delta)
             })
         },
         entityIdExists(id){
@@ -62,7 +60,6 @@ define(["ddm","jquery","entity/entityfactory","entity/monster","entity/land","en
             return id in this.entities
         },
         getEntityById(id){
-            console.log("this.entities = ",this.entities)
             if(id in this.entities){
                 return this.entities[id]
             }else{
@@ -98,38 +95,20 @@ define(["ddm","jquery","entity/entityfactory","entity/monster","entity/land","en
             console.log("Initialized the entity grid.");
 
         },
-        removeFromEntityGrid(entity,col,row){
-            if(this.entityGrid[row][col][entity.id]){
-                delete this.entityGrid[row][col][entity.id]
-            }
-        },
-        registerEntityDualPosition(entity){
-            if(entity){
-                this.entityGrid[entity.point.row][entity.point.col][entity.id]=entity
-                
-                var nextPoint = entity.nextPoint()
-                if(nextPoint.col >= 0 && nextPoint.row >= 0){
-                    this.entityGrid[nextPoint.row][nextPoint.col][entity.id] = entity
-                }
-            }
-        },
-        unregisterEntityPosition(entity){
-            if(entity){
-                this.removeFromEntityGrid(entity,entity.point.col,entity.point.row)
-                var nextPoint = entity.nextPoint()
-                if(nextPoint.col >= 0 && nextPoint.row >= 0){
-                    this.removeFromEntityGrid(entity,nextPoint.col,nextPoint.row)
-                }
-            }
-        },
-        registerToEntityGrid(entity){
+
+        registerToEntityGrid(entity,col,row){
             var col = entity.point.col,
                 row = entity.point.row
 
             if(entity){
-                if(entity instanceof Monster || entity instanceof Land){
+                // if(entity instanceof Monster || entity instanceof Land){
                     this.entityGrid[row][col][entity.id] = entity
-                }
+                // }
+            }
+        },
+        removeFromEntityGrid(entity,col,row){
+            if(this.entityGrid[row][col][entity.id]){
+                delete this.entityGrid[row][col][entity.id]
             }
         },
 
@@ -212,32 +191,33 @@ define(["ddm","jquery","entity/entityfactory","entity/monster","entity/land","en
         },
 
         despawnEntity(id){
-            if(this._onDespawnEntity)
-                this._onDespawnEntity(id)
+            var entity = this.getEntityById(id)
+            if(entity){
+                if(this._onDespawnEntity)
+                    this._onDespawnEntity(entity)
+            }
         },
 
         //Handle When Adding Specify Monster to list
         addMonster(entity,x,y,target){
             if(!this.entityIdExists(entity.id)){
-                this.addEntity(entity)
                 return true;
             }else{
                 return false
             }
         },
         addLand(entity,x,y,target){
-            this.addEntity(entity)
             return true;
         },
         addItem(entity,x,y){
-            this.addEntity(entity)
             return true;
         },
 
         //Callback
-        onAddEntity     (callback){ this._onAddEntity = callback},
+        onAddEntity     (callback){ this._onAddEntity    = callback},
         onRemoveEntity  (callback){ this._onRemoveEntity = callback},
-        onUpdateList    (callback){this._onUpdateList = callback},
+
+        onUpdateList    (callback){ this._onUpdateList   = callback},
         
         onSpawnMonster            (callback){this._onSpawnMonster = callback},
         onSpawnMonsterLord      (callback){this._onSpawnMonsterLord = callback},

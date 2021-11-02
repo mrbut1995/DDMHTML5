@@ -29,10 +29,11 @@ define(["jquery"], function ($) {
             }
         },
         complete: function () {
+            console.log("completed")
             this.isRunning = false
             this.time = 0
             if (this._onAnimationCompleted)
-                this.onAnimationCompleted()
+                this._onAnimationCompleted()
         },
 
         stop: function () {
@@ -54,6 +55,9 @@ define(["jquery"], function ($) {
             if (this.interval <= 0)
                 return 0;
             return 1 - (this.time / this.interval)
+        },
+        running(){
+            return this.isRunning
         }
     })
     Animation.onCreated = function(callback){this._onCreated = callback}.bind(Animation)

@@ -7,6 +7,9 @@ var Coord = function (x, y) {
     this.add = function (point) {
         return new Point(point.x + this.x, this.y + point.y)
     }
+    this.toString = function(){
+        return "("+this.x+","+this.y+")"
+    }
 };
 var Size = function(w,h){
     this.w      = w
@@ -32,9 +35,6 @@ function Point(col, row) {
             && other.row === this.row
     }
 
-    this.fromString = function (str) {
-
-    }
     this.toString = function () {
         return "(" + this.col + "," + this.row + ")";
     }

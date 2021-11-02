@@ -96,7 +96,7 @@ define(["ddm","jquery"],function(Tsh,$){
 
             var data = []
             data[0] = "DummyMonster1"
-            data[1] = uuid()
+            data[1] = entityId()
             data[2] = lCol
             data[3] = lRow
             data[4] = ""
@@ -113,7 +113,7 @@ define(["ddm","jquery"],function(Tsh,$){
 
             var data = []
             data[0] = "NormalLand"
-            data[1] = uuid()
+            data[1] = entityId()
             data[2] = pCol
             data[3] = pRow
             data[4] = ""

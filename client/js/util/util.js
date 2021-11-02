@@ -55,4 +55,14 @@ function extend(a, b) {
       return r.toString(16)
     })
   }
+
+  var mId = 0;
+  var mViewId = 0;
+  function entityId(){
+    return ++mId;
+  }
+
+  function viewid(){
+    return ++mViewId;
+  }
   

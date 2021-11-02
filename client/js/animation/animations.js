@@ -9,6 +9,7 @@ define(["animation/animation"],function(Animation){
             },
             start(from,to){
                 this._super()
+                console.log("start animation ,",this.target," this.isRunning ",this.isRunning)
                 if(this.target == null)
                     return
                 if(isCoord(from))
@@ -34,6 +35,62 @@ define(["animation/animation"],function(Animation){
             },
             setTo(to){
                 this.to = to;
+                this.restart()
+            }
+        }),
+        PointMoveAnimation: Animation.extend({
+            init(target,from,to){
+                this._super()
+                this.target = target
+                this.from   = from
+                this.to     = to 
+                if(this.target != null){
+                    this.coordFrom = this.target.toCoord(this.from)
+                    this.coordTo   = this.target.toCoord(this.to)
+                }else{
+                    this.coordFrom = new Coord(0,0)
+                    this.coordTo   = new Coord(0,0)    
+                }
+            },
+            start(from,to){
+                this._super()
+                if(this.target == null)
+                    return
+                if(isPoint(from)){
+                    this.from = from
+                    this.coordFrom = this.target.toCoord(this.from)
+                }
+                if(isPoint(to)){
+                    this.to   = to
+                    this.coordTo   = this.target.toCoord(this.to)
+                }
+                this.target.setPosition(this.coordFrom)
+                console.log("point     from ",this.from.toString()+" => ",this.to.toString())
+                console.log("animation from ",this.coordFrom.toString()+" => ",this.coordTo.toString())
+            },
+            update(delta){
+                this._super(delta)
+                if(this.isRunning){
+                    if(this.target == null)
+                        return
+                    var coord = new Coord(this.coordFrom.x,this.coordFrom.y);
+                    coord.x = (this.coordTo.x - this.coordFrom.x) * this.percent() + this.coordFrom.x
+                    coord.y = (this.coordTo.y - this.coordFrom.y) * this.percent() + this.coordFrom.y
+                    this.target.setPosition(coord)
+                }
+            },
+            setFrom(from){
+                this.from = from;
+                if(this.target != null){
+                    this.coordFrom = this.target.toCoord(this.from)
+                }
+                this.restart()
+            },
+            setTo(to){
+                this.to = to;
+                if(this.target != null){
+                    this.coordTo   = this.target.toCoord(this.to)
+                }
                 this.restart()
             }
         }),

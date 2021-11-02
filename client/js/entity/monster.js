@@ -1,11 +1,13 @@
 define(["entity/piece", "view/views", "animation/animations"], function (Piece, Views, Animations) {
     var Monster = Piece.extend({
-        init(id,kind) {
+        init(id, kind) {
+
+            var self = this
 
             this.stat = {
-                attack : 0,
-                defend : 0,
-                move   : 3
+                attack: 0,
+                defend: 0,
+                move: 3
             }
             this.movetype = "walk"
 
@@ -33,7 +35,7 @@ define(["entity/piece", "view/views", "animation/animations"], function (Piece, 
             this.nextY = 0
 
             //Attack
-            this.target  = null
+            this.target = null
             this.attackers = {}
             this.unconfirmedTarget = null
 
@@ -57,26 +59,43 @@ define(["entity/piece", "view/views", "animation/animations"], function (Piece, 
 
             //Animation
             this.animations = {
-                move       :  Animations.PositionAnimation,
-                attack     :  Animations.SpriteAnimation,
-                idle       :  Animations.SpriteAnimation,
-                walk       :  Animations.SpriteAnimation,
+                move: Animations.PointMoveAnimation.extend({
+                    init() {
+                        this._super(self.getView())
+                        this.interval = 5000
+                        this.onAnimationStart(function () {
+                            console.log("Animation is Start")
+                            self.hasMoved()
+                        }.bind(this))
+                        this.onAnimationCompleted(function () {
+                            console.log("Animation is completed")
+                            self.hasMoved()
+                            self.nextStep()
+                        }.bind(this))
+                        this.onRunningAnimation(function () {
+
+                        }.bind(this))
+                    }
+                }),
+                attack: Animations.SpriteAnimation,
+                idle: Animations.SpriteAnimation,
+                walk: Animations.SpriteAnimation,
             }
 
-            this._super(id,kind)
+            this._super(id, kind)
 
         },
         select() {
 
         },
-        setMoveNext(coord){
+        setMoveNext(coord) {
 
         },
-        engage(monster){
+        engage(monster) {
             this.attackmode = true;
             this.setTarget(monster);
         },
-        disengage(monster){
+        disengage(monster) {
             this.attackmode = false;
             this.removeTarget()
         },
@@ -85,10 +104,10 @@ define(["entity/piece", "view/views", "animation/animations"], function (Piece, 
                 speed: this.atkSpeed,
                 count: 1
             })
-            if(this._onAttack)
+            if (this._onAttack)
                 this._onAttack()
         },
-        idle(){
+        idle() {
             this.animate("idle", {
                 speed: this.atkSpeed,
             })
@@ -97,7 +116,7 @@ define(["entity/piece", "view/views", "animation/animations"], function (Piece, 
             this.animate("hurted", {
                 speed: this.atkSpeed,
             })
-            if(this._onAttacked)
+            if (this._onAttacked)
                 this._onAttacked()
         },
         killed(source) {
@@ -132,10 +151,10 @@ define(["entity/piece", "view/views", "animation/animations"], function (Piece, 
         useeffect(effect) {
 
         },
-        hasMoved(){
-            
+        hasMoved() {
+
         },
-        
+
 
         //Path Movement
         //Callback
@@ -152,10 +171,10 @@ define(["entity/piece", "view/views", "animation/animations"], function (Piece, 
             if (path.length > 1) {
                 this.path = path;
                 this.step = 0;
-
                 if (this._onStartPath) {
                     this._onStartPath(path)
                 }
+                this.nextStep()
             }
         },
         go(point) {
@@ -170,7 +189,8 @@ define(["entity/piece", "view/views", "animation/animations"], function (Piece, 
             return !(this.path === null)
         },
         hasNextStep: function () {
-            return !(this.path.length - 1 > this.step)
+            console.log("this.path.length = ",this.path.length," this.step = ",this.step)
+            return (this.path.length - 1 > this.step)
         },
         updatePositionOnGrid() {
             var col = this.path[this.step].col
@@ -194,10 +214,11 @@ define(["entity/piece", "view/views", "animation/animations"], function (Piece, 
             }
         },
         nextStep() {
+            console.log("nextStep")
             var stop = false
-            var x, y, Path
+            var x, y, path
             if (this.isMoving()) {
-                if (this.this._onBeforeStep) {
+                if (this._onBeforeStep) {
                     this._onBeforeStep()
                 }
                 this.updatePositionOnGrid()
@@ -208,67 +229,69 @@ define(["entity/piece", "view/views", "animation/animations"], function (Piece, 
                     if (this.hasNextStep()) {//Following Path Finding
                         this.nextGridCol = this.path[this.step + 1].col
                         this.nextGridRow = this.path[this.step + 1].row
-
-                        if (this._onStep)
-                            this._onStep()
-
-                        if (this.hasChangedItsPath()) {
-                            this.getView().setPosition(this.newDestination)
-                            path = this.requestPathfindingTo(this.newDestination)
-                            this.newDestination = null
-                            if(path.length < 2){
-                                stop = true
-                            }else{
-                                this.followPath(path)
-                            }
-                        } else if(this.hasNextStep()){
-                            this.step += 1;
-                            this.updateMovement()
-                        } else{
-                            stop = true
-                        }
+                        console.log("prepareMoveTo ",this.nextGridCol," ",this.nextGridRow)
                     }
+                    if (this._onStep)
+                        this._onStep()
+
+                    if (this.hasChangedItsPath()) {
+                        console.log("change it path")
+                        this.getView().setPosition(this.newDestination)
+                        path = this.requestPathfindingTo(this.newDestination)
+                        this.newDestination = null
+                        if (path.length < 2) {
+                            stop = true
+                        } else {
+                            this.followPath(path)
+                        }
+                    } else if (this.hasNextStep()) {
+                        console.log("prepareToMoveToOtherStep")
+                        this.step += 1;
+                    } else {
+                        stop = true
+                    }
+
                 }
-                if(stop){
+                if (stop) {
                     this.path = null;
                     this.idle();
-                    if(this._onStopPath){
+                    if (this._onStopPath) {
                         this._onStopPath(this.point)
                     }
                 }
             }
         },
-        nextPoint(){
-            return {col : this.nextGridCol, row : this.nextGridRow}
+        nextPoint() {
+            return new Point(this.nextGridCol, this.nextGridRow)
         },
-        isNear(piece,distance){
+        isNear(piece, distance) {
             var dx, dy, near = false;
-        
+
             dx = Math.abs(this.point.col - character.point.col);
             dy = Math.abs(this.point.row - character.point.row);
-        
-            if(dx <= distance && dy <= distance) {
+
+            if (dx <= distance && dy <= distance) {
                 near = true;
             }
             return near;
 
         },
         //Attacking Handle
-        isAttacking(){
+        isAttacking() {
             return this.attackmode
         },
         isAttackedBy(piece) {
             return (piece.id in this.attackers)
         },
         addAttacker(piece) {
-            if(!this.isAttackedBy(piece)){
+            if (!this.isAttackedBy(piece)) {
                 this.attackers[piece.id] = piece
-            }else{
+            } else {
                 log.error(this.id + " is already attacked by " + piece.id);
             }
         },
         removeAttacker(piece) {
-            if(this.isAttackedBy(piece)) {
+            if (this.isAttackedBy(piece)) {
                 delete this.attackers[piece.id];
             } else {
                 log.error(this.id + " is not attacked by " + piece.id);
@@ -276,24 +299,24 @@ define(["entity/piece", "view/views", "animation/animations"], function (Piece, 
         },
         forEachAttacker(callback) {
             let keys = Object.keys(this.attackers)
-            for(var i in keys){
+            for (var i in keys) {
                 callback(this.attackers[i])
             }
         },
         setTarget: function (monster) {
-            if(this.target !== monster){
-                if(this.hasTarget()){
+            if (this.target !== monster) {
+                if (this.hasTarget()) {
                     this.removeTarget()
                 }
                 this.unconfirmedTarget = null;
                 this.target = monster;
             }
-            else{
-                console.log("Already targetting "+monster.id)
+            else {
+                console.log("Already targetting " + monster.id)
             }
         },
         removeTarget: function () {
-            if(this.target){
+            if (this.target) {
                 this.target.removeAttacker(this)
                 this.target = null
             }
@@ -308,39 +331,27 @@ define(["entity/piece", "view/views", "animation/animations"], function (Piece, 
             return (this.unconfirmedTarget === monster)
         },
         canAttack(time) {
-            if(this.canReachTarget()){
+            if (this.canReachTarget()) {
                 return true;
             }
             return false;
         },
         canReachTarget() {
-            if(this.hasTarget() && this.isAdjacentNonDiagonal(this.target)){
+            if (this.hasTarget() && this.isAdjacentNonDiagonal(this.target)) {
                 return true;
             }
             return false;
         },
         //Update
-        update(delta){
+        update(delta) {
             this._super(delta)
-
-            //Update Monster 
+            //Update Monster
             this.updateMovingPath();
         },
-        updateMovingPath(){
-            if(this.isMoving() && this.animations.move.isRunning){
-                this.move.onAnimationStart(function(){
-                    this.hasMoved()
-                }.bind(this))
-                this.move.onRunningAnimation(function(){
-
-                }.bind(this))
-                this.move.onAnimationCompleted(function(){
-                    this.hasMoved()
-                    this.nextStep()
-                }.bind(this))
-                this.setFrom(this.getView().getPosition())
-                this.setTo  (new Coord(this.nextX,this.nextY))
-                this.move.start()
+        updateMovingPath() {
+            if (this.isMoving() && !this.getAnimations().move.running()) {
+                this.getAnimations().move.target = this.getView()
+                this.getAnimations().move.start(this.point, this.nextPoint())
             }
         },
         //Signal Slot
@@ -350,7 +361,7 @@ define(["entity/piece", "view/views", "animation/animations"], function (Piece, 
         onAttacked(callback) {
             this._onAttacked = callback
         },
-        onCheckAttack(callback){
+        onCheckAttack(callback) {
             this._onCheckAttack = callback
         },
         onDeath(callback) {
@@ -374,29 +385,25 @@ define(["entity/piece", "view/views", "animation/animations"], function (Piece, 
         onRequestPath(callback) {
             this._onRequestPath = callback
         },
-        onDamageTarget(callback){
+        onDamageTarget(callback) {
             this._onDamageTarget = callback
         },
-        onDamageMultiTarget(callback){
+        onDamageMultiTarget(callback) {
             this._onDamageMultiTarget = callback
         },
-        onKillTarget(callback){
+        onKillTarget(callback) {
             this._onKillTarget = callback
         },
-        onChangeStat(callback){
+        onChangeStat(callback) {
             this._onChangeStat = callback
         },
-        onChangeHealth(callback){
+        onChangeHealth(callback) {
             this._onChangeHealth = callback
         },
-        onKilled(callback){
+        onKilled(callback) {
             this._onKilled = callback
         },
-        
+
     })
-    var keys = Object.keys(Monster)
-    for(var i in keys){
-        console.log("=== ",keys[i])
-    }
     return Monster;
 })

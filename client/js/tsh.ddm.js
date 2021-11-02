@@ -164,53 +164,71 @@ define(function (Entity) {
         connectModule() {
             var self = this
             Tsh.Ddm.Entity.onInitialized(function () {
-                this.onAddEntity(function () {
+
+                this.onAddEntity(function (entity) {
+                    Tsh.Ddm.Entity  .registerToEntityGrid (entity,entity.point.col,entity.point.row)
+                    Tsh.Ddm.Path    .registerToPathingGrid(entity,entity.point.col,entity.point.row)
                 }.bind(this))
 
-                this.onRemoveEntity(function () {
+                this.onRemoveEntity(function (entity) {
+                    Tsh.Ddm.Entity  .removeFromEntityGrid (entity,entity.point.col,entity.point.row)
+                    Tsh.Ddm.Path    .removeFromPathingGrid(entity,entity.point.col,entity.point.row)
                 }.bind(this))
 
                 this.onUpdateList(function () {
+
                 }.bind(this))
 
                 this.onSpawnMonster(function (entity, col, row, controllerid, target) {
-                    console.log("onSpawnMonster ")
                     entity.constructView        (Tsh.Ddm.View.generateView.bind(Tsh.Ddm.View))
                     entity.constructAnimation   (Tsh.Ddm.Animator.generateAnimation.bind(Tsh.Ddm.Animator))
                     entity.setGridPosition(col, row)
-                    
+
+                    Tsh.Ddm.Entity.addEntity(entity)
+
                     console.log("entity = ",entity)
                     entity.idle()
                     if (controllerid == Tsh.Ddm.Player.playerid) {
                     }
                     entity.onDamageTarget(function (target, points) {
+                        
                     })
                     entity.onDamageMultiTarget(function (targets, point) {
+
                     })
                     entity.onKillTarget(function (target) {
+
                     })
                     entity.onChangeStat(function (stat, val) {
+
                     })
                     entity.onChangeHealth(function (points, reason) {
+
                     })
                     entity.onKilled(function (reason) {
+
                     })
                     entity.onHasMoved(function (reason) {
+
                     })
                     entity.onRequestPath(function (point) {
                         var path = self.findPath(entity,point.col,point.row)
-                        console.log("path = ",path)
                         return path
                     })
-                    entity.onStopPath(function (col, row) {
-                    })
-                    entity.onStep(function () {
-                        var board = Tsh.Ddm.View.getBoard();
-                        var coord = board.pointToCoord(entity.nextPoint())
+                    entity.onStartPath(function (path) {
+                        self.unregisterEntityPosition(entity)
                     })
                     entity.onBeforeStep(function () {
+                        self.unregisterEntityPosition(entity) 
                     })
-                    entity.onStartPath(function (path) {
+                    entity.onStep(function () {
+                        if(entity.hasNextStep()){
+                            self.registerEntityDualPosition(entity) 
+                        }
+                    })
+                    entity.onStopPath(function (point) {
+                        self.unregisterEntityPosition(entity)
+                        self.registerEntityPosition(entity)
                     })
                 }.bind(this))
 
@@ -218,19 +236,28 @@ define(function (Entity) {
                     var _view = Tsh.Ddm.View.generateView(entity.view)
                     entity.setView(_view)
                     entity.setGridPosition(col, row)
+
+                    Tsh.Ddm.Entity.addEntity(entity)
+
                 }.bind(this))
 
                 this.onSpawnLand(function (entity, col, row, controllerid) {
                     var _view = Tsh.Ddm.View.generateView(entity.view)
                     entity.setView(_view)
                     entity.setGridPosition(col, row)
+
+                    Tsh.Ddm.Entity.addEntity(entity)
+                    
                 }.bind(this))
 
                 this.onSpawnItem(function (entity, col, row, controllerid) {
                 }.bind(this))
 
-                this.onDespawnEntity(function () {
+                this.onDespawnEntity(function (entity) {
+                    Tsh.Ddm.Entity.removeEntity(entity)
+                    
                 }.bind(this))
+
             }.bind(Tsh.Ddm.Entity))
 
             Tsh.Ddm.View.onInitialized(function () {
@@ -361,6 +388,34 @@ define(function (Entity) {
                 path = Tsh.Ddm.Path.findMovingPath("",entity,x,y)
             }
             return path;
+        },
+        registerEntityPosition(entity){
+            if(entity){
+                Tsh.Ddm.Entity.registerToEntityGrid(entity,entity.point.col,entity.point.row)
+                Tsh.Ddm.Path  .registerToPathingGrid(entity,entity.point.col,entity.point.row)
+            }
+        },
+        registerEntityDualPosition(entity){
+            if(entity){
+                Tsh.Ddm.Entity.registerToEntityGrid(entity,entity.point.col,entity.point.row)
+                var nextPoint = entity.nextPoint()
+                if(nextPoint.col >= 0 && nextPoint.row >= 0){
+                    Tsh.Ddm.Entity.registerToEntityGrid(entity,nextPoint.col,nextPoint.row)
+                    Tsh.Ddm.Path  .registerToPathingGrid(entity,nextPoint.col,nextPoint.row)
+                }
+            }
+        },
+        unregisterEntityPosition(entity){
+            if(entity){
+                Tsh.Ddm.Entity.removeFromEntityGrid(entity,entity.point.col,entity.point.row)
+                Tsh.Ddm.Path  .removeFromPathingGrid(entity,entity.point.col,entity.point.row)
+                var nextPoint = entity.nextPoint()
+
+                if(nextPoint.col >= 0 && nextPoint.row >= 0){
+                    Tsh.Ddm.Entity.removeFromEntityGrid(entity,nextPoint.col,nextPoint.row)
+                    Tsh.Ddm.Path  .removeFromPathingGrid(entity,nextPoint.col,nextPoint.row)
+                }
+            }
         }
     }
 

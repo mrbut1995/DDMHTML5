@@ -18,6 +18,13 @@ define(["view/view"],function(View){
             }
             this.board().relocatingView(this,point)
         },
+        toCoord(point){
+            if(this.board() == null){
+                console.log("[ERROR] Not belong to any board")
+                return new Coord(0,0)
+            }
+            return this.board().coordFrom(point)
+        }
     })
     return PieceView
 })
