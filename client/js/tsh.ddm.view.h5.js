@@ -1,6 +1,7 @@
 
 // //Include Module
-define(["ddm", "jquery", "view/view","view/boardview","view/viewfactory","view/layer","animation/effect"], function (Tsh, $, View,BoardView,ViewFactory,Layer,Effect) {
+define(["ddm", "jquery", "view/view","view/boardview","view/highlightview","view/viewfactory","view/layer","animation/effect","entity/entity"], function 
+        (Tsh , $       , View       ,BoardView       ,HighlightView       ,ViewFactory       ,Layer       ,Effect            ,Entity) {
 
 
     Tsh = Tsh || {}
@@ -231,6 +232,16 @@ define(["ddm", "jquery", "view/view","view/boardview","view/viewfactory","view/l
             }
             view.layer = layer
         },
+        registerEntityView(entity){
+            if(entity instanceof Entity){
+                this.addView(entity.getView())
+            }
+        },
+        unregisterEntityView(entity){
+            if(entity instanceof Entity){
+                this.removeView(entity.getView())
+            }
+        },
         getLayer(layer){
             if(layer in this.layers){
                 return this.layers[layer]
@@ -334,7 +345,7 @@ define(["ddm", "jquery", "view/view","view/boardview","view/viewfactory","view/l
         generateViewFromKind(kind,config){
             var id =  viewid()
             var view = ViewFactory.createView(kind,id,config)
-            this.addView(view)
+            // this.addView(view)
             if(this._onViewCreated){
                 this._onViewCreated(view)
             }
@@ -344,7 +355,7 @@ define(["ddm", "jquery", "view/view","view/boardview","view/viewfactory","view/l
         generateViewFromPrototype(_class,config){
             var id = viewid()
             var view = new _class(id,config)
-            this.addView(view)
+            // this.addView(view)
             if(this._onViewCreated){
                 this._onViewCreated(view)
             }
@@ -363,27 +374,9 @@ define(["ddm", "jquery", "view/view","view/boardview","view/viewfactory","view/l
             this.registerLayer("piece");
             this.registerLayer("common");
 
-            this.registerViewIntoLayer(new BoardView("0000-0000-0000-0000",viewconfig.board))
+            this.registerViewIntoLayer(new BoardView    ("0000-0000-0000-0000",viewconfig.board))
+            this.registerViewIntoLayer(new HighlightView("0000-0000-0000-0001",viewconfig.board))
         },
-        //Mouse Handle
-        mouseClickedCanvasHandle  (opts) {
-            console.log("mouseClickedCanvasHandle ",opts)
-        },
-         mousePressedCanvasHandle  (opts) {
-            console.log("mousePressedCanvasHandle ",opts)
-        },
-         mousePressedAndHoldCanvasHandle  (opts) {
-            console.log("mousePressedAndHoldCanvasHandle ",opts)
-            // this.getBoard().mousePressAndHold(opts)
-        },
-         mouseReleasedCanvasHandle  (opts) {
-            console.log("mouseReleasedCanvasHandle ",opts)
-            // this.getBoard().mouseReleased(opts)
-        },
-         mouseDragCanvasHandle  (opts) {
-            // this.getBoard().mouseDrag(opts)
-        },
-
         //Signal Slots
         onViewCreated   (callback){this._onViewCreated = callback},
         onViewDestroyed (callback){this._onViewDestroyed = callback},

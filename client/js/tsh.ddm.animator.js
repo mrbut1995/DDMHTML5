@@ -1,4 +1,4 @@
-define(["ddm"],function(Tsh){
+define(["ddm","entity/entity"],function(Tsh,Entity){
     Tsh.Ddm = Tsh.Ddm || {}
     Tsh.Ddm.Animator = {
         init(app){
@@ -70,6 +70,20 @@ define(["ddm"],function(Tsh){
             forEachAnimation(function(animation){
 
             }.bind())
+        },
+        registerAnimator(entity){
+            if(entity instanceof Entity){
+                entity.forEachAnimation(function(animation){
+                    this.addAnimations(animation)
+                }.bind(this))
+            }
+        },
+        unregisterAnimator(entity){
+            if(entity instanceof Entity){
+                entity.forEachAnimation(function(animation){
+                    this.removeAnimation(animation)
+                }.bind(this))
+            }
         },
         onInitialized(callback){this._onInitialized = callback},
         onAddAnimation(callback){this._onAddAnimation = callback},

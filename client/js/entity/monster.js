@@ -31,8 +31,6 @@ define(["entity/piece", "view/views", "animation/animations"], function (Piece, 
             this.step = 0
             this.nextGridCol = -1
             this.nextGridRow = -1
-            this.nextX = 0
-            this.nextY = 0
 
             //Attack
             this.target = null
@@ -57,29 +55,10 @@ define(["entity/piece", "view/views", "animation/animations"], function (Piece, 
             this.effectSpeed = 120
             this.idleSpeed = 450
 
+            this.movingAnimation = 100
             //Animation
             this.animations = {
-                move: Animations.PointMoveAnimation.extend({
-                    init() {
-                        this._super(self.getView())
-                        this.interval = 5000
-                        this.onAnimationStart(function () {
-                            console.log("Animation is Start")
-                            self.hasMoved()
-                        }.bind(this))
-                        this.onAnimationCompleted(function () {
-                            console.log("Animation is completed")
-                            self.hasMoved()
-                            self.nextStep()
-                        }.bind(this))
-                        this.onRunningAnimation(function () {
-
-                        }.bind(this))
-                    }
-                }),
-                attack: Animations.SpriteAnimation,
-                idle: Animations.SpriteAnimation,
-                walk: Animations.SpriteAnimation,
+                move:   new Animations.PointMoveAnimation(),
             }
 
             this._super(id, kind)
@@ -100,49 +79,34 @@ define(["entity/piece", "view/views", "animation/animations"], function (Piece, 
             this.removeTarget()
         },
         attack(target) {
-            this.animate("attack", {
-                speed: this.atkSpeed,
-                count: 1
-            })
+            this.animate("attack",this.atkSpeed)
             if (this._onAttack)
                 this._onAttack()
         },
         idle() {
-            this.animate("idle", {
-                speed: this.atkSpeed,
-            })
+            this.animate("idle",this.atkSpeed)
         },
         hurted(source) {
-            this.animate("hurted", {
-                speed: this.atkSpeed,
-            })
+            this.animate("hurted", this.atkSpeed)
             if (this._onAttacked)
                 this._onAttacked()
         },
         killed(source) {
-            this.animate("killed", {
-                speed: this.summonSpeed,
-            })
+            this.animate("killed", this.summonSpeed)
         },
         summon() {
-            this.animate("summoned", {
-                speed: this.summonSpeed,
-            })
+            var self = this
+            this.animate("summoned",this.summonSpeed)
         },
         walk(point) {
-            this.animate("walk", {
-                speed: this.walkSpeed,
-            })
+            this.animate("walk", this.walkSpeed)
+            
         },
         fly(point) {
-            this.animate("fly", {
-                speed: this.walkSpeed,
-            })
+            this.animate("fly", this.walkSpeed)
         },
         teleport(point) {
-            this.animate("teleport", {
-                speed: this.walkSpeed,
-            })
+            this.animate("teleport",this.walkSpeed)
         },
 
         changestat(stat, value) {
@@ -155,6 +119,27 @@ define(["entity/piece", "view/views", "animation/animations"], function (Piece, 
 
         },
 
+        move(to){
+            console.log("move to ",to.toString())
+            var self = this; 
+            var move = this.animations.move
+            if(move){
+                this.animations.move.target = this.getView()
+                this.animations.move.onAnimationStart       (function () {
+                    self.hasMoved()
+                })
+                this.animations.move.onAnimationCompleted   (function () {
+                    self.hasMoved()
+                    self.nextStep()
+                })
+                this.animations.move.onRunningAnimation(function () {
+    
+                })
+                this.animations.move.setFrom(this.point)
+                this.animations.move.setTo(to)
+                this.animations.move.start(this.point,to,this.movingAnimation)    
+            }
+        },
 
         //Path Movement
         //Callback
@@ -350,8 +335,7 @@ define(["entity/piece", "view/views", "animation/animations"], function (Piece, 
         },
         updateMovingPath() {
             if (this.isMoving() && !this.getAnimations().move.running()) {
-                this.getAnimations().move.target = this.getView()
-                this.getAnimations().move.start(this.point, this.nextPoint())
+                this.move(this.nextPoint())
             }
         },
         //Signal Slot

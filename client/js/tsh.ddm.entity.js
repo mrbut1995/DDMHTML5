@@ -7,8 +7,8 @@ define(["ddm","jquery","entity/entityfactory","entity/monster","entity/land","en
         init(app){
             this.entities = {}
             this.entityGrid     = null
-            this.pathingGrid    = null
             this.map            = null
+            this.obsoleteEntities = null
 
             this.app = app
             if(this._onInitialized){
@@ -30,7 +30,7 @@ define(["ddm","jquery","entity/entityfactory","entity/monster","entity/land","en
             if(entity.id in this.entities){
                 if(this._onRemoveEntity)
                     this._onRemoveEntity(entity)
-                delete this.entities[entities.id]
+                delete this.entities[entity.id]
             }   
         },
         
@@ -101,9 +101,7 @@ define(["ddm","jquery","entity/entityfactory","entity/monster","entity/land","en
                 row = entity.point.row
 
             if(entity){
-                // if(entity instanceof Monster || entity instanceof Land){
-                    this.entityGrid[row][col][entity.id] = entity
-                // }
+                this.entityGrid[row][col][entity.id] = entity
             }
         },
         removeFromEntityGrid(entity,col,row){
@@ -123,6 +121,71 @@ define(["ddm","jquery","entity/entityfactory","entity/monster","entity/land","en
             return entity
         },
         
+        entityIds(){
+            return Object.keys(this.entities)
+        },
+
+        containIds(lst){
+            var result = [];
+            var ids = this.entityIds()
+            for(var i in lst){
+                if(ids.includes(lst[i])){
+                    result.push(lst[i])
+                }
+            }
+            return result
+        },
+
+        notContainIds(lst){
+            var result = [];
+            var ids = this.entityIds()
+            for(var i in lst){
+                if(!ids.includes(lst[i])){
+                    result.push(lst[i])
+                }
+            }
+            return result
+        },
+
+        removeObsoleteEntities(){
+            if(!this.obsoleteEntities){
+                return;
+            }
+            var ids = Object.keys(this.obsoleteEntities)
+            var num = ids.length
+            if(num > 0){
+                for(var i in ids){
+                    this.removeEntity(this.getEntityById(ids[i]))
+                }
+            }
+            this.obsoleteEntities = null;
+        },
+
+        updateList(lst){
+            var knowIds = this.containIds(lst),
+                newIds  = this.notContainIds(lst),
+                ids = this.entityIds()
+            this.obsoleteEntities = {}
+
+            //Find obsolete Entity
+            for(var i in ids){
+                var id = ids[i]
+                if(!knowIds.includes(id)){
+                    this.obsoleteEntities[id] = this.getEntityById(id)
+                }
+            }
+
+            //Remove all the obsolete
+            this.removeObsoleteEntities()
+
+            //Request the news Ids data
+            if(newIds.length > 0){
+                if(this._onRequestEntities){
+                    this._onRequestEntities(newIds)
+                }
+            }
+        },
+
         //SPECIFY ENTITY
         isMonsterOnSameTile(monster,col,row){
             var Col = col || monster.point.col,
@@ -216,18 +279,14 @@ define(["ddm","jquery","entity/entityfactory","entity/monster","entity/land","en
         //Callback
         onAddEntity     (callback){ this._onAddEntity    = callback},
         onRemoveEntity  (callback){ this._onRemoveEntity = callback},
-
-        onUpdateList    (callback){ this._onUpdateList   = callback},
         
+        onRequestEntities   (callback){ this._onRequestEntities = callback},
+
         onSpawnMonster            (callback){this._onSpawnMonster = callback},
         onSpawnMonsterLord      (callback){this._onSpawnMonsterLord = callback},
-        onSpawnLand(callback){this._onSpawnLand = callback},
+        onSpawnLand             (callback){this._onSpawnLand = callback},
         onSpawnItem(callback){this._onSpawItem = callback},
         onDespawnEntity(callback){this._onDespawnEntity = callback},
-
-        onConstructingPiece(callback){this._onConstructingPiece = callback},
-        onConstructingLand(callback){this._onConstructingLand = callback},
-        onConstructingItem(callback){this._onConstructingItem = callback},
 
         onInitialized   (callback){this._onInitialized = callback},
         

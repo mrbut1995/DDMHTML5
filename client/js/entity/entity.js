@@ -10,7 +10,6 @@ define(["jquery"],function($){
             var def = {
                 id           : id,
                 kind         : kind,
-                viewprototype: null,
                 view         : null,
                 isLoaded     : false,
                 point        : new Point(0,0),
@@ -21,15 +20,29 @@ define(["jquery"],function($){
             var otps = $.extend({},def,this)
             $.extend(this,otps)
 
-            this._viewInstance = null,
-            this._animationsInstance = {}
+            this._viewInstance = null
 
             if(Entity._onCreated){
                 Entity._onCreated(this)
             }
         },
-        animate(){
 
+        /**
+         * @decontructor
+         */
+        destroy(){
+            if(this.getView() != null){
+                this.getView().destroy()
+                this.setView(null)
+            }
+            if(!this.getAnimations()){
+                this.forEachAnimation(function(animation){ animation.destroy()})
+                this.setAnimations({})
+            }
+            this.currentAnimation = null
+        },
+
+        animate(name,interval,onStart,onRunning,onCompleted){
         },
         setName : function(name){
             this.name = name;
@@ -37,39 +50,25 @@ define(["jquery"],function($){
         getView(){
             return this._viewInstance;
         },
-        getAnimations(){
-            return this._animationsInstance
-        },
-        /**
-         * 
-         * @param {Entity} view 
-         */
         setView(view){
             this._viewInstance = view
         },
+
+        getAnimations(){
+            return this.animations
+        },
         setAnimations(animations){
-            this._animationsInstance = animations
+            this.animations = animations
         },
-        constructView(callback){
-            this._viewInstance = callback(this.view)
-        },
-        destructView(callback){
-            callback(this._viewInstance)
-            delete this._viewInstance
-        },
-        constructAnimation(callback){
-            var keys = Object.keys(this.animations)
-            for(var i in keys){
-                this._animationsInstance[keys[i]] = callback(this.animations[keys[i]])
+
+        forEachAnimation(callback){
+            var keys = Object.keys(this.getAnimations())
+            for(var i  in keys){
+                callback(this.getAnimations()[keys[i]])
             }
         },
-        destrucAnimation(callback){
-            var keys = Object.keys(this.animations)
-            for(var i in keys){
-                callback(this.animations[keys[i]])
-                delete this.animations[keys[i]]
-            }
-            delete this.animations
+        forView(callback){
+            callback(this.getView())
         },
         containView(view){
             return view != null && this.getView() != null && view == this.getView()
@@ -86,14 +85,8 @@ define(["jquery"],function($){
 
                 if(a){
                     this.currentAnimation = a
-                    this.currentAnimation.reset()
+                    this.currentAnimation.restart()
                 }
-            }
-        },
-        forEachAnimation(callback){
-            var keys = Object.keys(this.getAnimations())
-            for(var i  in keys){
-                callback(this.getAnimations()[keys[i]])
             }
         },
         stopAllAnimation(){

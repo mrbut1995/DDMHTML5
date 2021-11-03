@@ -1,4 +1,50 @@
 
+var landDebugData = [
+    [0,0,0,0,0,0,1,0,0,0,0,0,0],
+    [0,0,0,0,0,0,1,0,0,0,0,0,0],
+    [0,0,0,0,0,0,1,1,0,0,0,0,0],
+    [0,0,0,1,1,1,1,1,1,0,0,0,0],
+    [0,0,0,1,1,0,1,1,1,0,0,0,0],
+    [0,0,0,1,0,0,1,0,1,0,0,0,0],
+    [0,0,0,1,0,0,1,0,1,0,0,0,0],
+    [0,0,0,1,1,1,1,0,1,0,0,0,0],
+    [0,0,0,1,1,1,1,1,1,0,0,0,0],
+    [0,0,0,1,1,1,1,1,1,0,0,0,0],
+    [0,0,0,0,1,1,1,1,1,0,0,0,0],
+    [0,0,0,0,1,0,1,1,1,0,0,0,0],
+    [0,0,0,0,1,0,1,1,1,0,0,0,0],
+    [0,0,0,0,1,0,1,0,0,0,0,0,0],
+    [0,0,1,1,1,1,1,0,0,0,0,0,0],
+    [0,0,1,0,0,1,1,0,0,0,0,0,0],
+    [0,0,1,0,0,0,1,0,0,0,0,0,0],
+    [0,0,1,0,0,0,1,0,0,0,0,0,0],
+    [0,0,1,1,1,1,1,0,0,0,0,0,0]
+]
+
+var monsterDebugData = [
+    [0,0,0,0,0,0,1,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,1,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,1,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,1,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,1,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,1,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,1,0,0,0,0,0,0]
+]
+
+var isLoaded = false;
+
 define(["ddm","jquery"],function(Tsh,$){    
     Tsh = Tsh || {}
     Tsh.Ddm = Tsh.Ddm || {}
@@ -69,6 +115,10 @@ define(["ddm","jquery"],function(Tsh,$){
                 .appendTo('#devActions')
 
             $('<div></div>').addClass('action')
+                .append('<button class="button" id="dbSendAllData">Send All Data</button>')
+                .appendTo('#devActions')
+
+            $('<div></div>').addClass('action')
                 .append('<input id= "higlightchecked" type="checkbox">Highlight on Move</button>')
                 .appendTo('#devActions')
 
@@ -85,7 +135,107 @@ define(["ddm","jquery"],function(Tsh,$){
             $("#dbPieceChangePosition").click(this.btnPositionChange.bind(this))
             $("#dbPieceDestroy").click(this.btnDestroySelectedPiece.bind(this))
             $("#dbDisplayAction").click(this.btnDisplayActionPopup.bind(this))
+            $("#dbSendAllData").click(this.sendList.bind(this))
+        }
 
+        this.entityData = {}
+        this.sendCreateMonster = function(id,lCol,lRow){
+            console.log("createViewMonster")
+            var data = []
+            data[0] = Messages.SPAWN
+            data[1] = "DummyMonster1"
+            data[2] = id
+            data[3] = lCol
+            data[4] = lRow
+            data[5] = ""
+            data[6] = "player1"
+            data[7] = "player2"
+            Tsh.Ddm.Client.receiveMessage(JSON.stringify(data))
+        },
+        this.sendCreateLand    = function(id,pCol,pRow){
+            var data = []
+            data[0] = Messages.SPAWN
+            data[1] = "NormalLand"
+            data[2] = id
+            data[3] = pCol
+            data[4] = pRow
+            data[5] = ""
+            data[6] = "player1"
+            data[7] = "player2"
+            Tsh.Ddm.Client.receiveMessage(JSON.stringify(data))
+        },
+        this.sendMoveTo = function(toCol,toRow){
+            var data = []
+            data[0] = Messages.MOVE
+            data[1] = ""
+            data[2] = this.debugPieceSelected.id
+            data[3] = toCol
+            data[4] = toRow
+            data[5] = "walk"
+            Tsh.Ddm.Client.receiveMessage(JSON.stringify(data))
+        }
+        this.sendDestroy = function(){
+            var data = []
+            data[0] = Messages.DESPAWN
+            data[1] = ""
+            data[2] = this.debugPieceSelected.id 
+            Tsh.Ddm.Client.receiveMessage(JSON.stringify(data))
+        }
+        this.sendList = function(){
+            var data = []
+            data[0] = Messages.LIST
+            for(var i in Object.keys(this.entityData)){
+                data.push(this.entityData[Object.keys(this.entityData)[i]].id)
+            }
+            Tsh.Ddm.Client.receiveMessage(JSON.stringify(data))
+        }
+        this.receiveMessage = function(msg){
+            var data = JSON.parse(msg)
+            var id = data[0]
+            if(id == Messages.WHO){
+                
+            }
+        },
+        this.loadPrefabData = function(){
+            const col = 13
+            const row = 19
+            this.entityData = {}
+            mId = 0
+            for(var i = 0; i < row;i++){
+                for(var j= 0; j <col;j++){
+                    if(landDebugData[i][j] == 1){
+                        var eId = entityId()
+                        this.entityData[eId] = {
+                                        id  : eId,
+                                        type: "NormalLand",
+                                        col : j,
+                                        row : i,
+                                    }
+                    }
+                    if(monsterDebugData[i][j] == 1){
+                        var eId = entityId()
+                        this.entityData[eId] = {
+                                        id  : eId,
+                                        type: "DummyMonster1",
+                                        col : j,
+                                        row : i,
+                                    }
+                    }
+                }
+            }
+        },
+
+        this.sendAllData = function(){
+            var keys = Object.keys(this.entityData)
+            for(var i in keys){
+                var key = keys[i]
+                var e = this.entityData[key]
+                if(e.type == "NormalLand"){
+                    this.sendCreateLand(e.id,e.col,e.row)
+                }else if(e.type == "DummyMonster1"){
+                    this.sendCreateMonster(e.id,e.col,e.row)
+                }
+            }
         }
         this.createViewMonster = function () {
             console.log("createViewMonster")
@@ -93,16 +243,7 @@ define(["ddm","jquery"],function(Tsh,$){
             var lRow = document.getElementById("pieceRowId").value
             lCol = Math.max(lCol, 0)
             lRow = Math.max(lRow, 0)
-
-            var data = []
-            data[0] = "DummyMonster1"
-            data[1] = entityId()
-            data[2] = lCol
-            data[3] = lRow
-            data[4] = ""
-            data[5] = "player1"
-            data[6] = "player2"
-            Tsh.Ddm.Client.receiveSpawnEntity(data)
+            this.sendCreateMonster(entityId(),lCol,lRow)
         }
         this.createViewLand = function () {
             console.log("createViewLand")
@@ -111,29 +252,13 @@ define(["ddm","jquery"],function(Tsh,$){
             pCol = Math.max(pCol, 0)
             pRow = Math.max(pRow, 0)
 
-            var data = []
-            data[0] = "NormalLand"
-            data[1] = entityId()
-            data[2] = pCol
-            data[3] = pRow
-            data[4] = ""
-            data[5] = "player1"
-            data[6] = "player2"
-            Tsh.Ddm.Client.receiveSpawnEntity(data)
-
+            this.sendCreateLand(entityId(),pCol,pRow)
         }
-        this.DestroyedSelectedView = function () {
-            console.log("DestroyedSelectedView")
 
-        }
-        this.DrawPieceSelectedInfo = function () {
-            console.log("DrawPieceSelectedInfo")
-
-        }
         this.btnDestroySelectedPiece = function () {
             console.log("btnDestroySelectedPiece")
             if (this.debugPieceSelected != null) {
-                Tsh.Ddm.View.destroyView(this.debugPieceSelected.id)
+                this.sendDestroy()
                 this.debugPieceSelected = null
                 this.SetSelectingPiece(this.debugPieceSelected)
             }
@@ -148,13 +273,7 @@ define(["ddm","jquery"],function(Tsh,$){
             var mRow = document.getElementById("moveToRow").value
             mCol = Math.min(Math.max(mCol, 0), 12)
             mRow = Math.min(Math.max(mRow, 0), 18)
-            var data = []
-            data[0] = ""
-            data[1] = this.debugPieceSelected.id
-            data[2] = mCol
-            data[3] = mRow
-            data[4] = "walk"
-            Tsh.Ddm.Client.receiveEntityMove(data)
+            this.sendMoveTo(mCol,mRow)
         }
         this.btnDisplayActionPopup = function () {
             console.log("btnDisplayActionPopup")
@@ -229,4 +348,6 @@ define(["ddm","jquery"],function(Tsh,$){
             }
         }
     }
+    Tsh.Ddm.Client.enable()
+    Tsh.Ddm.Debug.loadPrefabData()
 })

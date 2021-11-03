@@ -14,7 +14,7 @@ define(["ddm"],function(Tsh){
             this.handlers = [];
             this.handlers[Messages.WELCOME]          = this.receiveWelcome;
             this.handlers[Messages.DISPATCH ]        = this.receiveDispatch;
-            this.handlers[Messages.LIST ]            = this.receiveEntityList;
+            this.handlers[Messages.LIST]            = this.receiveEntityList;
             this.handlers[Messages.SYNCHRONIZING ]   = this.receiveSynchronizingData;
             this.handlers[Messages.SPAWN ]           = this.receiveSpawnEntity;
             this.handlers[Messages.DESPAWN ]         = this.receiveDespawnEntity;
@@ -102,7 +102,7 @@ define(["ddm"],function(Tsh){
                 this.handlers[action].call(this, data);
             }
             else {
-                log.error("Unknown action : " + action);
+                console.log("Unknown action : " + action);
             }
         },
         receiveActionBatch: function(actions) {
@@ -114,13 +114,13 @@ define(["ddm"],function(Tsh){
 
         //Messge Handler
         receiveWelcome(data){
-            var playerid = data[0],
-                name     = data[1],
-                contain  = data[2],
-                avatar   = data[3],
-                lp       = data[4],
-                crests   = data[5],
-                matchid  = data[6]
+            var playerid = data[1],
+                name     = data[2],
+                contain  = data[3],
+                avatar   = data[4],
+                lp       = data[5],
+                crests   = data[6],
+                matchid  = data[7]
             if(this._onWelcome){
                 this._onWelcome(playerid,name,contain,avatar,lp,crests,matchid)
             }
@@ -129,41 +129,44 @@ define(["ddm"],function(Tsh){
 
         },
         receiveEntityList(data){
-
+            data.shift()
+            if(this._onEntityList)
+                this._onEntityList(data)
         },
         receiveSynchronizingData(data){
 
         },
         receiveSpawnEntity(data){
-            var kind            = data[0],
-                id              = data[1],
-                x               = data[2],
-                y               = data[3],
-                name            = data[4],
-                controllerid    = data[5],
-                target          = data[6]
+            var kind            = data[1],
+                id              = data[2],
+                x               = data[3],
+                y               = data[4],
+                name            = data[5],
+                controllerid    = data[6],
+                target          = data[7]
             if(this._onSpawnEntity){
                 this._onSpawnEntity(kind,id,x,y,name,controllerid,target)
             }
         },
         receiveDespawnEntity(data){
-            var id = data[0]
+            var playerid = data[0],
+                id       = data[1]
             if(this._onDespawnEntity){
-                this._onDespawnEntity(id)
+                this._onDespawnEntity(playerid,id)
             }
         },
         receiveEntityMove(data){
-            var playerid = data[0],
-                id = data[1],
-                x  = data[2],
-                y  = data[3],
-                type = data[4]
+            var playerid = data[1],
+                id = data[2],
+                x  = data[3],
+                y  = data[4],
+                type = data[5]
             if(this._onEntityMove){
                 this._onEntityMove(playerid,id,x,y,type)
             }
         },
         receiveEntityDestroy(data){
-            var id = data[0]
+            var id = data[1]
             if(this._onEntityDestroy){
                 this._onEntityDestroy(id)
             }
@@ -199,6 +202,17 @@ define(["ddm"],function(Tsh){
 
         },
 
+        //Send Method
+        sendAttack(source,target){
+            this.sendMessage([Messages.ATTACK,
+                              source.id,target.id]
+            )
+        },
+        sendQuery(ids){
+            var data = ids
+            data.unshift(Messages.QUERY)
+            this.sendMessage(data)
+        },
 
         //Signal Handle
         onDispatch          (callback){this._onDispatch             = callback},

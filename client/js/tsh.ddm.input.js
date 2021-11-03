@@ -1,4 +1,4 @@
-define(["ddm", "jquery"], function(Tsh,$){
+define(["ddm", "jquery","entity/entity"], function(Tsh,$,Entity){
     Tsh = Tsh || {}
     Tsh.Ddm = Tsh.Ddm || {}
 
@@ -29,11 +29,15 @@ define(["ddm", "jquery"], function(Tsh,$){
             $canvas.addEventListener("mouseout",  this.oncanvasmouseout.bind(this),       false);
         },
 
-        registerInputListener(){
+        registerEntityInput(entity){
+            if(entity instanceof Entity){
 
+            }
         },
-        unregisterInputListener(){
-
+        unregisterEntityInput(entity){
+            if(entity instanceof Entity){
+                
+            }
         },
         forEachInputListener(){
 

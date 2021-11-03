@@ -16,6 +16,7 @@ requirejs.config({
     'ddm-match':"./tsh.ddm.match",
     'ddm-animator':"./tsh.ddm.animator",
     'ddm-path':"./tsh.ddm.path",
+    'ddm-board':"./tsh.ddm.board",
 
     'view': './view',
     'animation':"./animation",
@@ -32,6 +33,7 @@ requirejs.config({
     'ddm-debug':['ddm'],
     'ddm-input':['ddm'],
     'ddm-entity':['ddm'],
+    'ddm-board':['ddm'],
   },
 });
 
@@ -39,7 +41,7 @@ requirejs.config({
 
 window.onload = function(){
   console.log("window.onLoad")
-  var tsh_module = ["ddm-view","ddm-logic","ddm-loader","ddm-input","ddm-debug","ddm-entity","ddm-player","ddm-client","ddm-match","ddm-animator","ddm-path"]
+  var tsh_module = ["ddm-view","ddm-logic","ddm-loader","ddm-input","ddm-debug","ddm-entity","ddm-player","ddm-client","ddm-match","ddm-animator","ddm-path","ddm-board"]
   var required_lib = ['lib/class','util/util','util/constant','util/struct','util/gametype',"message","jquery"]
   var ddm = ["ddm"]
   ddm.push(...required_lib)

@@ -14,17 +14,20 @@ define(function (Entity) {
 
             this.connectModule();
 
-            Tsh.Ddm.Animator.init(Tsh.Ddm)
-            Tsh.Ddm.View.init(Tsh.Ddm)
-            Tsh.Ddm.Debug.init(Tsh.Ddm)
             Tsh.Ddm.Loader.init(Tsh.Ddm)
-            Tsh.Ddm.Input.init(Tsh.Ddm)
+
+            Tsh.Ddm.View.init(Tsh.Ddm)
             Tsh.Ddm.Entity.init(Tsh.Ddm)
+
+            Tsh.Ddm.Animator.init(Tsh.Ddm)
+            Tsh.Ddm.Debug.init(Tsh.Ddm)
+            Tsh.Ddm.Input.init(Tsh.Ddm)
             Tsh.Ddm.Client.init(Tsh.Ddm)
             Tsh.Ddm.Player.init(Tsh.Ddm)
             Tsh.Ddm.Match.init(Tsh.Ddm)
             Tsh.Ddm.Path.init(Tsh.Ddm)
-            
+            Tsh.Ddm.Board.init(Tsh.Ddm)
+
             this.connectServer();
 
             Tsh.Ddm.Client.receiveWelcome(["", "", "", "", "", "", "", ""])
@@ -40,7 +43,8 @@ define(function (Entity) {
 
             })
             Tsh.Ddm.Client.onEntityList(function (list) {
-
+                console.log("Receive Entity List");
+                Tsh.Ddm.Entity.updateList(list)
             })
             Tsh.Ddm.Client.onWelcome(function (id, name, contain, avatar, lp, crests, matchid) {
                 console.log("Successfull Connect to server => Init handle")
@@ -87,7 +91,8 @@ define(function (Entity) {
                     Tsh.Ddm.Entity.spawnEntity(kind, id, x, y, name, controllerid, target)
                 });
                 Tsh.Ddm.Client.onDespawnEntity(function (player, id) {
-
+                    console.log("Despawn entiy ",id)
+                    Tsh.Ddm.Entity.despawnEntity(id)
                 })
 
                 Tsh.Ddm.Client.onEntityMove(function (playerid, id, x, y,type) {
@@ -163,30 +168,42 @@ define(function (Entity) {
 
         connectModule() {
             var self = this
+
+            Tsh.Ddm.Board.onInitialized(function(){
+                
+            })
             Tsh.Ddm.Entity.onInitialized(function () {
 
-                this.onAddEntity(function (entity) {
-                    Tsh.Ddm.Entity  .registerToEntityGrid (entity,entity.point.col,entity.point.row)
-                    Tsh.Ddm.Path    .registerToPathingGrid(entity,entity.point.col,entity.point.row)
+                
+                this.onAddEntity(function (entity) {    
+                    Tsh.Ddm.Entity  .registerToEntityGrid   (entity,entity.point.col,entity.point.row)
+                    Tsh.Ddm.Path    .registerToPathingGrid  (entity,entity.point.col,entity.point.row)
+                    Tsh.Ddm.Animator.registerAnimator       (entity)
+                    Tsh.Ddm.View    .registerEntityView     (entity)
+                    Tsh.Ddm.Input   .registerEntityInput    (entity)
                 }.bind(this))
 
                 this.onRemoveEntity(function (entity) {
-                    Tsh.Ddm.Entity  .removeFromEntityGrid (entity,entity.point.col,entity.point.row)
-                    Tsh.Ddm.Path    .removeFromPathingGrid(entity,entity.point.col,entity.point.row)
+                    Tsh.Ddm.Entity  .removeFromEntityGrid   (entity,entity.point.col,entity.point.row)
+                    Tsh.Ddm.Path    .removeFromPathingGrid  (entity,entity.point.col,entity.point.row)
+                    Tsh.Ddm.Animator.unregisterAnimator     (entity)
+                    Tsh.Ddm.View    .unregisterEntityView   (entity)
+                    Tsh.Ddm.Input   .unregisterEntityInput  (entity)
                 }.bind(this))
 
-                this.onUpdateList(function () {
 
-                }.bind(this))
-
+                this.onRequestEntities(function(entitieIds){
+                    console.log("request data from list",entitieIds)
+                    
+                })
                 this.onSpawnMonster(function (entity, col, row, controllerid, target) {
-                    entity.constructView        (Tsh.Ddm.View.generateView.bind(Tsh.Ddm.View))
-                    entity.constructAnimation   (Tsh.Ddm.Animator.generateAnimation.bind(Tsh.Ddm.Animator))
-                    entity.setGridPosition(col, row)
+                    var _view = Tsh.Ddm.View.generateView(entity.view)
+                    entity.setView(_view)
 
                     Tsh.Ddm.Entity.addEntity(entity)
 
-                    console.log("entity = ",entity)
+                    entity.setGridPosition(col, row)
+
                     entity.idle()
                     if (controllerid == Tsh.Ddm.Player.playerid) {
                     }
@@ -235,6 +252,9 @@ define(function (Entity) {
                 this.onSpawnMonsterLord(function (entity, col, row, controllerid, target) {
                     var _view = Tsh.Ddm.View.generateView(entity.view)
                     entity.setView(_view)
+
+                    Tsh.Ddm.Entity.addEntity(entity)
+
                     entity.setGridPosition(col, row)
 
                     Tsh.Ddm.Entity.addEntity(entity)
@@ -244,24 +264,33 @@ define(function (Entity) {
                 this.onSpawnLand(function (entity, col, row, controllerid) {
                     var _view = Tsh.Ddm.View.generateView(entity.view)
                     entity.setView(_view)
-                    entity.setGridPosition(col, row)
 
                     Tsh.Ddm.Entity.addEntity(entity)
+
+                    entity.setGridPosition(col, row)
+
                     
                 }.bind(this))
 
                 this.onSpawnItem(function (entity, col, row, controllerid) {
+                    var _view = Tsh.Ddm.View.generateView(entity.view)
+                    entity.setView(_view)
+
+                    Tsh.Ddm.Entity.addEntity(entity)
+
+                    entity.setGridPosition(col, row)
                 }.bind(this))
 
                 this.onDespawnEntity(function (entity) {
-                    Tsh.Ddm.Entity.removeEntity(entity)
-                    
+                    Tsh.Ddm.Entity  .removeEntity(entity)
+                    entity.destroy()
                 }.bind(this))
 
             }.bind(Tsh.Ddm.Entity))
 
             Tsh.Ddm.View.onInitialized(function () {
-                Tsh.Ddm.Input.connectInput(this.getDOM("ddm-canvas"))
+                Tsh.Ddm.Input.connectInput      (this.getDOM("ddm-canvas"))
+                Tsh.Ddm.Board.connectBoardView  (this.getBoard())
 
                 this.onViewCreated(function (view) {
                     if (view.type == "monster") {

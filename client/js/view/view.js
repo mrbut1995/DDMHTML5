@@ -1,6 +1,13 @@
 
 define(["jquery","ddm-view"],function($,Tsh){
     var View = Class.extend({
+        /**
+         * @constructor
+         * @param {number} id 
+         * @param {any} config 
+         * @param {string} layer 
+         * @param {View} parent 
+         */
         init      : function(id,config,layer,parent){
             $.extend(true,this,{
                 parent                      : parent,
@@ -32,6 +39,19 @@ define(["jquery","ddm-view"],function($,Tsh){
             if(View._onCreated)
                 View._onCreated(this)
         },
+        /**
+         * @deconstrutor
+         */
+        destroy : function(){
+            forEachChild(c => c.destroy())
+            if(this.parent != null){
+                this.removeInArray(this.parent.childs)
+            }
+            this.parent = null
+            this.point  = null
+            this.size   = null
+        },
+
         forEachChild: function(callback){
             for(var i in this.childs){
                 var view = this.childs[i]
@@ -210,13 +230,6 @@ define(["jquery","ddm-view"],function($,Tsh){
                     a.splice(i,1)
                 }
             }
-        },
-        destroy : function(){
-            forEachChild(c => c.destroy())
-            if(this.parent != null){
-                this.removeInArray(this.parent.childs)
-            }
-            this.parent = null
         },
         toString : function(){
             return this.type+"("+this.id+")"
