@@ -20,13 +20,14 @@ define(function (Entity) {
             Tsh.Ddm.Entity.init(Tsh.Ddm)
 
             Tsh.Ddm.Animator.init(Tsh.Ddm)
-            Tsh.Ddm.Debug.init(Tsh.Ddm)
             Tsh.Ddm.Input.init(Tsh.Ddm)
             Tsh.Ddm.Client.init(Tsh.Ddm)
             Tsh.Ddm.Player.init(Tsh.Ddm)
             Tsh.Ddm.Match.init(Tsh.Ddm)
             Tsh.Ddm.Path.init(Tsh.Ddm)
             Tsh.Ddm.Board.init(Tsh.Ddm)
+
+            Tsh.Ddm.Debug.init(Tsh.Ddm)
 
             this.connectServer();
 
@@ -178,7 +179,7 @@ define(function (Entity) {
                 this.onAddEntity(function (entity) {    
                     Tsh.Ddm.Entity  .registerToEntityGrid   (entity,entity.point.col,entity.point.row)
                     Tsh.Ddm.Path    .registerToPathingGrid  (entity,entity.point.col,entity.point.row)
-                    Tsh.Ddm.Animator.registerAnimator       (entity)
+                    Tsh.Ddm.Animator.registerEntityAnimator       (entity)
                     Tsh.Ddm.View    .registerEntityView     (entity)
                     Tsh.Ddm.Input   .registerEntityInput    (entity)
                 }.bind(this))
@@ -186,7 +187,7 @@ define(function (Entity) {
                 this.onRemoveEntity(function (entity) {
                     Tsh.Ddm.Entity  .removeFromEntityGrid   (entity,entity.point.col,entity.point.row)
                     Tsh.Ddm.Path    .removeFromPathingGrid  (entity,entity.point.col,entity.point.row)
-                    Tsh.Ddm.Animator.unregisterAnimator     (entity)
+                    Tsh.Ddm.Animator.unregisterEntityAnimator     (entity)
                     Tsh.Ddm.View    .unregisterEntityView   (entity)
                     Tsh.Ddm.Input   .unregisterEntityInput  (entity)
                 }.bind(this))
@@ -194,15 +195,15 @@ define(function (Entity) {
 
                 this.onRequestEntities(function(entitieIds){
                     console.log("request data from list",entitieIds)
-                    
+                    Tsh.Ddm.Client.sendQuery(entitieIds)
                 })
                 this.onSpawnMonster(function (entity, col, row, controllerid, target) {
                     var _view = Tsh.Ddm.View.generateView(entity.view)
                     entity.setView(_view)
+                    entity.setGridPosition(col, row)
 
                     Tsh.Ddm.Entity.addEntity(entity)
 
-                    entity.setGridPosition(col, row)
 
                     entity.idle()
                     if (controllerid == Tsh.Ddm.Player.playerid) {
@@ -252,9 +253,6 @@ define(function (Entity) {
                 this.onSpawnMonsterLord(function (entity, col, row, controllerid, target) {
                     var _view = Tsh.Ddm.View.generateView(entity.view)
                     entity.setView(_view)
-
-                    Tsh.Ddm.Entity.addEntity(entity)
-
                     entity.setGridPosition(col, row)
 
                     Tsh.Ddm.Entity.addEntity(entity)
@@ -264,10 +262,10 @@ define(function (Entity) {
                 this.onSpawnLand(function (entity, col, row, controllerid) {
                     var _view = Tsh.Ddm.View.generateView(entity.view)
                     entity.setView(_view)
+                    entity.setGridPosition(col, row)
 
                     Tsh.Ddm.Entity.addEntity(entity)
 
-                    entity.setGridPosition(col, row)
 
                     
                 }.bind(this))
@@ -300,9 +298,10 @@ define(function (Entity) {
                     } else if (view.type == "land") {
                         view.setBoard(Tsh.Ddm.View.getBoard())
                     }
+                    Tsh.Ddm.Animator.registerViewAnimator(view)
                 }.bind(this))
                 this.onViewDestroyed(function (view) {
-
+                    Tsh.Ddm.Animator.unregisterViewAnimator(view)
                 }.bind(this))
                 this.onDirty(function () {
 

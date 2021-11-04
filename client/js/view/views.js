@@ -1,4 +1,4 @@
-define(["jquery", "view/pieceview",], function ($,PieceView) {
+define(["jquery", "view/pieceview","animation/animations"], function ($,PieceView,Animations) {
     var Views = {
         LandView: PieceView.extend({
             init(id,config,parent) {
@@ -9,7 +9,6 @@ define(["jquery", "view/pieceview",], function ($,PieceView) {
 
                 this.imgSrcNormal = "#F0F0F0",
                 this.imgSrcSelect = "rgb(255, 100, 55, 0.5)"
-                
             },
             draw(context,mainView){
                 context.save()
@@ -31,6 +30,13 @@ define(["jquery", "view/pieceview",], function ($,PieceView) {
 
                 this.imgSrcNormal =  "red",
                 this.imgSrcSelect = "rgb(255, 100, 55, 0.5)"
+
+                this.animations = {
+                    move  : new Animations.PointMoveAnimation(),
+                    attack: new Animations.PointMoveAnimation()
+                }
+                this.movingAnimation = 100
+
             },
             draw(context,mainView){
                 context.save()
@@ -55,7 +61,22 @@ define(["jquery", "view/pieceview",], function ($,PieceView) {
                 
                 context.fillRect(drawingRect.x + 5, drawingRect.y +5 , drawingRect.w - 10, drawingRect.h - 10)
                 context.restore()
-            }    
+            },
+            moveAnimation(from,to,onStart,onRunning,onCompleted){
+                var move = this.animations.move
+                if(move){
+                    this.animations.move.target = this
+                    this.animations.move.onAnimationStart       (onStart)
+                    this.animations.move.onAnimationCompleted   (onCompleted)
+                    this.animations.move.onRunningAnimation     (onRunning)
+                    this.animations.move.start                  (from,to,this.movingAnimation)    
+                }
+            },
+            attackAnimation(orientation,onStart,onRunning,onCompleted){
+                if(this.animations.attack){
+                    
+                }
+            }
         }),
 
         MonsterLordView: PieceView.extend({

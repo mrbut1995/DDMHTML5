@@ -18,8 +18,8 @@ define(["jquery","ddm","lib/astar"],function($,Tsh,Astar){
             }
         },
         constant:{
-            MOVEABLE_CELL    : 1,
-            NONMOVEABLE_CELL : 0,
+            MOVEABLE_CELL    : 0,
+            NONMOVEABLE_CELL : 1,
         },
 
         //Findind
@@ -29,7 +29,7 @@ define(["jquery","ddm","lib/astar"],function($,Tsh,Astar){
             }else if(type == "fly"){
                 return this.findPath(this.flyingGrid ,entity,col,row,findIncomplete)
             }else{
-                return this.findPath(this.pathingGrid,entity,col,row,findIncomplete)
+                return this.findPath(this.walkingGrid,entity,col,row,findIncomplete)
             }
         },
         findPath(grid,entity,col,row,findIncomplete){
@@ -88,19 +88,19 @@ define(["jquery","ddm","lib/astar"],function($,Tsh,Astar){
          * @param {int} row Row Index of value need to remove from Pathing Grid 
          */
         removeFromPathingGrid(entity,col,row){
-            if(isLandView(entity)){
+            if(isLandEntity(entity)){
                 this.pathingGrid[row][col] = this.constant.NONMOVEABLE_CELL
                 this.walkingGrid[row][col] = this.constant.NONMOVEABLE_CELL
-            }else if(isMonsterView(entity) || isMonsterLordView(entity)){
+            }else if(isMonsterEntity(entity) || isMonsterLordEntity(entity)){
                 this.pathingGrid[row][col] = this.constant.MOVEABLE_CELL
                 this.walkingGrid[row][col] = this.constant.MOVEABLE_CELL
             }
         },
         registerToPathingGrid(entity,col,row){
-            if(isLandView(entity)){
+            if(isLandEntity(entity)){
                 this.pathingGrid[row][col] = this.constant.MOVEABLE_CELL
                 this.walkingGrid[row][col] = this.constant.MOVEABLE_CELL
-            }else if(isMonsterView(entity) || isMonsterLordView(entity)){
+            }else if(isMonsterEntity(entity) || isMonsterLordEntity(entity)){
                 this.pathingGrid[row][col] = this.constant.NONMOVEABLE_CELL
                 this.walkingGrid[row][col] = this.constant.NONMOVEABLE_CELL
             }

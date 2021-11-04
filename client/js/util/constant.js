@@ -1,35 +1,6 @@
 //Game Constant
 function p(col, row) { return {col:col,row:row} }
 
-var viewconfig = {
-    board:{
-        col : 13,
-        row : 19,
-        margin:{
-            horizontal:8,
-            vertical  :8
-        },
-        size: {
-          width:633,
-          height:923,
-        },
-        cell:{
-            margin:{
-              horizontal:0,
-              vertical  :0
-            },
-            size:{
-              width :42,
-              height:42 
-            },
-            padding:{
-              horizontal:6,
-              vertical  : 6
-            }
-        },
-    }
-}
-
 var Constants = new function () {
   this.GameStatus = {
     ACTIVE: "active",

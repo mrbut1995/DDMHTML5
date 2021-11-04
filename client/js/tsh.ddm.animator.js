@@ -1,4 +1,4 @@
-define(["ddm","entity/entity"],function(Tsh,Entity){
+define(["ddm","entity/entity","view/view"],function(Tsh,Entity,View){
     Tsh.Ddm = Tsh.Ddm || {}
     Tsh.Ddm.Animator = {
         init(app){
@@ -71,20 +71,35 @@ define(["ddm","entity/entity"],function(Tsh,Entity){
 
             }.bind())
         },
-        registerAnimator(entity){
+        registerEntityAnimator(entity){
             if(entity instanceof Entity){
                 entity.forEachAnimation(function(animation){
                     this.addAnimations(animation)
                 }.bind(this))
             }
         },
-        unregisterAnimator(entity){
+        unregisterEntityAnimator(entity){
             if(entity instanceof Entity){
                 entity.forEachAnimation(function(animation){
                     this.removeAnimation(animation)
                 }.bind(this))
             }
         },
+        registerViewAnimator(view){
+            if(view instanceof View){
+                view.forEachAnimation(function(animation){
+                    this.addAnimations(animation)
+                }.bind(this))
+            }
+        },
+        unregisterViewAnimator(view){
+            if(view instanceof View){
+                view.forEachAnimation(function(animation){
+                    this.removeAnimation(animation)
+                }.bind(this))
+            }
+        },
+
         onInitialized(callback){this._onInitialized = callback},
         onAddAnimation(callback){this._onAddAnimation = callback},
         onRemoveAnimation(callback){this._onRemoveAnimation = callback},

@@ -55,11 +55,7 @@ define(["entity/piece", "view/views", "animation/animations"], function (Piece, 
             this.effectSpeed = 120
             this.idleSpeed = 450
 
-            this.movingAnimation = 100
-            //Animation
-            this.animations = {
-                move:   new Animations.PointMoveAnimation(),
-            }
+            this.isMovingAnimation = false
 
             this._super(id, kind)
 
@@ -118,26 +114,20 @@ define(["entity/piece", "view/views", "animation/animations"], function (Piece, 
         hasMoved() {
 
         },
-
         move(to){
-            console.log("move to ",to.toString())
-            var self = this; 
-            var move = this.animations.move
-            if(move){
-                this.animations.move.target = this.getView()
-                this.animations.move.onAnimationStart       (function () {
-                    self.hasMoved()
-                })
-                this.animations.move.onAnimationCompleted   (function () {
-                    self.hasMoved()
-                    self.nextStep()
-                })
-                this.animations.move.onRunningAnimation(function () {
-    
-                })
-                this.animations.move.setFrom(this.point)
-                this.animations.move.setTo(to)
-                this.animations.move.start(this.point,to,this.movingAnimation)    
+            var self = this
+            var view = this.getView()
+            if(view){
+                if(view instanceof Views.MonsterView){
+                    view.moveAnimation(this.point,to,
+                        () => {this.isMovingAnimation = true,self.hasMoved()},
+                        null,
+                        () => {this.isMovingAnimation = false,self.hasMoved(),self.nextStep()}
+                    )
+                }
+            }else{
+                console.log("[ERROR] View does not created")
+                return
             }
         },
 
@@ -334,7 +324,7 @@ define(["entity/piece", "view/views", "animation/animations"], function (Piece, 
             this.updateMovingPath();
         },
         updateMovingPath() {
-            if (this.isMoving() && !this.getAnimations().move.running()) {
+            if (this.isMoving() && !this.isMovingAnimation) {
                 this.move(this.nextPoint())
             }
         },

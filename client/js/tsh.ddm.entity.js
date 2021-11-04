@@ -216,7 +216,41 @@ define(["ddm","jquery","entity/entityfactory","entity/monster","entity/land","en
             return result;
 
         },     
+        getMonsterAt(col,row){
+            var e = this.getEntityAt(col,row)
+            if(e instanceof Monster){
+                return e;
+            }else{
+                return null;
+            }
+        },
+        getLandAt(col,row){
+            var e = this.getEntityAt(col,row)
+            if(e instanceof Land){
+                return e;
+            }else{
+                return null;
+            }
 
+        },
+        getMonsterLordAt(col,row){
+            var e = this.getEntityAt(col,row)
+            if(e instanceof MonsterLord){
+                return e;
+            }else{
+                return null;
+            }
+
+        },
+        getItemAt(col,row){
+            // var e = this.getEntityAt(col,row)
+            // if(e instanceof Item){
+            //     return e;
+            // }else{
+            //     return null;
+            // }
+
+        },
         //Creating Entity
         spawnEntity(kind,id,x,y,name,controllerid,target){
             console.log("spawnEntity")

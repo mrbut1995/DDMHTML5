@@ -34,6 +34,7 @@ define(["jquery","ddm-view"],function($,Tsh){
             
                 scale                       : 1,
                 config                      : config,
+                animations                   : {}
             })
             
             if(View._onCreated)
@@ -82,6 +83,12 @@ define(["jquery","ddm-view"],function($,Tsh){
             if(this._onDirty)
                 this._onDirty()
         },
+        forEachAnimation(callback){
+            var keys = Object.keys(this.animations)
+            for(var i  in keys){
+                callback(this.animations[keys[i]])
+            }
+        },
 
         //Mouse Handle
         mouseClicked            (ev){
@@ -115,30 +122,6 @@ define(["jquery","ddm-view"],function($,Tsh){
             this.forEachChildAt( v => v.mouseCancel(ev))
         },
          
-        onDestroyed(callback){
-            this._onDestroyed = callback
-        },
-        onMouseClicked(callback){
-            this._onMouseClicked = callback
-        },
-        onMousePressed(callback){
-            this._onMousePressed = callback
-        },
-        onMouseReleased(callback){
-            this._onMouseReleased = callback
-        },
-        onMousePressAndHold(callback){
-            this._onPressAndHold = callback
-        },
-        onMouseDrag(callback){
-            this._onMouseDrag = callback
-        },
-        onMouseCancel(callback){
-            this._onMouseCancel = callback
-        },
-        onDirty(callback){
-            this._onDirty = callback;
-        },
         draw: function (context, mainView) {},
         
         //Get Set Property
@@ -177,6 +160,15 @@ define(["jquery","ddm-view"],function($,Tsh){
             this.highlight = value
             forEachChild(child => this.setHighlight(value));
             this.dirty()
+            if(this._onHighlight)
+                this._onHighlight()
+        },
+        toggleHighlight(){
+            if(this.highlight){
+                this.setHighlight(false)
+            }else{
+                this.setHighlight(true)
+            }
         },
         isHighlight(){
             return this.highlight
@@ -185,17 +177,35 @@ define(["jquery","ddm-view"],function($,Tsh){
             this.visible = value
             forEachChild(child => this.setVisible(value));
             this.dirty()
+            if(this._onVisible)
+                this._onVisible()
         },
         isVisible(){
             return this.visible
+        },
+        toggleVisble(){
+            if(this.visible){
+                this.setVisible(false)
+            }else{
+                this.setVisible(true)
+            }
         },
         setEnable(value){
             this.enable = value
             forEachChild(child => this.setEnable(value));
             this.dirty()
+            if(this._onEnable)
+                this._onEnable()
         },
         isEnabled(){
             return this.enable
+        },
+        toggleEnable(){
+            if(this.enable){
+                this.setEnable(false)
+            }else{
+                this.setEnable(true)
+            }
         },
         /////////////////////////////////////////
 
@@ -238,6 +248,40 @@ define(["jquery","ddm-view"],function($,Tsh){
             for(var i in this.childs){
                 callback(this.childs[i])
             }
+        },
+
+        onDestroyed(callback){
+            this._onDestroyed = callback
+        },
+        onMouseClicked(callback){
+            this._onMouseClicked = callback
+        },
+        onMousePressed(callback){
+            this._onMousePressed = callback
+        },
+        onMouseReleased(callback){
+            this._onMouseReleased = callback
+        },
+        onMousePressAndHold(callback){
+            this._onPressAndHold = callback
+        },
+        onMouseDrag(callback){
+            this._onMouseDrag = callback
+        },
+        onMouseCancel(callback){
+            this._onMouseCancel = callback
+        },
+        onDirty(callback){
+            this._onDirty = callback;
+        },
+        onVisible(callback){
+            this._onVisible = callback
+        },
+        onEnable(callback){
+            this._onEnable = callback
+        },
+        onHighlight(callback){
+            this._onHighlight = callback
         }
     })
     View.onCreated = function(callback){this._onCreated = callback}.bind(View)

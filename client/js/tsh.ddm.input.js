@@ -13,6 +13,12 @@ define(["ddm", "jquery","entity/entity"], function(Tsh,$,Entity){
                 col: 0,
                 row: 0,
             }
+            this.hovering = {
+                monster : null,
+                monsterlord: null,
+                land : null,
+                item : null
+            }
             this.inputListener = []
             this.pressAndHoldTimer = null
             this.app = app
@@ -78,6 +84,7 @@ define(["ddm", "jquery","entity/entity"], function(Tsh,$,Entity){
                 this.mouse.x = coord.x
                 this.mouse.y = coord.y
                 this._updateGridMousePosition()
+                this._updateHover()
             }
             if (this.mouse.down) {
                 this.mouse.dragging = true;
@@ -105,14 +112,18 @@ define(["ddm", "jquery","entity/entity"], function(Tsh,$,Entity){
         },
         _updateGridMousePosition(){
             //TODO: Translate Mouse Position into Col Row
-            var mx = this.mouse.x,
-                my = this.mouse.y,
-                mCol =  Math.floor((mx - viewconfig.board.margin.horizontal) / (viewconfig.board.cell.size.width  + viewconfig.board.cell.padding.horizontal)),
-                mRow = Math.floor ((my - viewconfig.board.margin.vertical)   / (viewconfig.board.cell.size.height + viewconfig.board.cell.padding.vertical))
-            this.mouse.col = mCol
-            this.mouse.row = mRow
+            var m = Tsh.Ddm.View.getGridPointAt(this.mouse.x,this.mouse.y)
+            this.mouse.col = m.col
+            this.mouse.row = m.row
         },
-
+        _updateHover(){
+            var col = this.mouse.col,
+                row = this.mouse.row
+            this.hovering.monster       = Tsh.Ddm.Entity.getMonsterAt(col,row)
+            this.hovering.monsterlord   = Tsh.Ddm.Entity.getMonsterLordAt(col,row)
+            this.hovering.land          = Tsh.Ddm.Entity.getLandAt(col,row)
+            this.hovering.item          = Tsh.Ddm.Enttiy.getItemAt(col,row)
+        },
         onCanvasClicked(callback)     {this._onMouseClicked = callback},
         onCanvasPressed(callback)     {this._onMousePressed = callback},
         onCanvasReleased(callback )   {this._onMouseReleased = callback},

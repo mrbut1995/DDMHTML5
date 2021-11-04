@@ -136,6 +136,14 @@ define(["ddm","jquery"],function(Tsh,$){
             $("#dbPieceDestroy").click(this.btnDestroySelectedPiece.bind(this))
             $("#dbDisplayAction").click(this.btnDisplayActionPopup.bind(this))
             $("#dbSendAllData").click(this.sendList.bind(this))
+            
+            Tsh.Ddm.Client.enable()
+            Tsh.Ddm.Debug.loadPrefabData()
+            Tsh.Ddm.Client.connection = {}
+            Tsh.Ddm.Client.connection.readyState = 1
+            Tsh.Ddm.Client.connection.send = function(msg){
+                Tsh.Ddm.Debug.receiveMessage(msg)
+            }
         }
 
         this.entityData = {}
@@ -192,8 +200,22 @@ define(["ddm","jquery"],function(Tsh,$){
         this.receiveMessage = function(msg){
             var data = JSON.parse(msg)
             var id = data[0]
-            if(id == Messages.WHO){
-                
+            if(id == Messages.QUERY){
+                data.shift()
+                this.handleSpawnEntity(data)
+            }
+        },
+        this.handleSpawnEntity = function(data){
+            console.log("handleSpawnEntity")
+            for(var i in data){
+                var e = this.entityData[data[i]]
+                if(e){
+                    if(e.type == "NormalLand"){
+                        this.sendCreateLand(e.id,e.col,e.row)
+                    }else if(e.type == "DummyMonster1"){
+                        this.sendCreateMonster(e.id,e.col,e.row)
+                    }    
+                }
             }
         },
         this.loadPrefabData = function(){
@@ -224,19 +246,6 @@ define(["ddm","jquery"],function(Tsh,$){
                 }
             }
         },
-
-        this.sendAllData = function(){
-            var keys = Object.keys(this.entityData)
-            for(var i in keys){
-                var key = keys[i]
-                var e = this.entityData[key]
-                if(e.type == "NormalLand"){
-                    this.sendCreateLand(e.id,e.col,e.row)
-                }else if(e.type == "DummyMonster1"){
-                    this.sendCreateMonster(e.id,e.col,e.row)
-                }
-            }
-        }
         this.createViewMonster = function () {
             console.log("createViewMonster")
             var lCol = document.getElementById("pieceColId").value
@@ -348,6 +357,4 @@ define(["ddm","jquery"],function(Tsh,$){
             }
         }
     }
-    Tsh.Ddm.Client.enable()
-    Tsh.Ddm.Debug.loadPrefabData()
 })

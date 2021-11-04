@@ -14,50 +14,66 @@ define(["ddm", "jquery", "view/view","view/boardview","view/highlightview","view
 
     //Board Canvas View
     Tsh.Ddm.View =  {
-        /////Property
-        //Main View
-        layers : {},
-        views : {},        
-        dirty : true,
-
-
-        //Highlight
-        isHighlight : false,
-        hightlights : [],
-        background  : null,
-        foreground  : null,
         
-        //Mouse
-        mouseCoord : null,
 
-        dom : {
-            DOMBoard : null,
-            DOMDiceOne : null,
-            DOMDiceTwo : null,
-            DOMDiceThree : null,
-            DOMCanvas : null,
-        },
-
+        //Define Pre View Data
         config : {
             canvas:{
                 width : 633,
                 height: 923
             },
+            views:{
+                board:{
+                    col : 13,
+                    row : 19,
+                    margin:{
+                        horizontal:8,
+                        vertical  :8
+                    },
+                    size: {
+                      width:633,
+                      height:923,
+                    },
+                    cell:{
+                        margin:{
+                          horizontal:0,
+                          vertical  :0
+                        },
+                        size:{
+                          width :42,
+                          height:42 
+                        },
+                        padding:{
+                          horizontal:6,
+                          vertical  : 6
+                        }
+                    },
+                }            
+            }
         },        
 
-        //Animation
-        effects : {},
-        animation : {},
-
-        //Popup
-        popup : {},
-        displaypopup : {},
 
         init (app) {
+
+            this.foreground = null
+            this.background = null
+            this.layers = {}
+            this.views = {}            
+            this.dom  = {}
+            this.effects = {}
+            this.animation = {}
+            this.popup = {}
+            this.displaypopup = {}
+
             this.initDOM()
             this.initCanvas()
             this.initBoard();
             this.redraw()
+
+            this.isHighlight = false
+            this.hightlights = []
+            this.dirty = false
+
             this.app = app
             if(this._onInitialized){
                 this._onInitialized()
@@ -252,6 +268,11 @@ define(["ddm", "jquery", "view/view","view/boardview","view/highlightview","view
         getLayers(){
             return this.layers;
         },
+        getGridPointAt(x,y){
+            var  mCol =  Math.floor((x - this.config.views.board.margin.horizontal) / (this.config.views.board.cell.size.width  + this.config.views.board.cell.padding.horizontal)),
+                 mRow = Math.floor ((y - this.config.views.board.margin.vertical)   / (this.config.views.board.cell.size.height + this.config.views.board.cell.padding.vertical))
+            return new Point(mCol,mRow)
+        },
         unregisterViewFromLayer(view){
             if(view == null){
                 console.log("[ERROR] view = null");
@@ -374,8 +395,8 @@ define(["ddm", "jquery", "view/view","view/boardview","view/highlightview","view
             this.registerLayer("piece");
             this.registerLayer("common");
 
-            this.registerViewIntoLayer(new BoardView    ("0000-0000-0000-0000",viewconfig.board))
-            this.registerViewIntoLayer(new HighlightView("0000-0000-0000-0001",viewconfig.board))
+            this.registerViewIntoLayer(new BoardView    ("0000-0000-0000-0000",Tsh.Ddm.View.config.views.board))
+            this.registerViewIntoLayer(new HighlightView("0000-0000-0000-0001",Tsh.Ddm.View.config.views.board))
         },
         //Signal Slots
         onViewCreated   (callback){this._onViewCreated = callback},

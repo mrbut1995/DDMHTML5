@@ -1,4 +1,11 @@
+var Monster,Land,MonsterLord
 
+require(["entity/monster","entity/land","entity/monsterlord"],function(monster_proto,land_proto,monsterlord_prot){
+  console.log("load Class")
+  Monster = monster_proto
+  Land    = land_proto
+  MonsterLord = monsterlord_prot
+})
 function isFunction(f) {
   return typeof f === 'function'
 }
@@ -41,7 +48,15 @@ function isMonsterLordView(n) {
 function isItemView(n) {
   return n.type == "item"
 }
-
+function isMonsterEntity(n){
+  return n instanceof Monster
+}
+function isMonsterLordEntity(n){
+  return n instanceof MonsterLord
+}
+function isLandEntity(n){
+  return n instanceof Land
+}
 
 var Types = {
   Views: {
