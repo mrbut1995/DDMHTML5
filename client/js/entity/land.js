@@ -1,10 +1,10 @@
-define(["entity/entity","view/views"],function(Entity,Views){
+define(["entity/entity","view/landview"],function(Entity,LandView){
     console.log("LOAD ENTITY LAND")
 
     var Land = Entity.extend({
         init(id,kind) {
             //View
-            this.view = Views.LandView
+            this.view = LandView
             this._super(id,kind)
         },
         destroy(){

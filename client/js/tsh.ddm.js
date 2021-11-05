@@ -27,9 +27,10 @@ define(function (Entity) {
             Tsh.Ddm.Path.init(Tsh.Ddm)
             Tsh.Ddm.Board.init(Tsh.Ddm)
 
-            Tsh.Ddm.Debug.init(Tsh.Ddm)
 
             this.connectServer();
+
+            Tsh.Ddm.Debug.init(Tsh.Ddm)
 
             Tsh.Ddm.Client.receiveWelcome(["", "", "", "", "", "", "", ""])
 
@@ -144,10 +145,10 @@ define(function (Entity) {
                 Tsh.Ddm.Client.onPlayerDie(function (playerid, result) {
 
                 });
-                Tsh.Ddm.Client.onPlayerRollDice(function (playerid, dice, result) {
+                Tsh.Ddm.Client.onRollDice(function (playerid, dice, result) {
 
                 });
-                Tsh.Ddm.Client.onPlayerChangePhase(function (playerid, changephase) {
+                Tsh.Ddm.Client.onPhaseChanged(function (playerid, changephase) {
 
                 });
                 Tsh.Ddm.Client.onGameEnd(function (state, playerid) {

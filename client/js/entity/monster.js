@@ -1,4 +1,4 @@
-define(["entity/piece", "view/views", "animation/animations"], function (Piece, Views, Animations) {
+define(["entity/piece", "view/monsterview", "animation/animations"], function (Piece, MonsterView, Animations) {
     var Monster = Piece.extend({
         init(id, kind) {
 
@@ -12,7 +12,7 @@ define(["entity/piece", "view/views", "animation/animations"], function (Piece, 
             this.movetype = "walk"
 
             //View
-            this.view = Views.MonsterView
+            this.view = MonsterView
 
             //Action
             this.canAction = true
@@ -118,7 +118,7 @@ define(["entity/piece", "view/views", "animation/animations"], function (Piece, 
             var self = this
             var view = this.getView()
             if(view){
-                if(view instanceof Views.MonsterView){
+                if(view instanceof MonsterView){
                     view.moveAnimation(this.point,to,
                         () => {this.isMovingAnimation = true,self.hasMoved()},
                         null,

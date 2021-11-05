@@ -1,4 +1,4 @@
-define(["view/view"],function(View){
+define(["view/view","animation/animations"],function(View,Animations){
     var PieceView = View.extend({
         init(id,config,layer,parent){
             this._super(id,config,layer,parent)

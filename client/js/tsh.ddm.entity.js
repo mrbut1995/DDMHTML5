@@ -1,4 +1,4 @@
-define(["ddm","jquery","entity/entityfactory","entity/monster","entity/land","entity/entity"],function(Tsh,$,EntityFactory,Monster,Land,Entity){
+define(["ddm","jquery","entity/entityfactory","entity/monster","entity/land","entity/item"],function(Tsh,$,EntityFactory,Monster,Land,Item){
     console.log("LOAD TSH.DDM.ENTITY")
     Tsh = Tsh || {}
     Tsh.Ddm = Tsh.Ddm || {}
@@ -9,6 +9,11 @@ define(["ddm","jquery","entity/entityfactory","entity/monster","entity/land","en
             this.entityGrid     = null
             this.map            = null
             this.obsoleteEntities = null
+            
+            this.selected = {
+                monster : null,
+                land    : null
+            }
 
             this.app = app
             if(this._onInitialized){
@@ -243,13 +248,27 @@ define(["ddm","jquery","entity/entityfactory","entity/monster","entity/land","en
 
         },
         getItemAt(col,row){
-            // var e = this.getEntityAt(col,row)
-            // if(e instanceof Item){
-            //     return e;
-            // }else{
-            //     return null;
-            // }
+            var e = this.getEntityAt(col,row)
+            if(e instanceof Item){
+                return e;
+            }else{
+                return null;
+            }
 
+        },
+        getSelected(){
+            return this.selected
+        },
+        selectAt(col,row){
+            this.selected.monster = this.getMonsterAt(col,row)
+            this.selected.land    = this.getLandAt(col,row)
+            if(this._onSelectedEntity){
+                this._onSelectedEntity(this.selected)
+            }
+        },
+        clearSelection(){
+            this.selected.monster = null
+            this.selected.land    = null
         },
         //Creating Entity
         spawnEntity(kind,id,x,y,name,controllerid,target){
@@ -321,6 +340,8 @@ define(["ddm","jquery","entity/entityfactory","entity/monster","entity/land","en
         onSpawnLand             (callback){this._onSpawnLand = callback},
         onSpawnItem(callback){this._onSpawItem = callback},
         onDespawnEntity(callback){this._onDespawnEntity = callback},
+
+        onSelectedEntity(callback){this._onSelectedEntity = callback},
 
         onInitialized   (callback){this._onInitialized = callback},
         

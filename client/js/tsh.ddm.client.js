@@ -27,8 +27,8 @@ define(["ddm"],function(Tsh){
             this.handlers[Messages.ACTIVE]           = this.receivePlayerActive;
             this.handlers[Messages.DEACTIVE ]        = this.receivePlayerDeactive;
             this.handlers[Messages.DIE ]             = this.receivePlayerDie;
-            this.handlers[Messages.ROLL ]            = this.receivePlayerRollDice;
-            this.handlers[Messages.PHASE ]           = this.receivePlayerChangePhase;
+            this.handlers[Messages.ROLL ]            = this.receiveRollDice;
+            this.handlers[Messages.PHASE ]           = this.receivePhaseChanged;
             this.handlers[Messages.END ]             = this.receiveGameEnd;
         
             this.useBison = false;
@@ -192,10 +192,14 @@ define(["ddm"],function(Tsh){
         receivePlayerDie        (data){
 
         },
-        receivePlayerRollDice   (data){
-
+        receiveRollDice   (data){
+            var result = data;
+            result.shift()
+            if(this._onRollDice){
+                this._onRollDice(result)
+            }
         },
-        receivePlayerChangePhase(data){
+        receivePhaseChanged(data){
 
         },
         receiveGameEnd(data){
@@ -233,8 +237,8 @@ define(["ddm"],function(Tsh){
         onPlayerActive      (callback){this._onPlayerActive         = callback},
         onPlayerDeactive    (callback){this._onPlayerDeactive       = callback},
         onPlayerDie         (callback){this._onPlayerDie            = callback},
-        onPlayerRollDice    (callback){this._onPlayerRollDice       = callback},
-        onPlayerChangePhase (callback){this._onPlayerChangePhase    = callback},
+        onRollDice          (callback){this._onRollDice             = callback},
+        onPhaseChanged      (callback){this._onPhaseChanged         = callback},
 
         onGameEnd           (callback){this._onDisconnected    = callback},
 

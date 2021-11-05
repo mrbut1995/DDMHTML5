@@ -18,5 +18,7 @@ Messages = {
     DIE : 16,
     ROLL : 17,
     PHASE : 18,
-    END : 19
+    END : 19,
+    BOARD: 20,
+    PLAYER: 21
 }

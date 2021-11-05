@@ -108,7 +108,7 @@ define(["ddm", "jquery","entity/entity"], function(Tsh,$,Entity){
             ev.preventDefault();
         },
         _requestCanvasCoord(e){
-            return this.app.View.getCanvasCoord(e)
+            return Tsh.Ddm.View.getCanvasCoord(e)
         },
         _updateGridMousePosition(){
             //TODO: Translate Mouse Position into Col Row
@@ -122,8 +122,9 @@ define(["ddm", "jquery","entity/entity"], function(Tsh,$,Entity){
             this.hovering.monster       = Tsh.Ddm.Entity.getMonsterAt(col,row)
             this.hovering.monsterlord   = Tsh.Ddm.Entity.getMonsterLordAt(col,row)
             this.hovering.land          = Tsh.Ddm.Entity.getLandAt(col,row)
-            this.hovering.item          = Tsh.Ddm.Enttiy.getItemAt(col,row)
+            this.hovering.item          = Tsh.Ddm.Entity.getItemAt(col,row)
         },
+        
         onCanvasClicked(callback)     {this._onMouseClicked = callback},
         onCanvasPressed(callback)     {this._onMousePressed = callback},
         onCanvasReleased(callback )   {this._onMouseReleased = callback},

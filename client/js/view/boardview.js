@@ -12,16 +12,34 @@ define(["jquery", "view/view"], function ($, View) {
             this.imgCell = "#606060"
             this.cellColor = "#606060"
             this.type = "board"
+
+            this.highlights =[]
+        },
+        //Highlight
+        highlight(list){
+            this.highlights = list
+            this.setHightlight(true)
+            this.dirty()
+        },
+        clearHighlight(){
+            this.highlight = []
+            this.setHightlight(false)
+            this.dirty()
         },
         //Drawing
-        draw: function (context, mainView) {
+        draw: function (context) {
             context.save()
             for (var i = 0; i < this.row; i++) {
                 for (var j = 0; j < this.col; j++) {
                     this.drawCellRect(context,j,i,this.cellColor)
                 }
             }
-
+            if(this.highlight){
+                for(var i = 0 ; i < this.highlight.length; i++){
+                    let  p = this.highlight[i]
+                    thid.drawCellHightlight(context,p.col,p.row)
+                }
+            }
             context.restore()
         },
         drawCellRect(context,col,row,color){
@@ -36,7 +54,18 @@ define(["jquery", "view/view"], function ($, View) {
             
             context.restore();
         },
-        
+        drawCellHightlight(context,col,row){
+            context.save();
+            context.fillStyle = "rgb(255, 100, 55, 0.5)" 
+            
+            var pCell = new Point(col, row)
+            var cCell = this.pointToCoord(pCell)
+            var rCell = new Rect(cCell, this.cell.size.width, this.cell.size.height)
+
+            context.fillRect(rCell.x,rCell.y,rCell.w,rCell.h)
+            
+            context.restore();
+        },
         coordToPoint: function (coord) {
             var x = coord.x
             var y = coord.y

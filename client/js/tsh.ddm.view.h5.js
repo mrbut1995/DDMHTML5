@@ -1,7 +1,7 @@
 
 // //Include Module
-define(["ddm", "jquery", "view/view","view/boardview","view/highlightview","view/viewfactory","view/layer","animation/effect","entity/entity"], function 
-        (Tsh , $       , View       ,BoardView       ,HighlightView       ,ViewFactory       ,Layer       ,Effect            ,Entity) {
+define(["ddm", "jquery", "view/views","view/boardview","view/highlightview","view/viewfactory","view/layer","animation/effect","entity/entity","view/landview","view/monsterview"], function 
+        (Tsh , $       , Views       ,BoardView       ,HighlightView       ,ViewFactory       ,Layer       ,Effect            ,Entity         ,LandView       ,MonsterView) {
 
 
     Tsh = Tsh || {}
@@ -58,13 +58,18 @@ define(["ddm", "jquery", "view/view","view/boardview","view/highlightview","view
             this.foreground = null
             this.background = null
             this.layers = {}
-            this.views = {}            
+            this.views = {}
+            this.entityConnections = {}            
             this.dom  = {}
             this.effects = {}
             this.animation = {}
             this.popup = {}
             this.displaypopup = {}
-
+            this.highlight = {
+                land    : [],
+                monster : [],
+                board   : [],
+            }
             this.initDOM()
             this.initCanvas()
             this.initBoard();
@@ -187,6 +192,7 @@ define(["ddm", "jquery", "view/view","view/boardview","view/highlightview","view
         removeView(view){
             if(view.id in this.views){
                 this.unregisterViewFromLayer(view)
+                delete this.views[view.id]
             }
             this.setDirty()
         },
@@ -201,6 +207,9 @@ define(["ddm", "jquery", "view/view","view/boardview","view/highlightview","view
                     layer.forEachView(callback)
                 }
             }.bind(this))
+        },
+        findIfView(callback){
+
         },
         forEachLayer(callback){
             var ids = Object.keys(this.layers)
@@ -250,12 +259,16 @@ define(["ddm", "jquery", "view/view","view/boardview","view/highlightview","view
         },
         registerEntityView(entity){
             if(entity instanceof Entity){
+                var view = entity.getView()
                 this.addView(entity.getView())
+                this.entityConnections[view.id] = entity
             }
         },
         unregisterEntityView(entity){
             if(entity instanceof Entity){
+                var view = entity.getView()
                 this.removeView(entity.getView())
+                delete this.entityConnections[view.id]
             }
         },
         getLayer(layer){
@@ -327,7 +340,144 @@ define(["ddm", "jquery", "view/view","view/boardview","view/highlightview","view
         getBoard(){
             return this.getViewsByClass(BoardView)[0]
         },
-    
+        getHighlightViews(){
+            return this.getViewsByClass(BoardView)[0]
+        },
+        //////////////////////////////////////// Highlight
+        /**
+         * Highlight list of Land View
+         * @param {Land[]} list 
+         */
+        highlightLandView(list){    
+            for(var i in list){
+                var landview = list[i]
+                if(landview instanceof Views.Land){
+                    landview.setHighlight(true)
+                }
+            }
+        },
+        /**
+         * Highlight list of Monster View
+         * @param {Monster[]} list 
+         */
+        highlightMonsterView(list){
+            for(var i in list){
+                var monsterview = list[i]
+                if(monsterview instanceof Views.Mosnter){
+                    monsterview.setHighlight(true)
+                }
+            }
+        },
+        /**
+         * Highlight list of Cell point in Board View
+         * @param {Point[]} list 
+         */
+        highlightBoard(list){
+            if(isFunction(this.getHighlightViews().setHighlight)){
+                this.getHighlightViews().highlight(list)
+                this.getHighlightViews().setHighlight(true)
+            }
+        },
+        
+        /**
+         * Highlight all the Flat Cell (Empty Cell / Land) in the list
+         * @param {(Point|View)[]} region 
+         */
+        highlightFlatInList(list){
+            if(this.isHighlight){
+                for(var i in list){
+                    var item = list[i]
+                    if(item instanceof Point){
+
+                    }else if(item instanceof View){
+                        if(item instanceof LandView){
+                            
+                        }
+                    }
+                }
+            }
+        },
+
+        /**
+         * Highlight all the cell and item that can movable (Land/ Monster that can move throguht) in the list
+         * @param {(Point|View)[]} region 
+         */
+        highlightMoveableInList(list){
+            if(this.isHighlight){
+                for(var i in list){
+                    var item = list[i]
+                    if(item instanceof Point){
+
+                    }else if(item instanceof View){
+                        if(item instanceof LandView){
+                            
+                        }else if(item instanceof MonsterView){
+
+                        }
+                    }
+                }
+            }
+
+        },
+        
+        /**
+         * Highlight all the cell and Item that cannot move throught (Monster/Item/MonsterLord) in the list
+         * @param {(Point|View)[]} region 
+         */
+        highlightNonMovableInList(list){
+            if(this.isHighlight){
+                for(var i in list){
+                    var item = list[i]
+                    if(item instanceof Point){
+
+                    }else if(item instanceof View){
+                        
+                    }
+                }
+            }
+
+        },
+
+        /**
+         * Highlight all the cell and item that can placed Land (Empty Cell) in the list
+         * @param {(Point|View)[]} list 
+         */
+        highlightPlaceableInList(list){
+            if(this.isHighlight){
+                for(var i in list){
+                    var item = list[i]
+                    if(item instanceof Point){
+
+                    }else if(item instanceof View){
+                        
+                    }
+                }
+            }
+        },
+
+        /**
+         * Highlight all the cell and item that is non-placebale (Monster/Land/Item/MonsterLord) in list
+         * @param {(Point|View)[]} region 
+         */
+        highlightNonPlaceableInList(list){
+            if(this.isHighlight){
+                for(var i in list){
+                    var item = list[i]
+                    if(item instanceof Point){
+
+                    }else if(item instanceof View){
+
+                    }
+                }
+            }
+        },
+
+        /**
+         * Clear All hightlight
+         */
+        clearAllHighlight(){
+
+        },
         //////////////////////////////////////// DOM Event
         displayDice(interval){
             var dices = document.getElementById("dicesId");
@@ -366,7 +516,6 @@ define(["ddm", "jquery", "view/view","view/boardview","view/highlightview","view
         generateViewFromKind(kind,config){
             var id =  viewid()
             var view = ViewFactory.createView(kind,id,config)
-            // this.addView(view)
             if(this._onViewCreated){
                 this._onViewCreated(view)
             }
@@ -376,7 +525,6 @@ define(["ddm", "jquery", "view/view","view/boardview","view/highlightview","view
         generateViewFromPrototype(_class,config){
             var id = viewid()
             var view = new _class(id,config)
-            // this.addView(view)
             if(this._onViewCreated){
                 this._onViewCreated(view)
             }
@@ -399,10 +547,11 @@ define(["ddm", "jquery", "view/view","view/boardview","view/highlightview","view
             this.registerViewIntoLayer(new HighlightView("0000-0000-0000-0001",Tsh.Ddm.View.config.views.board))
         },
         //Signal Slots
-        onViewCreated   (callback){this._onViewCreated = callback},
-        onViewDestroyed (callback){this._onViewDestroyed = callback},
-        onDirty         (callback){this._onDirty = callback},
-        onInitialized   (callback){this._onInitialized = callback},
+        onViewCreated    (callback)          {this._onViewCreated = callback},
+        onViewDestroyed  (callback)          {this._onViewDestroyed = callback},
+        onDirty          (callback)          {this._onDirty = callback},
+        onInitialized    (callback)          {this._onInitialized = callback},
+
     }
 })
 

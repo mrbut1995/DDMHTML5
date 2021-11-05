@@ -1,4 +1,4 @@
-define(["view/views","view/view"],function(Views,View){
+define(["view/views","view/view","view/landview","view/monsterview"],function(Views,View,LandView,MonsterView){
     var ViewsFactory = {}
 
     ViewsFactory.builders = {};
@@ -15,7 +15,7 @@ define(["view/views","view/view"],function(Views,View){
     }
 
     ViewsFactory.builders[Types.Views.LANDVIEW] = function(id,config,layer,parent){
-        var view = new Views.LandView(id,config,parent)
+        var view = new LandView(id,config,parent)
         if(parent instanceof View){
             view.childOf(parent)
         }
@@ -23,7 +23,7 @@ define(["view/views","view/view"],function(Views,View){
     }
 
     ViewsFactory.builders[Types.Views.MONSTERVIEW] = function(id,config,layer,parent){
-        var view = new Views.MonsterView(id,config,parent)
+        var view = new MonsterView(id,config,parent)
         if(parent instanceof View){
             view.childOf(parent)
         }

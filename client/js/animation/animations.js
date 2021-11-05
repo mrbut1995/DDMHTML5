@@ -1,4 +1,4 @@
-define(["animation/animation","animation/timeranimation","animation/transitionanimation"],function(Animation,TimerAnimation,TransitionAnimation){
+define(["animation/animation","animation/timeranimation","animation/transitionanimation","animation/sequentialanimation"],function(Animation,TimerAnimation,TransitionAnimation,SequentialAnimation){
     var Animations = {
         PositionAnimation : TransitionAnimation.extend({
             init(target,from,to,interval){
@@ -61,6 +61,11 @@ define(["animation/animation","animation/timeranimation","animation/transitionan
         }),
         SpriteAnimation: TimerAnimation.extend({
         }),
+        AttackAnimation: SequentialAnimation.extend({
+            init(orientation){
+                this.animations = {}
+            }
+        })
     }
     return Animations
 })
