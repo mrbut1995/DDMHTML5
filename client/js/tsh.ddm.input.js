@@ -13,6 +13,9 @@ define(["ddm", "jquery","entity/entity"], function(Tsh,$,Entity){
                 col: 0,
                 row: 0,
             }
+            this.prevmouse = {
+                
+            }
             this.hovering = {
                 monster : null,
                 monsterlord: null,
@@ -89,10 +92,10 @@ define(["ddm", "jquery","entity/entity"], function(Tsh,$,Entity){
             if (this.mouse.down) {
                 this.mouse.dragging = true;
             }
-            if(this._onMouseMove){
-                this._onMouseMove(ev)
+            if(this._onCanvasHover){
+                this._onCanvasHover(ev)
             }
-
+            Tsh.Ddm.Game.highlighPlaceableInRegion([new Point(this.mouse.col,this.mouse.row)])
             ev.preventDefault();
         },
         oncanvasmouseout:function(ev){
@@ -123,12 +126,13 @@ define(["ddm", "jquery","entity/entity"], function(Tsh,$,Entity){
             this.hovering.monsterlord   = Tsh.Ddm.Entity.getMonsterLordAt(col,row)
             this.hovering.land          = Tsh.Ddm.Entity.getLandAt(col,row)
             this.hovering.item          = Tsh.Ddm.Entity.getItemAt(col,row)
+            console.log("this.hovering = ",this.hovering)
         },
         
         onCanvasClicked(callback)     {this._onMouseClicked = callback},
         onCanvasPressed(callback)     {this._onMousePressed = callback},
         onCanvasReleased(callback )   {this._onMouseReleased = callback},
-        onCanvasMove(callback)        {this._onMouseMove = callback},
+        onCanvasHover(callback)       {this._onCanvasHover = callback},
         onCanvasOut(callback)         {this._onMouseOut = callback},
         onCanvasPressAndHold(callback){this._onPressAndHold = callback},
         onInitialized   (callback){this._onInitialized = callback},

@@ -1,9 +1,9 @@
 define(["view/pieceview"],function(PieceView){
-    var LandView = PieceView.extend({
+    var ItemView = PieceView.extend({
         init(id,config,parent) {
-            this._super(id,config,"land",parent)
+            this._super(id,config,"piece",parent)
 
-            this.type = "land"
+            this.type = "item"
             this.size = new Size(43,43)
 
             this.imgSrcNormal = "#F0F0F0",
@@ -13,14 +13,10 @@ define(["view/pieceview"],function(PieceView){
             context.save()
             let drawingRect = this.getBound()
             var style;
-            if(this.isHighlight()){
-                context.fillStyle = this.imgSrcSelect
-            }else{
-                context.fillStyle = this.imgSrcNormal
-            }
+            context.fillStyle = this.imgSrcNormal
             context.fillRect(drawingRect.x, drawingRect.y , drawingRect.w , drawingRect.h )
             context.restore()
         }    
     })
-    return LandView
+    return ItemView
 })

@@ -21,7 +21,10 @@ define(["view/view"],function(View){
             if(this.views[view.id] === undefined){
                 this.views[view.id] = view
                 view.layer = this.name
-                view.onDirty(function(){this.dirty()}.bind(this))
+                view.onDirty(function(){
+                    this.dirty()
+                }.bind(this))
+                
             }else{
                 console.log("This view already exist")
             }

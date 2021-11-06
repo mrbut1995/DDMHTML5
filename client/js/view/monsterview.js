@@ -33,7 +33,7 @@ define(["view/pieceview","animation/animations"],function(PieceView,Animations){
             if(this.iscontrol){
                 context.strokeStyle = "red"
             }else{
-                context.strokeStyle = "red"
+                context.strokeStyle = "blue"
             }
             context.strokeRect(drawingRect.x,drawingRect.y,drawingRect.w,drawingRect.h)
             

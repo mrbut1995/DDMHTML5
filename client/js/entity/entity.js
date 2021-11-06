@@ -14,6 +14,7 @@ define(["jquery"],function($){
                 isLoaded     : false,
                 point        : new Point(0,0),
                 animations   : {},
+                solid        : true,
                 currentAnimation: null
             }
             
@@ -53,7 +54,12 @@ define(["jquery"],function($){
         setView(view){
             this._viewInstance = view
         },
-
+        getSolid(){
+            return this.solid
+        },
+        setSolid(value){
+            this.solid = value;
+        },
         getAnimations(){
             return this.animations
         },

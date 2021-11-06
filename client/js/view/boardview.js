@@ -16,14 +16,14 @@ define(["jquery", "view/view"], function ($, View) {
             this.highlights =[]
         },
         //Highlight
-        highlight(list){
+        requestHighlight(list){
             this.highlights = list
-            this.setHightlight(true)
+            this.setHighlight(true)
             this.dirty()
         },
         clearHighlight(){
             this.highlight = []
-            this.setHightlight(false)
+            this.setHighlight(false)
             this.dirty()
         },
         //Drawing
@@ -37,6 +37,7 @@ define(["jquery", "view/view"], function ($, View) {
             if(this.highlight){
                 for(var i = 0 ; i < this.highlight.length; i++){
                     let  p = this.highlight[i]
+                    console.log("drawCell highlight at ",p)
                     thid.drawCellHightlight(context,p.col,p.row)
                 }
             }
@@ -98,7 +99,6 @@ define(["jquery", "view/view"], function ($, View) {
         
         relocatingView: function (view, point) {
             var coord = this.coordFrom(point)
-            console.log("new coord = ",coord)
             view.setPosition(coord)
             view.dirty()
         },

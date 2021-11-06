@@ -44,7 +44,7 @@ define(["jquery","ddm-view"],function($,Tsh){
          * @deconstrutor
          */
         destroy : function(){
-            forEachChild(c => c.destroy())
+            this.forEachChild(c => c.destroy())
             if(this.parent != null){
                 this.removeInArray(this.parent.childs)
             }
@@ -158,7 +158,7 @@ define(["jquery","ddm-view"],function($,Tsh){
         },
         setHighlight(value){
             this.highlight = value
-            forEachChild(child => this.setHighlight(value));
+            this.forEachChild(child => this.setHighlight(value));
             this.dirty()
             if(this._onHighlight)
                 this._onHighlight()
@@ -175,7 +175,7 @@ define(["jquery","ddm-view"],function($,Tsh){
         },
         setVisible(value){
             this.visible = value
-            forEachChild(child => this.setVisible(value));
+            this.forEachChild(child => this.setVisible(value));
             this.dirty()
             if(this._onVisible)
                 this._onVisible()
@@ -192,7 +192,7 @@ define(["jquery","ddm-view"],function($,Tsh){
         },
         setEnable(value){
             this.enable = value
-            forEachChild(child => this.setEnable(value));
+            this.forEachChild(child => this.setEnable(value));
             this.dirty()
             if(this._onEnable)
                 this._onEnable()
@@ -244,12 +244,6 @@ define(["jquery","ddm-view"],function($,Tsh){
         toString : function(){
             return this.type+"("+this.id+")"
         },
-        forEachChild: function(callback){
-            for(var i in this.childs){
-                callback(this.childs[i])
-            }
-        },
-
         onDestroyed(callback){
             this._onDestroyed = callback
         },

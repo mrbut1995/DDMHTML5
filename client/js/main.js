@@ -38,7 +38,6 @@ requirejs.config({
 });
 
 
-
 window.onload = function(){
   console.log("window.onLoad")
   var tsh_module = ["ddm-view","ddm-logic","ddm-loader","ddm-input","ddm-debug","ddm-entity","ddm-player","ddm-client","ddm-match","ddm-animator","ddm-path","ddm-board"]

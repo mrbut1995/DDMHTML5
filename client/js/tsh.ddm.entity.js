@@ -1,19 +1,27 @@
-define(["ddm","jquery","entity/entityfactory","entity/monster","entity/land","entity/item"],function(Tsh,$,EntityFactory,Monster,Land,Item){
+/**
+ * @typedef {Object} EntityGroup
+ * @property {object} point 
+ * @property {object} monster    
+ * @property {object} land       
+ * @property {object} monsterlord
+ * @property {object} item       
+ */
+
+define(["ddm","jquery","entity/entityfactory","entity/monster","entity/land","entity/item","entity/monsterlord"],function(Tsh,$,EntityFactory,Monster,Land,Item,MonsterLord){
     console.log("LOAD TSH.DDM.ENTITY")
     Tsh = Tsh || {}
     Tsh.Ddm = Tsh.Ddm || {}
 
     Tsh.Ddm.Entity = {
+        
         init(app){
             this.entities = {}
             this.entityGrid     = null
             this.map            = null
             this.obsoleteEntities = null
             
-            this.selected = {
-                monster : null,
-                land    : null
-            }
+            /**@type {EntityGroup} */
+            this.selected = {}
 
             this.app = app
             if(this._onInitialized){
@@ -114,18 +122,78 @@ define(["ddm","jquery","entity/entityfactory","entity/monster","entity/land","en
                 delete this.entityGrid[row][col][entity.id]
             }
         },
-
-        getEntityAt(col,row){
-            if(!this.entityGrid){
-                return null;
+        /**
+         * 
+         * @param {number} col Column in board that contain entites
+         * @param {number} row Row in board that contain entites
+         * @returns {EntityGroup} 
+         */
+        getEntityGroupAt(col,row){
+            var entity = {
+                point       : null,
+                top         : null,
+                monster     : null,
+                land        : null,
+                monsterlord : null,
+                item        : null,
             }
-            var entites = this.entityGrid[row][col], entity = null;
-            if(Object.keys(entites).length > 0){
-                entity = entites[Object.keys(entites)[0]]
+
+            // if(this.entityGrid == null){
+            //     return entity;
+            // }
+            entity.point = new Point(col,row)
+
+            var entities =  this.entityGrid[row][col]
+            var keys = Object.keys(entities)
+
+            if(keys.length > 0){
+                entity.top = entities[keys[0]]
+                for(var i in keys){
+                    var e = entities[keys[i]]
+                    if(e instanceof Monster){
+                        entity.monster = e
+                    }else if(e instanceof Land){
+                        entity.land = e
+                    }else if(e instanceof Item){
+                        entity.item = e
+                    }else if(e instanceof MonsterLord){
+                        entity.monsterlord = e
+                    }
+                }
             }
             return entity
         },
-        
+        /**
+         * Retrive List of Entity at region
+         * @param {Point[]}         region  List of position need to get  
+         * @return {EntityGroup[]}
+         */
+        getEntityGroupsAtRegion(region){
+            var lst = []
+            for(var i in region){
+                var p = region[i]
+                if(isPoint(p)){
+                    lst.push(this.getEntityGroupAt(p.col,p.row))
+                }
+            }
+            return lst 
+        },
+        getEntityAt(col,row){
+            return this.getEntityGroupAt(col,row).top;
+        },
+        getMonsterAt(col,row){
+            return this.getEntityGroupAt(col,row).monster
+        },
+        getLandAt(col,row){
+            return this.getEntityGroupAt(col,row).land
+        },
+        getMonsterLordAt(col,row){
+            return this.getEntityGroupAt(col,row).monsterlord
+        },
+        getItemAt(col,row){
+            return this.getEntityGroupAt(col,row).item
+        },
+
         entityIds(){
             return Object.keys(this.entities)
         },
@@ -221,41 +289,6 @@ define(["ddm","jquery","entity/entityfactory","entity/monster","entity/land","en
             return result;
 
         },     
-        getMonsterAt(col,row){
-            var e = this.getEntityAt(col,row)
-            if(e instanceof Monster){
-                return e;
-            }else{
-                return null;
-            }
-        },
-        getLandAt(col,row){
-            var e = this.getEntityAt(col,row)
-            if(e instanceof Land){
-                return e;
-            }else{
-                return null;
-            }
-
-        },
-        getMonsterLordAt(col,row){
-            var e = this.getEntityAt(col,row)
-            if(e instanceof MonsterLord){
-                return e;
-            }else{
-                return null;
-            }
-
-        },
-        getItemAt(col,row){
-            var e = this.getEntityAt(col,row)
-            if(e instanceof Item){
-                return e;
-            }else{
-                return null;
-            }
-
-        },
         getSelected(){
             return this.selected
         },
