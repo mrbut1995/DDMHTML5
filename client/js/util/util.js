@@ -56,6 +56,22 @@ function extend(a, b) {
     })
   }
 
+  /**
+   * Transforming relative point from From point into absolute point
+   * @param {Point} point 
+   * @param {Point} relative 
+   * @return {Point}
+   */
+  function relativeToAbsolutePoint(from,relative){
+    return from.add(relative)
+  }
+
+  function forEach(list,callback){
+    for(var i in list.length){
+        callback(list[i])
+    }
+  }
+
   var mId = 0;
   var mViewId = 0;
   function entityId(){

@@ -11,6 +11,12 @@ var Coord = function (x, y) {
         return "("+this.x+","+this.y+")"
     }
 };
+Coord.fromString = function(str){
+    var x = parseFloat(str.match(/[+-]?\d+(\.\d+)?/g)[0]);
+    var y = parseFloat(str.match(/[+-]?\d+(\.\d+)?/g)[1]);
+    return new Coord(x,y)
+}
+
 var Size = function(w,h){
     this.w      = w
     this.h      = h
@@ -50,4 +56,9 @@ function Point(col, row) {
     this.add = function (point) {
         return new Point(point.col + this.col, this.row + point.row)
     }
+}
+Point.fromString = function(str){
+    var col = parseFloat(str.match(/[+-]?\d+(\.\d+)?/g)[0]);
+    var row = parseFloat(str.match(/[+-]?\d+(\.\d+)?/g)[1]);
+    return new Point(col,row)
 }

@@ -17,12 +17,12 @@ define(["jquery", "view/view"], function ($, View) {
         },
         //Highlight
         requestHighlight(list){
-            this.highlights = list
+            this.highlights = this.highlights.concat(list)
             this.setHighlight(true)
             this.dirty()
         },
         clearHighlight(){
-            this.highlight = []
+            this.highlights = []
             this.setHighlight(false)
             this.dirty()
         },
@@ -34,11 +34,10 @@ define(["jquery", "view/view"], function ($, View) {
                     this.drawCellRect(context,j,i,this.cellColor)
                 }
             }
-            if(this.highlight){
-                for(var i = 0 ; i < this.highlight.length; i++){
-                    let  p = this.highlight[i]
-                    console.log("drawCell highlight at ",p)
-                    thid.drawCellHightlight(context,p.col,p.row)
+            if(this.isHighlight()){
+                for(var i = 0 ; i < this.highlights.length; i++){
+                    let  p = this.highlights[i]
+                    this.drawCellHightlight(context,p.col,p.row)
                 }
             }
             context.restore()
@@ -84,14 +83,12 @@ define(["jquery", "view/view"], function ($, View) {
 
         pointFrom(coord){
             if(!coord){
-                console.log("ERROR coord = ",coord)
                 return new Point(-1,-1)
             }
             return this.coordToPoint(coord)
         },
         coordFrom(point){
             if(!point){
-                console.log("ERROR point = ",point)
                 return new Coord(-1,-1)
             }
             return this.pointToCoord(point)

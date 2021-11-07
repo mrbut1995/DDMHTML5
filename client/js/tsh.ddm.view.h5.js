@@ -59,7 +59,7 @@ define(["ddm", "jquery", "view/views", "view/boardview", "view/highlightview", "
             this.background = null
             this.layers = {}
             this.views = {}
-            this.entityConnections = {}
+            this.entityOf = {}
             this.dom = {}
             this.effects = {}
             this.animation = {}
@@ -122,7 +122,6 @@ define(["ddm", "jquery", "view/views", "view/boardview", "view/highlightview", "
         },
 
         draw() {
-            console.log("draw")
             context.clearRect(0, 0, canvas.width, canvas.height)
             this.forEachLayer(function (layer) {
                 layer.draw(canvas)
@@ -163,11 +162,6 @@ define(["ddm", "jquery", "view/views", "view/boardview", "view/highlightview", "
             }
             this.draw();
         },
-        destroyView(view) {
-            if (this._onViewDestroyed) {
-                this._onViewDestroyed(view)
-            }
-        },
         setDirty() {
             this.dirty = this.dirty || true
         },
@@ -182,9 +176,10 @@ define(["ddm", "jquery", "view/views", "view/boardview", "view/highlightview", "
             }
             if (this.views[view.id] === undefined) {
                 this.views[view.id] = view
+                this.entityOf[view.id] = null
                 this.registerViewIntoLayer(view, view.layer)
             } else {
-                console.log("This view already exist")
+                console.log("[ERROR]This view already exist")
             }
             this.setDirty()
 
@@ -193,6 +188,7 @@ define(["ddm", "jquery", "view/views", "view/boardview", "view/highlightview", "
             if (view.id in this.views) {
                 this.unregisterViewFromLayer(view)
                 delete this.views[view.id]
+                delete this.entityOf[view.id]
             }
             this.setDirty()
         },
@@ -238,6 +234,8 @@ define(["ddm", "jquery", "view/views", "view/boardview", "view/highlightview", "
             }.bind(this))
             return lst;
         },
+        getViewByEntity(entity){
+        },
         registerViewIntoLayer(view, layer) {
             if (view == null) {
                 console.log("[ERROR] view = null");
@@ -261,14 +259,13 @@ define(["ddm", "jquery", "view/views", "view/boardview", "view/highlightview", "
             if (entity instanceof Entity) {
                 var view = entity.getView()
                 this.addView(entity.getView())
-                this.entityConnections[view.id] = entity
+                this.entityOf[view.id] = entity
             }
         },
         unregisterEntityView(entity) {
             if (entity instanceof Entity) {
                 var view = entity.getView()
                 this.removeView(entity.getView())
-                delete this.entityConnections[view.id]
             }
         },
         getLayer(layer) {
@@ -313,13 +310,12 @@ define(["ddm", "jquery", "view/views", "view/boardview", "view/highlightview", "
         },
         registerLayer(name, views) {
             if (name in this.layers) {
-                console.log("Already contain layer ", name)
+                console.log("[ERROR]Already contain layer ", name)
             } else {
                 var layer = new Layer(name, canvas);
                 layer.onDirty(function () {
                     this.setDirty()
                 }.bind(this))
-                console.log("regsiter layer ", name, " success")
                 views = views | []
                 for (var i in views) {
                     layer.registerView(views[i])
@@ -335,6 +331,11 @@ define(["ddm", "jquery", "view/views", "view/boardview", "view/highlightview", "
                 return new Point(-1, -1)
             }
             return this.getBoard().pointFrom(coord)
+        },
+        destroyView(view) {
+            if (this._onViewDestroyed) {
+                this._onViewDestroyed(view)
+            }
         },
 
         //////////////////////////////////////// Specify View
@@ -355,6 +356,18 @@ define(["ddm", "jquery", "view/views", "view/boardview", "view/highlightview", "
             return this.getViewsByClass(BoardView)[0]
         },
         //////////////////////////////////////// Highlight
+
+        /**
+         * Check if is currently Highlight or not
+         * @returns {boolean}
+         */
+        isHighlight(){
+            return this.highlight.land.length > 0 ||
+            this.highlight.lanmonsterd.length > 0 ||
+            this.highlight.monsterlord.length > 0 ||
+            this.highlight.item.length > 0 ||
+            this.highlight.board.length > 0
+        },
         /**
          * Highlight list of Land View
          * @param {LandView[]} list 
@@ -423,7 +436,6 @@ define(["ddm", "jquery", "view/views", "view/boardview", "view/highlightview", "
         highlightBoardView(list, type) {
             if (isFunction(this.getHighlightViews().setHighlight)) {
                 var view = this.getHighlightViews()
-                console.log("highlight at =",list)
                 view.requestHighlight(list)
                 view.setHighlight(true)
                 this.highlight.board = list
@@ -458,8 +470,7 @@ define(["ddm", "jquery", "view/views", "view/boardview", "view/highlightview", "
             this.highlight.item = []
 
             //Clear board highlight
-            this.getHighlightViews().setHighlight([])
-            this.getHighlightViews().setHighlight(false)
+            this.getHighlightViews().clearHighlight([])
             this.highlight.board = []
         },
         //////////////////////////////////////// DOM Event
@@ -477,7 +488,6 @@ define(["ddm", "jquery", "view/views", "view/boardview", "view/highlightview", "
                 case 1: DOMObject = this.dom.DOMDiceTwo; break
                 case 2: DOMObject = this.dom.DOMDiceThree; break
             }
-            console.log("result = ", result)
             for (var i = 1; i <= 6; i++) {
                 DOMObject.classList.remove('show-' + i);
                 if (result === i) {
@@ -488,7 +498,6 @@ define(["ddm", "jquery", "view/views", "view/boardview", "view/highlightview", "
         },
         //////////////////////////////////////// SPECIFY
         generateView(kind, config) {
-            console.log(this)
             if (isViewKind(kind)) {
                 return this.generateViewFromKind(kind, config)
             } else if (isViewPrototype(kind)) {
@@ -503,7 +512,6 @@ define(["ddm", "jquery", "view/views", "view/boardview", "view/highlightview", "
             if (this._onViewCreated) {
                 this._onViewCreated(view)
             }
-            console.log("view = ", view)
             return view
         },
         generateViewFromPrototype(_class, config) {
@@ -512,10 +520,7 @@ define(["ddm", "jquery", "view/views", "view/boardview", "view/highlightview", "
             if (this._onViewCreated) {
                 this._onViewCreated(view)
             }
-            console.log("view = ", view)
             return view
-        },
-        destroyView(id) {
         },
 
         //////////////////////////////////////// ANIMATION

@@ -350,6 +350,7 @@ define(function (Entity) {
                     Tsh.Ddm.View.requestViewsAt(mouse.x, mouse.y, function (views) {
 
                     }.bind(this))
+                    Tsh.Ddm.Debug.onCanvasHoverDebug(mouse)
                 })
                 this.onCanvasOut(function (ev) {
                     let mouse = Tsh.Ddm.Input.mouse
@@ -529,7 +530,6 @@ define(function (Entity) {
             if (!entitygroup) {
                 return viewgroup
             }
-            console.log("entitygroup.point = ",entitygroup.point)
             viewgroup.point = entitygroup.point
             if (entitygroup.top) {
                 viewgroup.topview = entitygroup.top.getView()
@@ -560,6 +560,7 @@ define(function (Entity) {
             this.highlightMoveableInList(groups)
             this.highlightNonMovableInList(groups)
         },
+
         /**
         * Highlight all the Flat Cell (Empty Cell / Land) in the list
         * @param {EntityGroup[]} list 

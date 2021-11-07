@@ -50,16 +50,16 @@ var Constants = new function () {
   }
 
   this.RELATIVE_PATTERN = {
-    TYPE_1: [p(0, -1), p(-1, -1), p(-2, -1), p(0, 1), p(0, 2)],
-    TYPE_2: [p(0, 1), p(-1, 1), p(-2, 1), p(0, 1), p(0, 2)],
-    TYPE_3: [p(1, 0), p(1, -1), p(-1, 0), p(-2, 0), p(-2, 1)],
-    TYPE_4: [p(-1, 0), p(-1, -1), p(1, 0), p(2, 0), p(2, 1)],
-    TYPE_5: [p(-1, 0), p(0, 1), p(0, -1), p(1, -1), p(1, -2)],
-    TYPE_6: [p(-1, 0), p(0, 1), p(0, -1), p(1, 1), p(1, 2)],
-    TYPE_7: [p(0, 1), p(-1, 1), p(1, 0), p(1, -1), p(2, -1)],
-    TYPE_8: [p(0, -1), p(-1, -1), p(1, 0), p(1, 1), p(2, 1)],
-    TYPE_9: [p(-1, 0), p(0, 1), p(1, 0), p(1, -1), p(2, -1)],
-    TYPE_10: [p(-1, 0), p(0, -1), p(1, 0), p(1, 1), p(2, 1)],
+    TYPE_1: ["(0, -1)", "(-1, -1)","(-2, -1)","(0, 1)",  "(0, 2)"],
+    TYPE_2: ["(0, 1)",  "(-1, 1)", "(-2, 1)", "(0, 1)",  "(0, 2)"],
+    TYPE_3: ["(1, 0)",  "(1, -1)", "(-1, 0)", "(-2, 0)", "(-2, 1)"],
+    TYPE_4: ["(-1, 0)", "(-1, -1)","(1, 0)",  "(2, 0)",  "(2, 1)"],
+    TYPE_5: ["(-1, 0)", "(0, 1)",  "(0, -1)", "(1, -1)", "(1, -2)"],
+    TYPE_6: ["(-1, 0)", "(0, 1)",  "(0, -1)", "(1, 1)",  "(1, 2)"],
+    TYPE_7: ["(0, 1)",  "(-1, 1)", "(1, 0)",  "(1, -1)", "(2, -1)"],
+    TYPE_8: ["(0, -1)", "(-1, -1)","(1, 0)",  "(1, 1)",  "(2, 1)"],
+    TYPE_9: ["(-1, 0)", "(0, 1)",  "(1, 0)",  "(1, -1)", "(2, -1)"],
+    TYPE_10:["(-1, 0)", "(0, -1)", "(1, 0)",  "(1, 1)",  "(2, 1)"],
     ALL_TYPE: ["TYPE_1", "TYPE_2", "TYPE_3", "TYPE_4", "TYPE_5",
       "TYPE_6", "TYPE_7", "TYPE_8", "TYPE_9", "TYPE_10"]
   }
@@ -72,7 +72,7 @@ function pointsFromPattern(point, pattern, rot) {
     console.log("DOES NOT CONTAIN PATTERN ", pattern)
     return lst
   }
-  var pRelativePattern = Constants.RELATIVE_PATTERN[pattern]
+  var pRelativePattern = Point.fromString(Constants.RELATIVE_PATTERN[pattern])
   for (var i = 0; i < Math.abs(rot); i++) {
     pRelativePattern = rotating(pRelativePattern, Math.sign(rot) == -1);
   }

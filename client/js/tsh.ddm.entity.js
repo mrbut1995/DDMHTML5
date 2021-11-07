@@ -17,6 +17,7 @@ define(["ddm","jquery","entity/entityfactory","entity/monster","entity/land","en
         init(app){
             this.entities = {}
             this.entityGrid     = null
+            this.groupGrid      = null
             this.map            = null
             this.obsoleteEntities = null
             
@@ -108,13 +109,13 @@ define(["ddm","jquery","entity/entityfactory","entity/monster","entity/land","en
             console.log("Initialized the entity grid.");
 
         },
-
         registerToEntityGrid(entity,col,row){
             var col = entity.point.col,
                 row = entity.point.row
 
             if(entity){
                 this.entityGrid[row][col][entity.id] = entity
+                
             }
         },
         removeFromEntityGrid(entity,col,row){
@@ -138,12 +139,14 @@ define(["ddm","jquery","entity/entityfactory","entity/monster","entity/land","en
                 item        : null,
             }
 
-            // if(this.entityGrid == null){
-            //     return entity;
-            // }
+            if(this.entityGrid == null){
+                return entity;
+            }
             entity.point = new Point(col,row)
 
             var entities =  this.entityGrid[row][col]
+            if(!entities)
+                return entity
             var keys = Object.keys(entities)
 
             if(keys.length > 0){
@@ -288,7 +291,8 @@ define(["ddm","jquery","entity/entityfactory","entity/monster","entity/land","en
             }
             return result;
 
-        },     
+        },
+             
         getSelected(){
             return this.selected
         },

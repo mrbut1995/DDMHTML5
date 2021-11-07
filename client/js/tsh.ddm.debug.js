@@ -356,5 +356,8 @@ define(["ddm","jquery"],function(Tsh,$){
                 Tsh.Ddm.Debug.SetSelectingPiece(monster)
             }
         }
+        this.onCanvasHoverDebug = function(mouse){
+            Tsh.Ddm.Game.highlighPlaceableInRegion(Tsh.Ddm.Input.nearby.all)
+        }
     }
 })

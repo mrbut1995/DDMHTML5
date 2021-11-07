@@ -5,7 +5,7 @@ define(["ddm", "jquery","entity/entity"], function(Tsh,$,Entity){
     Tsh.Ddm.Input = {
 
         init:function(app){
-            this. mouse = {
+            this.mouse = {
                 x:0,
                 y:0,
                 down:false,
@@ -13,10 +13,15 @@ define(["ddm", "jquery","entity/entity"], function(Tsh,$,Entity){
                 col: 0,
                 row: 0,
             }
-            this.prevmouse = {
-                
+            this.nearby = {
+                point   :{col : 0,row: 0},
+                relative:[],
+                absolute:[],
+                all:[],
             }
+            this.prevmouse = {}
             this.hovering = {
+                point   : null,
                 monster : null,
                 monsterlord: null,
                 land : null,
@@ -84,10 +89,12 @@ define(["ddm", "jquery","entity/entity"], function(Tsh,$,Entity){
         oncanvasmousemove:function(ev){
             var coord = this._requestCanvasCoord(ev)
             if(isCoord(coord)){
+                this.prevmouse = deepCopy(this.mouse)
                 this.mouse.x = coord.x
                 this.mouse.y = coord.y
                 this._updateGridMousePosition()
                 this._updateHover()
+                this._updateNearby()
             }
             if (this.mouse.down) {
                 this.mouse.dragging = true;
@@ -95,7 +102,6 @@ define(["ddm", "jquery","entity/entity"], function(Tsh,$,Entity){
             if(this._onCanvasHover){
                 this._onCanvasHover(ev)
             }
-            Tsh.Ddm.Game.highlighPlaceableInRegion([new Point(this.mouse.col,this.mouse.row)])
             ev.preventDefault();
         },
         oncanvasmouseout:function(ev){
@@ -110,25 +116,58 @@ define(["ddm", "jquery","entity/entity"], function(Tsh,$,Entity){
             }
             ev.preventDefault();
         },
+
+        isRequestNearbyPoint(){
+            return this.nearby.relative.length > 0
+        },
+        setNearbyRelativeList(lst){
+            this.nearby.relative = lst
+        },
+        clearNearbyRelativeList(){
+            this.nearby.relative = []
+        },
+        getNearbyAbsoluteList(){
+            return this.nearby.absolute;
+        },
+         /**
+         * @private
+         */
         _requestCanvasCoord(e){
             return Tsh.Ddm.View.getCanvasCoord(e)
         },
+         /**
+         * @private
+         */
         _updateGridMousePosition(){
             //TODO: Translate Mouse Position into Col Row
             var m = Tsh.Ddm.View.getGridPointAt(this.mouse.x,this.mouse.y)
             this.mouse.col = m.col
             this.mouse.row = m.row
         },
+         /**
+         * @private
+         */
         _updateHover(){
             var col = this.mouse.col,
                 row = this.mouse.row
+            this.hovering.point         = new Point(col,row)
             this.hovering.monster       = Tsh.Ddm.Entity.getMonsterAt(col,row)
             this.hovering.monsterlord   = Tsh.Ddm.Entity.getMonsterLordAt(col,row)
             this.hovering.land          = Tsh.Ddm.Entity.getLandAt(col,row)
             this.hovering.item          = Tsh.Ddm.Entity.getItemAt(col,row)
-            console.log("this.hovering = ",this.hovering)
         },
-        
+        /**
+         * @private
+         */
+        _updateNearby(){
+            this.nearby.point.col = this.mouse.col
+            this.nearby.point.row = this.mouse.row
+            this.nearby.absolute = []
+            forEach(this.nearby.relative,function(relative){
+                this.nearby.absolute.push(relativeToAbsolutePoint(this.nearby.point,relative))
+            })
+            this.nearby.all = this.nearby.absolute.concat([this.nearby.point])
+        },
         onCanvasClicked(callback)     {this._onMouseClicked = callback},
         onCanvasPressed(callback)     {this._onMousePressed = callback},
         onCanvasReleased(callback )   {this._onMouseReleased = callback},

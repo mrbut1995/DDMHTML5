@@ -17,6 +17,7 @@ define(["ddm"],function(Tsh){
 
            this.isSummoning = false
            this.isRolling   = false
+           this.isMoving    = false
            
            this.selectedMonster   = null
 
