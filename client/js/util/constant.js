@@ -12,11 +12,10 @@ var Constants = new function () {
     INITIALIZED: "initialized"
   }
   this.direction = {
-    NORTH: "north",
-    EAST: "east",
-    SOUTH: "south",
-    WEST: "west",
-    ALL: ["north", "east", "south", "west"]
+    NORTH: 1,
+    EAST: 2,
+    SOUTH: 3,
+    WEST: 4,
   }
 
   this.action = {
@@ -63,6 +62,13 @@ var Constants = new function () {
     ALL_TYPE: ["TYPE_1", "TYPE_2", "TYPE_3", "TYPE_4", "TYPE_5",
       "TYPE_6", "TYPE_7", "TYPE_8", "TYPE_9", "TYPE_10"]
   }
+}
+function stringsArrayToPoints(array){
+  var lst = []
+  for(var i in array){
+    lst.push(Point.fromString(array[i]))
+  }
+  return lst
 }
 
 function pointsFromPattern(point, pattern, rot) {

@@ -10,18 +10,26 @@ define(["animation/animation"],function(Animation){
         start(){
             this.step    =-1
             this.current = null
-            this.next()
+            this._super()
+        },
+        reset(){
+            this.step    =-1
+            this.current = null
             this._super()
         },
         update(delta){
             if(this.running()){
                 if(this.current == null){
                     this.next()
+                    this.current.start()
                 }else{
                     if(this.current.running()){
+                        console.log("updating ",this._keys()[this.step])
                         this.current.update(delta)
                     }else if(this.current.isCompleted()){
+                        console.log("updating ",this._keys()[this.step])
                         this.next()
+                        this.current.start()
                     }   
                 }
             }
@@ -29,7 +37,7 @@ define(["animation/animation"],function(Animation){
         },
         isCompleted(){
             return this.step == this._keys().length - 1 
-            && this.current 
+            && this.current
             && this.current.isCompleted()
         },
 
@@ -37,12 +45,14 @@ define(["animation/animation"],function(Animation){
         next(){
             if(this.hasNextStep()){
                 this.step++
-                var key = this._keys()[i]
+                var key = this._keys()[this.step]
+                console.log("next = ",this._keys()[this.step])
                 if(!(this.animations[key] instanceof Animation)){
                     this.current = null
                     this.next()
                 }else{
-                    this.current = this.animation[key]
+                    this.current = this.animations[key]
+                    console.log("play ",this._keys()[this.step]," = ",this.current)
                 }
             }
         },

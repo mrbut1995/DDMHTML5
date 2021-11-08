@@ -64,7 +64,7 @@ var Types = {
     LANDVIEW: 1,
     MONSTERVIEW: 3,
     MONSTERLORDVIEW: 4,
-  }
+  },
 }
 
 function isMonsterKind(kind){

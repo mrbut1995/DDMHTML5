@@ -19,6 +19,9 @@ define(["jquery"], function ($) {
         },
 
         start: function () {
+            if(this.isRunning){
+                this.reset()
+            }
             this.isRunning = true
             if (this._onAnimationStart)
                 this._onAnimationStart()
@@ -32,20 +35,22 @@ define(["jquery"], function ($) {
                 }
             }
         },
+        reset(){
+
+        },
         isCompleted(){
             return true;
         },
-        complete: function () {
-            console.log("completed")
+        complete() {
             this.isRunning = false
             if (this._onAnimationCompleted)
                 this._onAnimationCompleted()
         },
 
-        stop: function () {
+        stop() {
             this.isRunning = false
         },
-        pause: function () {
+        pause() {
             this.isRunning = false
         },
         restart() {

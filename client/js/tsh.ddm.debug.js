@@ -114,8 +114,13 @@ define(["ddm","jquery"],function(Tsh,$){
                 .append('<button class="button">Roll Dice</button>')
                 .appendTo('#devActions')
 
+                
             $('<div></div>').addClass('action')
                 .append('<button class="button" id="dbSendAllData">Send All Data</button>')
+                .appendTo('#devActions')
+
+            $('<div></div>').addClass('action')
+                .append('<button class="button" id="dbAttack">Attack</button>')
                 .appendTo('#devActions')
 
             $('<div></div>').addClass('action')
@@ -136,7 +141,8 @@ define(["ddm","jquery"],function(Tsh,$){
             $("#dbPieceDestroy").click(this.btnDestroySelectedPiece.bind(this))
             $("#dbDisplayAction").click(this.btnDisplayActionPopup.bind(this))
             $("#dbSendAllData").click(this.sendList.bind(this))
-            
+            $("#dbAttack").click(this.btnSelectedPieceAttack.bind(this))
+
             Tsh.Ddm.Client.enable()
             Tsh.Ddm.Debug.loadPrefabData()
             Tsh.Ddm.Client.connection = {}
@@ -188,6 +194,11 @@ define(["ddm","jquery"],function(Tsh,$){
             data[1] = ""
             data[2] = this.debugPieceSelected.id 
             Tsh.Ddm.Client.receiveMessage(JSON.stringify(data))
+        }
+        this.sendAttack = function(){
+            var data = []
+            data[0] = Messages.ATTACK
+            data[1] = this.debugPieceSelected.id
         }
         this.sendList = function(){
             var data = []
@@ -270,6 +281,12 @@ define(["ddm","jquery"],function(Tsh,$){
                 this.sendDestroy()
                 this.debugPieceSelected = null
                 this.SetSelectingPiece(this.debugPieceSelected)
+            }
+        }
+        this.btnSelectedPieceAttack = function () {
+            console.log("btnDestroySelectedPiece")
+            if (this.debugPieceSelected != null) {
+                this.debugPieceSelected.attack(1)
             }
         }
         this.btnPositionChange = function () {

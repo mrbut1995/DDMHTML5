@@ -22,7 +22,7 @@ define(["view/view"],function(View){
                 this.views[view.id] = view
                 view.layer = this.name
                 view.onDirty(function(){
-                    this.dirty()
+                    this.dirtyItemInLayer()
                 }.bind(this))
                 
             }else{
@@ -67,6 +67,12 @@ define(["view/view"],function(View){
         getView(index){
             return this.views[index]
         },
+        dirtyItemInLayer(){
+            if(this._onDirty){
+                this._onDirty()
+            }
+        },
+
         onDirty(callback){
             this._onDirty = callback
         }

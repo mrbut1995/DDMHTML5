@@ -14,8 +14,12 @@ define(["animation/timeranimation"],function(TimerAnimation){
             if(to){
                 this.to   = to
             }
-            this.val  = this.from
+            this.val = this.from
             this._super(interval)
+        },
+        reset(){
+            this._super()
+            this.val  = this.from
         },
         update(delta){
             if(this.running()){
@@ -25,6 +29,10 @@ define(["animation/timeranimation"],function(TimerAnimation){
         },
         isCompleted(){
             return this._super()
+        },
+        complete(){
+            this.val = this.to
+            this._super()
         },
         setFrom(from){
             this.from = from

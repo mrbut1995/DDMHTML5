@@ -31,6 +31,7 @@ define(["entity/piece", "view/monsterview", "animation/animations"], function (P
             this.step = 0
             this.nextGridCol = -1
             this.nextGridRow = -1
+            this.direction = Constants.direction.NORTH
 
             //Attack
             this.target = null
@@ -74,13 +75,13 @@ define(["entity/piece", "view/monsterview", "animation/animations"], function (P
             this.attackmode = false;
             this.removeTarget()
         },
-        attack(target) {
-            this.animate("attack",this.atkSpeed)
-            if (this._onAttack)
-                this._onAttack()
-        },
+        // attack(target) {
+        //     this.animate("attack",this.atkSpeed)
+        //     if (this._onAttack)
+        //         this._onAttack()
+        // },
         idle() {
-            this.animate("idle",this.atkSpeed)
+            this.animate("idle", this.atkSpeed)
         },
         hurted(source) {
             this.animate("hurted", this.atkSpeed)
@@ -92,17 +93,17 @@ define(["entity/piece", "view/monsterview", "animation/animations"], function (P
         },
         summon() {
             var self = this
-            this.animate("summoned",this.summonSpeed)
+            this.animate("summoned", this.summonSpeed)
         },
         walk(point) {
             this.animate("walk", this.walkSpeed)
-            
+
         },
         fly(point) {
             this.animate("fly", this.walkSpeed)
         },
         teleport(point) {
-            this.animate("teleport",this.walkSpeed)
+            this.animate("teleport", this.walkSpeed)
         },
 
         changestat(stat, value) {
@@ -114,23 +115,31 @@ define(["entity/piece", "view/monsterview", "animation/animations"], function (P
         hasMoved() {
 
         },
-        move(to){
+        move(to) {
             var self = this
             var view = this.getView()
-            if(view){
-                if(view instanceof MonsterView){
-                    view.moveAnimation(this.point,to,
-                        () => {this.isMovingAnimation = true,self.hasMoved()},
-                        null,
-                        () => {this.isMovingAnimation = false,self.hasMoved(),self.nextStep()}
-                    )
-                }
-            }else{
+            if (view instanceof MonsterView) {
+                view.moveAnimation(this.point, to,
+                    () => { this.isMovingAnimation = true, self.hasMoved() },
+                    null,
+                    () => { this.isMovingAnimation = false, self.hasMoved(), self.nextStep() }
+                )
+
+            } else {
                 console.log("[ERROR] View does not created")
                 return
             }
         },
-
+        attack(direction) {
+            var view = this.getView()
+            if (view instanceof MonsterView) {
+                view.attackAnimation(direction,
+                        ()=>{},
+                        null,
+                        ()=>{}
+                    )
+            }
+        },
         //Path Movement
         //Callback
 
@@ -164,7 +173,7 @@ define(["entity/piece", "view/monsterview", "animation/animations"], function (P
             return !(this.path === null)
         },
         hasNextStep: function () {
-            console.log("this.path.length = ",this.path.length," this.step = ",this.step)
+            console.log("this.path.length = ", this.path.length, " this.step = ", this.step)
             return (this.path.length - 1 > this.step)
         },
         updatePositionOnGrid() {
@@ -204,7 +213,7 @@ define(["entity/piece", "view/monsterview", "animation/animations"], function (P
                     if (this.hasNextStep()) {//Following Path Finding
                         this.nextGridCol = this.path[this.step + 1].col
                         this.nextGridRow = this.path[this.step + 1].row
-                        console.log("prepareMoveTo ",this.nextGridCol," ",this.nextGridRow)
+                        console.log("prepareMoveTo ", this.nextGridCol, " ", this.nextGridRow)
                     }
                     if (this._onStep)
                         this._onStep()

@@ -15,7 +15,7 @@ define(["jquery","ddm-view"],function($,Tsh){
                 view                        : null,
 
                 id                          : id,
-                point                       : new Point(0,0),
+                coord                       : new Coord(0,0),
                 size                        : new Size(0,0),
                 focused                     : false,
                 type                        : "",
@@ -49,7 +49,7 @@ define(["jquery","ddm-view"],function($,Tsh){
                 this.removeInArray(this.parent.childs)
             }
             this.parent = null
-            this.point  = null
+            this.coord  = null
             this.size   = null
         },
 
@@ -125,36 +125,36 @@ define(["jquery","ddm-view"],function($,Tsh){
         draw: function (context, mainView) {},
         
         //Get Set Property
-        setPosition : function(point){
-            this.point = point
+        setPosition : function(coord){
+            this.coord = coord
             this.dirty()
         },
         getPosition : function(){
-            return this.point
+            return deepCopy(this.coord)
         },
         setSize(size){
             this.size = size
             this.dirty()
         },
-        getSize(size){
-            return this.size
+        getSize(){
+            return deepCopy(this.size)
         },
         setScale(s){
             this.scale =s;
             this.dirty()
         },
-        getScale(s){
-            return this.scale
+        getScale(){
+            return deepCopy(this.scale)
         },
         setBound : function(rect){
-            this.point.x = rect.x
-            this.point.y = rect.y
+            this.coord.x = rect.x
+            this.coord.y = rect.y
             this.size.w  = rect.w
             this.size.h  = rect.h
             this.dirty()
         },
         getBound : function(){
-            return new Rect(this.point,this.size.w,this.size.h)
+            return new Rect(this.coord,this.size.w,this.size.h)
         },
         setHighlight(value){
             this.highlight = value

@@ -9,8 +9,11 @@ define(["animation/animation"],function(Animation){
             if(interval){
                 this.interval = interval
             }
-            this.time = this.interval 
+            this.time = this.interval
             this._super()
+        },
+        reset(){
+            this.time = this.interval
         },
         update(delta){
             if(this.running()){
@@ -21,6 +24,10 @@ define(["animation/animation"],function(Animation){
         isCompleted(){
             return this.time <= 0
         },
+        complete(){
+            this.time = 0
+            this._super()
+        },
         percent(){
             if(!this.running())
                 return 1;
@@ -28,6 +35,9 @@ define(["animation/animation"],function(Animation){
                 return 0;
             return 1 - (this.time / this.interval)
         },
+        setInterval(val){
+            this.interval = val
+        }
     })
     return TimerAnimation
 })

@@ -205,7 +205,7 @@ define(["ddm","jquery","entity/entityfactory","entity/monster","entity/land","en
             var result = [];
             var ids = this.entityIds()
             for(var i in lst){
-                if(ids.includes(lst[i])){
+                if(ids.includes(lst[i] + "")){
                     result.push(lst[i])
                 }
             }
@@ -216,7 +216,7 @@ define(["ddm","jquery","entity/entityfactory","entity/monster","entity/land","en
             var result = [];
             var ids = this.entityIds()
             for(var i in lst){
-                if(!ids.includes(lst[i])){
+                if(!ids.includes(lst[i]  + "")){
                     result.push(lst[i])
                 }
             }
@@ -246,11 +246,10 @@ define(["ddm","jquery","entity/entityfactory","entity/monster","entity/land","en
             //Find obsolete Entity
             for(var i in ids){
                 var id = ids[i]
-                if(!knowIds.includes(id)){
+                if(!knowIds.includes(parseInt(id))){
                     this.obsoleteEntities[id] = this.getEntityById(id)
                 }
             }
-
             //Remove all the obsolete
             this.removeObsoleteEntities()
 

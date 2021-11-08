@@ -8,7 +8,11 @@ function extend(a, b) {
     return a
   }
   function deepCopy(thing) {
-    return JSON.parse(JSON.stringify(thing))
+    if(typeof thing === 'object' ){
+      return  Object.assign(Object.create(Object.getPrototypeOf(thing)), thing)
+    }else{
+      return thing
+    }
   }
   function throttle(f, interval, scope) {
     var timeout = 0
@@ -63,13 +67,13 @@ function extend(a, b) {
    * @return {Point}
    */
   function relativeToAbsolutePoint(from,relative){
-    return from.add(relative)
+    return new Point(from.col + relative.col,from.row + relative.row)
   }
 
   function forEach(list,callback){
-    for(var i in list.length){
+      for(var i in list){
         callback(list[i])
-    }
+      }
   }
 
   var mId = 0;
