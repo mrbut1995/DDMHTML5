@@ -149,8 +149,8 @@ define(["ddm"],function(Tsh){
             }
         },
         receiveDespawnEntity(data){
-            var playerid = data[0],
-                id       = data[1]
+            var playerid = data[1],
+                id       = data[2]
             if(this._onDespawnEntity){
                 this._onDespawnEntity(playerid,id)
             }
@@ -200,24 +200,44 @@ define(["ddm"],function(Tsh){
             }
         },
         receivePhaseChanged(data){
-
+            var idplayer = data[1],
+                phase    = data[2],
+                turn     = data[3],
+                status   = data[4]
+            if(this._onPhaseChanged){
+                this._onPhaseChanged(idplayer,phase,turn,status)
+            }
         },
         receiveGameEnd(data){
 
         },
-
+        receiveBox(data){
+            
+        },
         //Send Method
         sendAttack(source,target){
             this.sendMessage([Messages.ATTACK,
-                              source.id,target.id]
-            )
+                              source.id,target.id])
         },
         sendQuery(ids){
             var data = ids
             data.unshift(Messages.QUERY)
             this.sendMessage(data)
         },
-
+        sendSpawn(kind,type,col,row,controllerid,target){
+            this.sendMessage([Messages.SPAWN,
+                              kind,type,col,row,controllerid,target])
+        },
+        sendRoll(playerid,roll1,roll2,roll3){
+            this.sendMessage([Messages.ROLL,
+                             playerid,roll1,roll2,roll3])
+        },
+        sendPhase(playerid,phase){
+            this.sendMessage([Messages.PHASE,
+                             playerid,phase])
+        },
+        sendBox(playerid,contain,used){
+        },
         //Signal Handle
         onDispatch          (callback){this._onDispatch             = callback},
         onConnected         (callback){this._onConnected            = callback},

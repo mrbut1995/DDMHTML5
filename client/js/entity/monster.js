@@ -75,11 +75,6 @@ define(["entity/piece", "view/monsterview", "animation/animations"], function (P
             this.attackmode = false;
             this.removeTarget()
         },
-        // attack(target) {
-        //     this.animate("attack",this.atkSpeed)
-        //     if (this._onAttack)
-        //         this._onAttack()
-        // },
         idle() {
             this.animate("idle", this.atkSpeed)
         },
@@ -114,6 +109,11 @@ define(["entity/piece", "view/monsterview", "animation/animations"], function (P
         },
         hasMoved() {
 
+        },
+        facedTo(entity){
+            if(entity instanceof Piece){
+                
+            }
         },
         move(to) {
             var self = this

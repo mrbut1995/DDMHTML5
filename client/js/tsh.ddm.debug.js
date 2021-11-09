@@ -87,6 +87,9 @@ define(["ddm","jquery"],function(Tsh,$){
                                         )
                                         .append('<div class="action"><label>Destroy</label><button class="button" id="dbPieceDestroy">Destory Object</button></div>	')
                                         .append('<div class="action"><label>Display Action Popup</label><button class="button" id="dbDisplayAction">Display</button></div>	')
+                                        .append(
+                                            $('<div></div>').addClass('action').append('<button class="button" id="dbAttack">Attack</button>')
+                                        )                
                                 )
                         )
                 )
@@ -111,7 +114,7 @@ define(["ddm","jquery"],function(Tsh,$){
                 .appendTo('#devActions')
 
             $('<div></div>').addClass('action')
-                .append('<button class="button">Roll Dice</button>')
+                .append('<button class="button" id = "btnRollDice">Roll Dice</button>')
                 .appendTo('#devActions')
 
                 
@@ -119,9 +122,6 @@ define(["ddm","jquery"],function(Tsh,$){
                 .append('<button class="button" id="dbSendAllData">Send All Data</button>')
                 .appendTo('#devActions')
 
-            $('<div></div>').addClass('action')
-                .append('<button class="button" id="dbAttack">Attack</button>')
-                .appendTo('#devActions')
 
             $('<div></div>').addClass('action')
                 .append('<input id= "higlightchecked" type="checkbox">Highlight on Move</button>')
@@ -142,7 +142,7 @@ define(["ddm","jquery"],function(Tsh,$){
             $("#dbDisplayAction").click(this.btnDisplayActionPopup.bind(this))
             $("#dbSendAllData").click(this.sendList.bind(this))
             $("#dbAttack").click(this.btnSelectedPieceAttack.bind(this))
-
+            $("#btnRollDice").click(this.btnRoll.bind(this))
             Tsh.Ddm.Client.enable()
             Tsh.Ddm.Debug.loadPrefabData()
             Tsh.Ddm.Client.connection = {}
@@ -150,6 +150,8 @@ define(["ddm","jquery"],function(Tsh,$){
             Tsh.Ddm.Client.connection.send = function(msg){
                 Tsh.Ddm.Debug.receiveMessage(msg)
             }
+
+            Tsh.Ddm.Client.receiveWelcome(["P00001", "Player 1", "", "", "3", "[0,0,0,0,0]", "M00001"])
         }
 
         this.entityData = {}
@@ -305,7 +307,7 @@ define(["ddm","jquery"],function(Tsh,$){
             console.log("btnDisplayActionPopup")
         }
         this.btnRoll = function () {
-            // roll()
+            Tsh.Ddm.Game.roll()
         }
         this.checkBoxHighlight = function () {
             var val = document.getElementById("higlightchecked").checked
@@ -362,7 +364,6 @@ define(["ddm","jquery"],function(Tsh,$){
     
         }
         this.onSelectedPiecePositionChanged = function () {
-    
         }
         this.mouseClicked = function(mouse){}
         this.onMonsterClickedDebug = function(monster){
@@ -374,7 +375,6 @@ define(["ddm","jquery"],function(Tsh,$){
             }
         }
         this.onCanvasHoverDebug = function(mouse){
-            Tsh.Ddm.Game.highlighPlaceableInRegion(Tsh.Ddm.Input.nearby.all)
         }
     }
 })

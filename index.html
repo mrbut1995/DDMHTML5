@@ -1,20 +1,23 @@
-<!DOCTYPE html> 
-<html lang="en"> 
-<head> 
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
 	<meta charset="UTF-8">
 	<title>DDM HTML5 Fangame</title>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js"></script>
-	<script src="client/js/lib/require.js"  data-main="client/js/main"></script>
+	<script src="client/js/lib/require.js" data-main="client/js/main"></script>
 	<link rel="stylesheet" href="style-h5.css" />
-</head> 
+</head>
+
 <body>
-	
+
+	<!--Game Section Code-->>
 	<div id="gameSection">
 		<div id="board"></div>
-		<div class="player-ui ui player1" id= "player1-ui">
+		<div class="player-ui ui player1" id="player1-ui">
 			<div class="player-btns-container">
 				<button class="player-btn left-side">Roll</button>
-				<button class="player-btn highlight-btn right-side">End Phase</button>	
+				<button class="player-btn highlight-btn right-side">End Phase</button>
 				<button class="player-btn right-side">Storage</button>
 				<button class="player-btn right-side">Information</button>
 
@@ -30,83 +33,90 @@
 				<div class="player-crest"></div>
 			</div>
 		</div>
-	</div>	
-	 <!--For Dice Rolling-->
-	 <div class="dices" id="dicesId">
+	</div>
+
+	<!--Rollind Code-->
+	<div class="dices" id="dicesId">
 		<div class="dicecontainer">
 			<div id='dice1' class="dice dice-one">
-		  		<div id="dice-one-side-one" class='side one'>
-					<img src = "client/img/dice_face_1.png">
+				<div id="dice-one-side-one" class='side one'>
+					<img src="client/img/dice_face_1.png">
 				</div>
 				<div id="dice-one-side-two" class='side two'>
-					<img src = "client/img/dice_face_2.png">
+					<img src="client/img/dice_face_2.png">
 				</div>
 				<div id="dice-one-side-three" class='side three'>
-					<img src = "client/img/dice_face_3.png">
+					<img src="client/img/dice_face_3.png">
 				</div>
 				<div id="dice-one-side-four" class='side four'>
-					<img src = "client/img/dice_face_4.png">
+					<img src="client/img/dice_face_4.png">
 				</div>
 				<div id="dice-one-side-five" class='side five'>
-					<img src = "client/img/dice_face_5.png">
+					<img src="client/img/dice_face_5.png">
 				</div>
 				<div id="dice-one-side-five" class='side six'>
-					<img src = "client/img/dice_face_6.png">
+					<img src="client/img/dice_face_6.png">
 				</div>
 			</div>
 		</div>
 		<div class="dicecontainer">
 			<div id='dice2' class="dice dice-two">
-		  		<div id="dice-two-side-one" class='side one'>
-					<img src = "client/img/dice_face_1.png">
+				<div id="dice-two-side-one" class='side one'>
+					<img src="client/img/dice_face_1.png">
 				</div>
 				<div id="dice-two-side-two" class='side two'>
-					<img src = "client/img/dice_face_2.png">
+					<img src="client/img/dice_face_2.png">
 				</div>
 				<div id="dice-two-side-three" class='side three'>
-					<img src = "client/img/dice_face_3.png">
+					<img src="client/img/dice_face_3.png">
 				</div>
 				<div id="dice-two-side-four" class='side four'>
-					<img src = "client/img/dice_face_4.png">
+					<img src="client/img/dice_face_4.png">
 				</div>
 				<div id="dice-two-side-five" class='side five'>
-					<img src = "client/img/dice_face_5.png">
+					<img src="client/img/dice_face_5.png">
 				</div>
 				<div id="dice-two-side-five" class='side six'>
-					<img src = "client/img/dice_face_6.png">
+					<img src="client/img/dice_face_6.png">
 				</div>
 			</div>
 		</div>
 		<div class="dicecontainer">
 			<div id='dice3' class="dice dice-three">
-		  		<div id="dice-three-side-one" class='side one'>
-					<img src = "client/img/dice_face_1.png">
+				<div id="dice-three-side-one" class='side one'>
+					<img src="client/img/dice_face_1.png">
 				</div>
 				<div id="dice-three-side-two" class='side two'>
-					<img src = "client/img/dice_face_2.png">
+					<img src="client/img/dice_face_2.png">
 				</div>
 				<div id="dice-three-side-three" class='side three'>
-					<img src = "client/img/dice_face_3.png">
+					<img src="client/img/dice_face_3.png">
 				</div>
 				<div id="dice-three-side-four" class='side four'>
-					<img src = "client/img/dice_face_4.png">
+					<img src="client/img/dice_face_4.png">
 				</div>
 				<div id="dice-three-side-five" class='side five'>
-					<img src = "client/img/dice_face_5.png">
+					<img src="client/img/dice_face_5.png">
 				</div>
 				<div id="dice-three-side-five" class='side six'>
-					<img src = "client/img/dice_face_6.png">
+					<img src="client/img/dice_face_6.png">
 				</div>
 			</div>
 		</div>
 	</div>
 	<div id="pieceactionmenu">
-		<div class="btnaction"><img src="./client/img/AttackDeclarationIcon1.png" class = "btnactioncontent"></div>
-		<div class="btnaction"><div class = "btnactioncontent"></div></div>
-		<div class="btnaction"><div class = "btnactioncontent"></div></div>
+		<div class="btnaction"><img src="./client/img/AttackDeclarationIcon1.png" class="btnactioncontent"></div>
+		<div class="btnaction">
+			<div class="btnactioncontent"></div>
+		</div>
+		<div class="btnaction">
+			<div class="btnactioncontent"></div>
+		</div>
 	</div>
 	<div id="piecedescription">
 	</div>
+
+	<!--Logging Code-->
 	<!-- <div id="logsection">
 		<div class="log">Action 1 Resolve</div>
 		<div class="log">Action 2 Resolve</div>
@@ -114,7 +124,8 @@
 		<div class="log">Action 4 Resolve</div>
 		<div class="log">Action 5 Resolve</div>
 	</div> -->
-	<!--For Debugging-->
+
+	<!--Debugging Code-->
 	<div id="devSection">
 		<div>
 			<span id="toggleLink" class="link" onclick="$('#devTools').slideToggle()">[Toggle Developer Tools]</span>
@@ -123,5 +134,8 @@
 			<div id="gameState"></div>
 		</div>
 	</div>
-</body> 
-</html> 
+
+
+</body>
+
+</html>

@@ -21,6 +21,9 @@ define(function (Entity) {
 
             this.app = Tsh.Ddm
 
+            //Define Property
+            
+            
             this.connectModule();
 
             Tsh.Ddm.Loader.init(Tsh.Ddm)
@@ -39,9 +42,6 @@ define(function (Entity) {
             this.connectServer();
 
             Tsh.Ddm.Debug.init(Tsh.Ddm)
-
-            Tsh.Ddm.Client.receiveWelcome(["", "", "", "", "", "", "", ""])
-
         },
         connectServer() {
             var self = this
@@ -702,6 +702,16 @@ define(function (Entity) {
             Tsh.Ddm.View.highlightItemView(items)
         },
 
+        /**
+         * Highlight following Mouse
+         */
+        highlighMouseHover(isHighlightNearby){
+            if(isHighlightNearby){
+                this.highlighPlaceableInRegion(Tsh.Ddm.Input.nearby.all)
+            }else{
+                this.highlighPlaceableInRegion(Tsh.Ddm.Input.nearby.point)
+            }
+        }
     }
 
     return Tsh

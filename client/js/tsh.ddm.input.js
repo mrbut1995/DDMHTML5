@@ -14,7 +14,7 @@ define(["ddm", "jquery","entity/entity"], function(Tsh,$,Entity){
                 row: 0,
             }
             this.nearby = {
-                point   :{col : 0,row: 0},
+                point   :[{col : 0,row: 0}],
                 relative: [],
                 absolute:[],
                 all:[],
@@ -160,11 +160,11 @@ define(["ddm", "jquery","entity/entity"], function(Tsh,$,Entity){
          * @private
          */
         _updateNearby(){
-            this.nearby.point.col = this.mouse.col
-            this.nearby.point.row = this.mouse.row
+            this.nearby.point[0].col = this.mouse.col
+            this.nearby.point[0].row = this.mouse.row
             this.nearby.absolute = []
             forEach(this.nearby.relative,function(pRelative){
-                var p = relativeToAbsolutePoint(this.nearby.point,pRelative)
+                var p = relativeToAbsolutePoint(this.nearby.point[0],pRelative)
                 this.nearby.absolute.push(p)
             }.bind(this))
             this.nearby.all = this.nearby.absolute.concat([this.nearby.point])

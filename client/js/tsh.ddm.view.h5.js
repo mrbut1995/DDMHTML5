@@ -483,14 +483,14 @@ define(["ddm", "jquery", "view/views", "view/boardview", "view/highlightview", "
         },
         rollDice(index, face) {
             var DOMObject = undefined
-            switch (dice) {
+            switch (index) {
                 case 0: DOMObject = this.dom.DOMDiceOne; break
                 case 1: DOMObject = this.dom.DOMDiceTwo; break
                 case 2: DOMObject = this.dom.DOMDiceThree; break
             }
             for (var i = 1; i <= 6; i++) {
                 DOMObject.classList.remove('show-' + i);
-                if (result === i) {
+                if (face === i) {
                     console.log("roll to ", 'show-' + i)
                     DOMObject.classList.add('show-' + i);
                 }
