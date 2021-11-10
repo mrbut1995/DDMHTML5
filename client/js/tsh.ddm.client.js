@@ -30,7 +30,8 @@ define(["ddm"],function(Tsh){
             this.handlers[Messages.ROLL ]            = this.receiveRollDice;
             this.handlers[Messages.PHASE ]           = this.receivePhaseChanged;
             this.handlers[Messages.END ]             = this.receiveGameEnd;
-        
+            this.handlers[Messages.POOL]             = this.receivePool;
+
             this.useBison = false;
             this.enable();
 
@@ -211,7 +212,7 @@ define(["ddm"],function(Tsh){
         receiveGameEnd(data){
 
         },
-        receiveBox(data){
+        receivePool(data){
             
         },
         //Send Method
@@ -222,6 +223,11 @@ define(["ddm"],function(Tsh){
         sendQuery(ids){
             var data = ids
             data.unshift(Messages.QUERY)
+            this.sendMessage(data)
+        },
+        sendWho(ids){
+            var data = ids
+            data.unshift(Messages.WHO)
             this.sendMessage(data)
         },
         sendSpawn(kind,type,col,row,controllerid,target){
@@ -235,8 +241,6 @@ define(["ddm"],function(Tsh){
         sendPhase(playerid,phase){
             this.sendMessage([Messages.PHASE,
                              playerid,phase])
-        },
-        sendBox(playerid,contain,used){
         },
         //Signal Handle
         onDispatch          (callback){this._onDispatch             = callback},

@@ -7,11 +7,13 @@
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js"></script>
 	<script src="client/js/lib/require.js" data-main="client/js/main"></script>
 	<link rel="stylesheet" href="style-h5.css" />
+	<link rel="stylesheet" href="style-popup.css" />
+	<link rel="stylesheet" href="style-dice.css" />
 </head>
 
 <body>
 
-	<!--Game Section Code-->>
+	<!--Game Section Code-->
 	<div id="gameSection">
 		<div id="board"></div>
 		<div class="player-ui ui player1" id="player1-ui">
@@ -125,6 +127,8 @@
 		<div class="log">Action 5 Resolve</div>
 	</div> -->
 
+
+
 	<!--Debugging Code-->
 	<div id="devSection">
 		<div>
@@ -135,6 +139,43 @@
 		</div>
 	</div>
 
+	<div class="popup-controller">
+		<div class="outside">
+		</div>
+		<div class="popup">
+			<div class="content">
+				<div class="container">
+					<span class="closebtn">&#9932;</span>
+					<div class="popup-grid">
+						<div class="item-grid">Item A</div>
+						<div class="item-grid">Item B</div>
+						<div class="item-grid selected">Item C</div>
+						<div class="item-grid disable">Item D</div>
+						<div class="item-grid">Item E</div>
+						<div class="item-grid">Item A</div>
+						<div class="item-grid">Item B</div>
+						<div class="item-grid">Item C</div>
+						<div class="item-grid">Item D</div>
+						<div class="item-grid">Item E</div>
+						<div class="item-grid">Item A</div>
+						<div class="item-grid">Item B</div>
+						<div class="item-grid">Item C</div>
+						<div class="item-grid">Item D</div>
+						<div class="item-grid">Item E</div>
+						<div class="item-grid">Item A</div>
+						<div class="item-grid">Item B</div>
+						<div class="item-grid">Item C</div>
+						<div class="item-grid">Item D</div>
+						<div class="item-grid">Item E</div>
+					</div>
+					<div class="btn-container">
+						<div class="btn">Roll</div>
+						<div class="btn">Cancel</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 
 </body>
 

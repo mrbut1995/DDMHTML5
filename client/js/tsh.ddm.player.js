@@ -4,7 +4,15 @@ define(["ddm"],function(Tsh){
            this.id = ""
            this.name = ""
            this.contain = []
-           this.crests = {}
+           this.crests =  {
+                attack :  0,
+                defend :  0,
+                movement: 0,
+                summon:   0,
+                magic:    0,
+                trap:     0
+           }
+
            this.avatar = null
            this.avatarSource = ""
            this.lp = 0
@@ -20,7 +28,8 @@ define(["ddm"],function(Tsh){
            this.isMoving    = false
            
            this.selectedMonster   = null
-
+           this.selectedEntityGroup = null
+           
            this.controlmonster    = {}
            this.controlland       = {}
            this.movablemonster    = {}
@@ -31,7 +40,33 @@ define(["ddm"],function(Tsh){
                this._onInitialized()
            }
        },
+       /**
+        * Get value of crest
+        * @param {string} name name of crest user want to get
+        * @returns value of crest user want to get
+        */
+       getCrest(name){
+          if(name in this.crests){
+               return this.crests[name]
+          }else{
+               return -1
+          }
+       },
 
+       /**
+        * Set Value of crest
+        * @param {string} name  Name of Crest user want set
+        * @param {number} value Value want to set to crest
+        */
+       setCrest(name,value){
+          if(name in this.crests){
+               this.crests[name] = value
+          }
+       },
+
+       getCrests(){
+          return this.crests;
+       },
        getAvatar(){
 
        },
@@ -84,6 +119,20 @@ define(["ddm"],function(Tsh){
        getControlLands(){
             return this.controlland
        },
+
+       displayAvatar(){
+          
+       },
+       displayCrestInfo(){
+
+       },
+       displaySelectionEntity(){
+
+       },
+       displayPlayerPool(){
+
+       },
+
        //Signal
        onLoaded         (callback) {this._onLoaded              = callback},
        onActive         (callback) {this._onActive              = callback},

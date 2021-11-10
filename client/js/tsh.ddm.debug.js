@@ -122,6 +122,9 @@ define(["ddm","jquery"],function(Tsh,$){
                 .append('<button class="button" id="dbSendAllData">Send All Data</button>')
                 .appendTo('#devActions')
 
+             $('<div></div>').addClass('action')
+                .append('<button class="button" id="dbDisplayPool">Display Pool</button>')
+                .appendTo('#devActions')
 
             $('<div></div>').addClass('action')
                 .append('<input id= "higlightchecked" type="checkbox">Highlight on Move</button>')
@@ -143,6 +146,7 @@ define(["ddm","jquery"],function(Tsh,$){
             $("#dbSendAllData").click(this.sendList.bind(this))
             $("#dbAttack").click(this.btnSelectedPieceAttack.bind(this))
             $("#btnRollDice").click(this.btnRoll.bind(this))
+            $("#dbDisplayPool").click(this.btnDisplayPool.bind(this))
             Tsh.Ddm.Client.enable()
             Tsh.Ddm.Debug.loadPrefabData()
             Tsh.Ddm.Client.connection = {}
@@ -150,7 +154,7 @@ define(["ddm","jquery"],function(Tsh,$){
             Tsh.Ddm.Client.connection.send = function(msg){
                 Tsh.Ddm.Debug.receiveMessage(msg)
             }
-
+            
             Tsh.Ddm.Client.receiveWelcome(["P00001", "Player 1", "", "", "3", "[0,0,0,0,0]", "M00001"])
         }
 
@@ -213,7 +217,7 @@ define(["ddm","jquery"],function(Tsh,$){
         this.receiveMessage = function(msg){
             var data = JSON.parse(msg)
             var id = data[0]
-            if(id == Messages.QUERY){
+            if(id == Messages.WHO){
                 data.shift()
                 this.handleSpawnEntity(data)
             }
@@ -309,6 +313,10 @@ define(["ddm","jquery"],function(Tsh,$){
         this.btnRoll = function () {
             Tsh.Ddm.Game.roll()
         }
+        this.btnDisplayPool = function(){
+            $('.popup-controller').addClass('open');
+        }
+        
         this.checkBoxHighlight = function () {
             var val = document.getElementById("higlightchecked").checked
             var varRot

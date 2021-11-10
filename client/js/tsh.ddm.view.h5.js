@@ -100,6 +100,15 @@ define(["ddm", "jquery", "view/views", "view/boardview", "view/highlightview", "
             this.dom.DOMDiceTwo = document.getElementById("dice2")
             this.dom.DOMDiceThree = document.getElementById("dice3")
             this.dom.DOMCanvas = document.getElementById("canvas")
+
+            $('.popup .closebtn').click(function(){
+                $('.popup-controller').removeClass('open');
+            });
+
+            $('.popup-controller .outside').click(function(){
+                  $('.popup-controller').removeClass('open');
+            });
+          
         },
         getDOM(name) {
             return document.getElementById(name)

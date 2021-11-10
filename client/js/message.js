@@ -22,5 +22,5 @@ Messages = {
     END             : 20,
     BOARD           : 21,
     PLAYER          : 22,
-    BOX             : 23,
+    POOL            : 23,
 }

@@ -204,7 +204,7 @@ define(function (Entity) {
 
                 this.onRequestEntities(function (entitieIds) {
                     console.log("request data from list", entitieIds)
-                    Tsh.Ddm.Client.sendQuery(entitieIds)
+                    Tsh.Ddm.Client.sendWho(entitieIds)
                 })
                 this.onSpawnMonster(function (entity, col, row, controllerid, target) {
                     var _view = Tsh.Ddm.View.generateView(entity.view)

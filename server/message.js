@@ -1,5 +1,5 @@
 Messages = {
-    WELCOME         :0,
+    WELCOME         : 0,
     DISPATCH        : 1,
     CONNECTED       : 2,
     LIST            : 3,
@@ -21,5 +21,6 @@ Messages = {
     PHASE           : 19,
     END             : 20,
     BOARD           : 21,
-    PLAYER          : 22
+    PLAYER          : 22,
+    POOL            : 23,
 }
