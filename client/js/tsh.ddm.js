@@ -11,6 +11,13 @@ Tsh.Ddm = Tsh.Ddm || {}
  * @property {object} itemview       
  */
 
+/**
+ * @typedef  {object} AsyncRequest
+ * @property {object[]} param
+ * @property {object[]} data
+ * @property {string}   status Status of current Async request
+ * @property {function} oncompleted 
+ */
 //Define Modul
 define(function (Entity) {
 
@@ -36,12 +43,15 @@ define(function (Entity) {
             Tsh.Ddm.Client.init(Tsh.Ddm)
             Tsh.Ddm.Player.init(Tsh.Ddm)
             Tsh.Ddm.Match.init(Tsh.Ddm)
+            Tsh.Ddm.Blueprint.init(Tsh.Ddm)
+
             Tsh.Ddm.Path.init(Tsh.Ddm)
             Tsh.Ddm.Board.init(Tsh.Ddm)
 
             this.connectServer();
 
             Tsh.Ddm.Debug.init(Tsh.Ddm)
+            this.test = Tsh.Ddm.Loader.loadModule("entity/item")
         },
         connectServer() {
             var self = this
@@ -98,11 +108,11 @@ define(function (Entity) {
 
                 Tsh.Ddm.Client.onSpawnEntity(function (kind, id, x, y, name, controllerid, target) {
                     console.log("Spawn entity ", id)
-                    Tsh.Ddm.Entity.spawnEntity(kind, id, x, y, name, controllerid, target)
+                    Tsh.Ddm.Entity.requestSpawnEntityAsync(kind, id, x, y, name, controllerid, target)
                 });
                 Tsh.Ddm.Client.onDespawnEntity(function (player, id) {
                     console.log("Despawn entiy ", id)
-                    Tsh.Ddm.Entity.despawnEntity(id)
+                    Tsh.Ddm.Entity.requestDespawnEntityAsync(id)
                 })
 
                 Tsh.Ddm.Client.onEntityMove(function (playerid, id, x, y, type) {
@@ -158,6 +168,8 @@ define(function (Entity) {
                 });
                 Tsh.Ddm.Client.onPhaseChanged(function (playerid, changephase) {
 
+                });
+                Tsh.Ddm.Client.onPoolChanged(function(playerid,pool,unusedpool){
                 });
                 Tsh.Ddm.Client.onGameEnd(function (state, playerid) {
 
@@ -296,7 +308,7 @@ define(function (Entity) {
             }.bind(Tsh.Ddm.Entity))
 
             Tsh.Ddm.View.onInitialized(function () {
-                Tsh.Ddm.Input.connectInput(this.getDOM("ddm-canvas"))
+                Tsh.Ddm.Input.connectInput(this.getDOMItems())
                 Tsh.Ddm.Board.connectBoardView(this.getBoard())
 
                 this.onViewCreated(function (view) {

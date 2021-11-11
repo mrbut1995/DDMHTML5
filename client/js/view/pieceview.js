@@ -6,7 +6,6 @@ define(["view/view","animation/animations"],function(View,Animations){
         },
         setBoard(view){
             this.boardview = view
-            console.log("setted board = ",this.board())
         },
         board(){
             return this.boardview

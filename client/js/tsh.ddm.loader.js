@@ -9,6 +9,10 @@ define(["ddm"], function (Tsh) {
         totalCount: 0, // Total number of asstes that need loading
         soundFileExtn: ".ogg",
 
+        store:{
+            module:{}
+        },
+
         init: function (app) {
             var mp3support, oggsupport;
             var audio = document.createElement("ddm-audio")
@@ -44,6 +48,52 @@ define(["ddm"], function (Tsh) {
             audio.src = url + Tsh.Ddm.Loader.soundFileExtn;
             return audio;
         },
+        loadModule: function(url,callback){
+            if(url in this.store.module){
+                if(callback){
+                    setTimeout(callback,4)
+                }
+                return this.store.module[url]
+            }
+            this.loaded = false;
+            this.totalCount++;
+            var result = {
+                data:{},
+                status: "loading",
+            }
+            this.store.module[url] = result
+
+            require([url],function(module){ // On success
+                deepCopyTo(result.data,module)
+                result.status = "complete"
+                Tsh.Ddm.Loader.totalCount++;
+                if (Tsh.Ddm.Loader.loadedCount === Tsh.Ddm.Loader.totalCount) {
+                    // Loader has loaded completely..
+                    // Reset and clear the loader
+                    Tsh.Ddm.Loader.loaded = true;
+                    Tsh.Ddm.Loader.loadedCount = 0;
+                    Tsh.Ddm.Loader.totalCount = 0;
+                    // Hide the loading screen
+                    // and call the loader.onload method if it exists
+                    if (Tsh.Ddm.Loader.onload) {
+                        Tsh.Ddm.Loader.onload();
+                        Tsh.Ddm.Loader.onload = undefined;
+                    }
+                }    
+                if(callback){
+                    callback()
+                }
+            },
+            function(module){ //On Non success;
+                result.status = "error"
+                if(callback){
+                    callback()
+                }
+            }
+            );
+            return result;
+        },
+        
         itemLoaded: function (ev) {
             // Stop listening for event type (load or canplaythrough) for this item now that it has been loaded
             ev.target.removeEventListener(ev.type, Tsh.Ddm.Loader.itemLoaded, false);

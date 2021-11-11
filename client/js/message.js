@@ -23,4 +23,6 @@ Messages = {
     BOARD           : 21,
     PLAYER          : 22,
     POOL            : 23,
+    FETCH           : 24,
+    METADATA        : 25
 }

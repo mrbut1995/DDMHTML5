@@ -1,94 +1,111 @@
-define(["ddm", "jquery","entity/entity"], function(Tsh,$,Entity){
+define(["ddm", "jquery", "entity/entity"], function (Tsh, $, Entity) {
     Tsh = Tsh || {}
     Tsh.Ddm = Tsh.Ddm || {}
 
     Tsh.Ddm.Input = {
 
-        init:function(app){
+        init: function (app) {
             this.mouse = {
-                x:0,
-                y:0,
-                down:false,
+                x: 0,
+                y: 0,
+                down: false,
                 dragging: false,
                 col: 0,
                 row: 0,
             }
             this.nearby = {
-                point   :[{col : 0,row: 0}],
+                point: [{ col: 0, row: 0 }],
                 relative: [],
-                absolute:[],
-                all:[],
+                absolute: [],
+                all: [],
             }
             this.prevmouse = {}
             this.hovering = {
-                point   : null,
-                monster : null,
+                point: null,
+                monster: null,
                 monsterlord: null,
-                land : null,
-                item : null
+                land: null,
+                item: null
             }
             this.inputListener = []
             this.pressAndHoldTimer = null
             this.app = app
-            if(this._onInitialized){
+            if (this._onInitialized) {
                 this._onInitialized()
             }
         },
-        
-        connectInput($canvas){
-            $canvas.addEventListener("click",     this.oncanvasmouseclicked.bind(this),   false);
-            $canvas.addEventListener("mousedown", this.oncanvasmousedown.bind(this),      false);
-            $canvas.addEventListener("mouseup",   this.oncanvasmouseup.bind(this),        false);
-            $canvas.addEventListener("mousemove", this.oncanvasmousemove.bind(this),      false);
-            $canvas.addEventListener("mouseout",  this.oncanvasmouseout.bind(this),       false);
+
+        connectInput($dom) {
+            console.log("$dom = ", $dom)
+
+            $dom.jquery.canvas.on("click", this.oncanvasmouseclicked.bind(this))
+            $dom.jquery.canvas.on("mousedown", this.oncanvasmousedown.bind(this));
+            $dom.jquery.canvas.on("mouseup", this.oncanvasmouseup.bind(this));
+            $dom.jquery.canvas.on("mousemove", this.oncanvasmousemove.bind(this));
+            $dom.jquery.canvas.on("mouseout", this.oncanvasmouseout.bind(this));
+
+            $dom.jquery.popup.gridpopup.items.on("click", function () {
+                var index = $(".popup-controller .popup-grid .item-grid").index(this)
+                console.log("item clicked = ", index)
+            })
+
+            $dom.jquery.popup.closebtn.on("click", function () {
+                Tsh.Ddm.View.hideDicePool()
+            })
+
+            $dom.jquery.popup.outside.on("click", function () {
+                Tsh.Ddm.View.hideDicePool()
+            })
+
+
         },
 
-        registerEntityInput(entity){
-            if(entity instanceof Entity){
-
-            }
-        },
-        unregisterEntityInput(entity){
-            if(entity instanceof Entity){
+        registerEntityInput(entity) {
+            if (entity instanceof Entity) {
+                var view = entity.getView()
                 
             }
         },
-        forEachInputListener(){
+        unregisterEntityInput(entity) {
+            if (entity instanceof Entity) {
+
+            }
+        },
+        forEachInputListener() {
 
         },
         //Listener
-        oncanvasmouseclicked:function(ev){
-            console.log("oncanvasmouseclicked")
-            if(this._onMouseClicked){
+        oncanvasmouseclicked: function (ev) {
+            if (this._onMouseClicked) {
                 this._onMouseClicked(ev)
             }
             ev.preventDefault();
         },
-        oncanvasmousedown:function(ev){
+        oncanvasmousedown: function (ev) {
             this.mouse.down = true
-            if(this._onMousePressed){
+            if (this._onMousePressed) {
                 this._onMousePressed(ev)
             }
-            this.pressAndHoldTimer = setTimeout((e =>this.onmousepressandhold(ev)).bind(this),300)
+            this.pressAndHoldTimer = setTimeout((e => this.onmousepressandhold(ev)).bind(this), 300)
             ev.preventDefault();
         },
-        forEachInputListener(callback){
-            for(var i in this.inputListener){
+        forEachInputListener(callback) {
+            for (var i in this.inputListener) {
                 callback(this.inputListener[i])
             }
         },
-        oncanvasmouseup:function(ev){
+        oncanvasmouseup: function (ev) {
             this.mouse.down = false
             this.mouse.dragging = false
 
-            if(this._onMouseReleased){
+            if (this._onMouseReleased) {
                 this._onMouseReleased(ev)
             }
             ev.preventDefault();
         },
-        oncanvasmousemove:function(ev){
+        oncanvasmousemove: function (ev) {
             var coord = this._requestCanvasCoord(ev)
-            if(isCoord(coord)){
+            if (isCoord(coord)) {
                 this.prevmouse = deepCopy(this.mouse)
                 this.mouse.x = coord.x
                 this.mouse.y = coord.y
@@ -99,83 +116,104 @@ define(["ddm", "jquery","entity/entity"], function(Tsh,$,Entity){
             if (this.mouse.down) {
                 this.mouse.dragging = true;
             }
-            if(this._onCanvasHover){
+            if (this._onCanvasHover) {
                 this._onCanvasHover(ev)
             }
             ev.preventDefault();
         },
-        oncanvasmouseout:function(ev){
-            if(this._onMouseOut){
+        oncanvasmouseout: function (ev) {
+            if (this._onMouseOut) {
                 this._onMouseOut(ev)
             }
             ev.preventDefault();
         },
-        onmousepressandhold:function(ev){
-            if(this._onMousePressAndHold){
+        onmousepressandhold: function (ev) {
+            if (this._onMousePressAndHold) {
                 this._onMousePressAndHold(ev)
             }
             ev.preventDefault();
         },
 
-        isRequestNearbyPoint(){
+        isRequestNearbyPoint() {
             return this.nearby.relative.length > 0
         },
-        setNearbyRelativeList(lst){
+        setNearbyRelativeList(lst) {
             this.nearby.relative = lst
         },
-        clearNearbyRelativeList(){
+        clearNearbyRelativeList() {
             this.nearby.relative = []
         },
-        getNearbyAbsoluteList(){
+        getNearbyAbsoluteList() {
             return this.nearby.absolute;
         },
-         /**
-         * @private
-         */
-        _requestCanvasCoord(e){
+        //Member of class
+        getCanvasCoord(e) {
+            var x, y;
+
+            // Get xy coords on page
+            if (e.pageX != undefined && e.pageY != undefined) {
+                x = e.pageX;
+                y = e.pageY;
+            } else {
+                x = e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft;
+                y = e.clientY + document.body.scrollTop + document.documentElement.scrollTop;
+            }
+
+            // Narrow xy coords to canvas
+            x -= canvas.offsetLeft;
+            y -= canvas.offsetTop;
+
+            return new Coord(x, y);
+        },
+
+
+        /**
+        * @private
+        */
+        _requestCanvasCoord(e) {
             return Tsh.Ddm.View.getCanvasCoord(e)
         },
-         /**
-         * @private
-         */
-        _updateGridMousePosition(){
+        /**
+        * @private
+        */
+        _updateGridMousePosition() {
             //TODO: Translate Mouse Position into Col Row
-            var m = Tsh.Ddm.View.getGridPointAt(this.mouse.x,this.mouse.y)
+            var m = Tsh.Ddm.View.getGridPointAt(this.mouse.x, this.mouse.y)
             this.mouse.col = m.col
             this.mouse.row = m.row
         },
-         /**
-         * @private
-         */
-        _updateHover(){
+        /**
+        * @private
+        */
+        _updateHover() {
             var col = this.mouse.col,
                 row = this.mouse.row
-            this.hovering.point         = new Point(col,row)
-            this.hovering.monster       = Tsh.Ddm.Entity.getMonsterAt(col,row)
-            this.hovering.monsterlord   = Tsh.Ddm.Entity.getMonsterLordAt(col,row)
-            this.hovering.land          = Tsh.Ddm.Entity.getLandAt(col,row)
-            this.hovering.item          = Tsh.Ddm.Entity.getItemAt(col,row)
+            this.hovering.point = new Point(col, row)
+            this.hovering.monster = Tsh.Ddm.Entity.getMonsterAt(col, row)
+            this.hovering.monsterlord = Tsh.Ddm.Entity.getMonsterLordAt(col, row)
+            this.hovering.land = Tsh.Ddm.Entity.getLandAt(col, row)
+            this.hovering.item = Tsh.Ddm.Entity.getItemAt(col, row)
         },
         /**
          * @private
          */
-        _updateNearby(){
+        _updateNearby() {
             this.nearby.point[0].col = this.mouse.col
             this.nearby.point[0].row = this.mouse.row
             this.nearby.absolute = []
-            forEach(this.nearby.relative,function(pRelative){
-                var p = relativeToAbsolutePoint(this.nearby.point[0],pRelative)
+            forEach(this.nearby.relative, function (pRelative) {
+                var p = relativeToAbsolutePoint(this.nearby.point[0], pRelative)
                 this.nearby.absolute.push(p)
             }.bind(this))
             this.nearby.all = this.nearby.absolute.concat([this.nearby.point])
         },
-        onCanvasClicked(callback)     {this._onMouseClicked = callback},
-        onCanvasPressed(callback)     {this._onMousePressed = callback},
-        onCanvasReleased(callback )   {this._onMouseReleased = callback},
-        onCanvasHover(callback)       {this._onCanvasHover = callback},
-        onCanvasOut(callback)         {this._onMouseOut = callback},
-        onCanvasPressAndHold(callback){this._onPressAndHold = callback},
-        onInitialized   (callback){this._onInitialized = callback},
+        onCanvasClicked(callback) { this._onMouseClicked = callback },
+        onCanvasPressed(callback) { this._onMousePressed = callback },
+        onCanvasReleased(callback) { this._onMouseReleased = callback },
+        onCanvasHover(callback) { this._onCanvasHover = callback },
+        onCanvasOut(callback) { this._onMouseOut = callback },
+        onCanvasPressAndHold(callback) { this._onPressAndHold = callback },
+        onInitialized(callback) { this._onInitialized = callback },
 
     }
 })

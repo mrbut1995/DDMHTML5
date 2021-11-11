@@ -42,6 +42,11 @@ var monsterDebugData = [
     [0,0,0,0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,1,0,0,0,0,0,0]
 ]
+var player1debug = {
+    id:"player1",
+    pool :           ["dummymonster1","dummymonster2","dummymonster4","dummymonster6"],
+    unavailablepool :["dummymonster2","dummymonster4"]
+}
 
 var isLoaded = false;
 
@@ -132,7 +137,7 @@ define(["ddm","jquery"],function(Tsh,$){
 
         }
         this.init = function (app) {
-            var DOMBoard = Tsh.Ddm.View.getDOM("board")
+            var DOMBoard = Tsh.Ddm.View.getDOMItems().element.board
             this.CreateDebugDOM()
     
             $("#dbCreateLand").click(this.createViewLand.bind(this))
@@ -159,11 +164,20 @@ define(["ddm","jquery"],function(Tsh,$){
         }
 
         this.entityData = {}
+        this.sendPool = function(playerid,pool,unusedpool){
+            console.log("sendPool")
+            var data = []
+            data[0] = Messages.POOL 
+            data[1] = playerid
+            data[2] = pool
+            data[3] = unusedpool
+            Tsh.Ddm.Client.receiveMessage(JSON.stringify(data))
+        },
         this.sendCreateMonster = function(id,lCol,lRow){
             console.log("createViewMonster")
             var data = []
             data[0] = Messages.SPAWN
-            data[1] = "DummyMonster1"
+            data[1] = "dummymonster1"
             data[2] = id
             data[3] = lCol
             data[4] = lRow
@@ -201,10 +215,12 @@ define(["ddm","jquery"],function(Tsh,$){
             data[2] = this.debugPieceSelected.id 
             Tsh.Ddm.Client.receiveMessage(JSON.stringify(data))
         }
-        this.sendAttack = function(){
+        this.sendAttack = function(selectedid,targetid){
             var data = []
             data[0] = Messages.ATTACK
-            data[1] = this.debugPieceSelected.id
+            data[1] = selectedid
+            data[2] = targetid
+            Tsh.Ddm.Client.receiveMessage(JSON.stringify(data))
         }
         this.sendList = function(){
             var data = []
@@ -229,7 +245,7 @@ define(["ddm","jquery"],function(Tsh,$){
                 if(e){
                     if(e.type == "NormalLand"){
                         this.sendCreateLand(e.id,e.col,e.row)
-                    }else if(e.type == "DummyMonster1"){
+                    }else if(e.type == "dummymonster1"){
                         this.sendCreateMonster(e.id,e.col,e.row)
                     }    
                 }
@@ -255,7 +271,7 @@ define(["ddm","jquery"],function(Tsh,$){
                         var eId = entityId()
                         this.entityData[eId] = {
                                         id  : eId,
-                                        type: "DummyMonster1",
+                                        type: "dummymonster1",
                                         col : j,
                                         row : i,
                                     }
@@ -314,6 +330,7 @@ define(["ddm","jquery"],function(Tsh,$){
             Tsh.Ddm.Game.roll()
         }
         this.btnDisplayPool = function(){
+            this.sendPool(player1debug.id,player1debug.pool,player1debug.unavailablepool)
             $('.popup-controller').addClass('open');
         }
         

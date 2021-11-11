@@ -17,6 +17,10 @@ requirejs.config({
     'ddm-animator':"./tsh.ddm.animator",
     'ddm-path':"./tsh.ddm.path",
     'ddm-board':"./tsh.ddm.board",
+    'ddm-blueprint':"./tsh.ddm.blueprint",
+
+    //Server
+    "server-meta-data" : "../../server/metadata",
 
     'view': './view',
     'animation':"./animation",
@@ -34,23 +38,21 @@ requirejs.config({
     'ddm-input':['ddm'],
     'ddm-entity':['ddm'],
     'ddm-board':['ddm'],
+    'ddm-blueprint':['ddm']
   },
 });
 
 
 window.onload = function(){
   console.log("window.onLoad")
-  var tsh_module = ["ddm-view","ddm-logic","ddm-loader","ddm-input","ddm-debug","ddm-entity","ddm-player","ddm-client","ddm-match","ddm-animator","ddm-path","ddm-board"]
+  var tsh_module = ["ddm-view","ddm-logic","ddm-loader","ddm-input","ddm-debug","ddm-entity","ddm-player","ddm-client","ddm-match","ddm-animator","ddm-path","ddm-board","ddm-blueprint"]
   var required_lib = ['lib/class','util/util','util/constant','util/struct','util/gametype',"message","jquery"]
-  var ddm = ["ddm"]
+  var ddm = ["ddm","server-meta-data/monster/dummymonster1"]
   ddm.push(...required_lib)
   ddm.push(...tsh_module)
   require(ddm,function(Tsh){
     console.log("onLoaded All Module")
     Tsh.Ddm.Game.init()
     Tsh.Ddm.Game.run()
-    var c = Class.extend({})
-    console.log("c = ",c.prototype)
-  })
-  // require(["tsh"])
+})
 }

@@ -213,7 +213,12 @@ define(["ddm"],function(Tsh){
 
         },
         receivePool(data){
-            
+            var playerid        = data[1],
+                pool            = data[2],
+                unavailablepool = data[3]
+            if(this._onPoolChanged){
+                this._onPoolChanged(playerid,pool,unavailablepool)
+            }
         },
         //Send Method
         sendAttack(source,target){
@@ -263,7 +268,8 @@ define(["ddm"],function(Tsh){
         onPlayerDie         (callback){this._onPlayerDie            = callback},
         onRollDice          (callback){this._onRollDice             = callback},
         onPhaseChanged      (callback){this._onPhaseChanged         = callback},
-
+        onPoolChanged       (callback){this._onPoolChanged          = callback},
+        
         onGameEnd           (callback){this._onDisconnected    = callback},
 
         onInitialized       (callback){this._onInitialized = callback},

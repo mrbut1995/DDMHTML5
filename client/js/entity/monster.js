@@ -49,24 +49,75 @@ define(["entity/piece", "view/monsterview", "animation/animations"], function (P
             this.continuousTargets = {}
 
             //Animating
-            this.atkSpeed = 50
-            this.moveSpeed = 120
-            this.walkSpeed = 100
-            this.summonSpeed = 150
-            this.effectSpeed = 120
-            this.idleSpeed = 450
-
             this.isMovingAnimation = false
 
+            
             this._super(id, kind)
-
         },
-        select() {
 
-        },
-        setMoveNext(coord) {
+        /**
+         * Monster Interface Method
+         */
+        
+         beforeSummon(){
 
-        },
+         },
+         afterSummon(){
+
+         },
+         beforeAttack(){
+             
+         },
+         attackDeclare(){
+
+         },
+         damageCalculate(){
+
+         },
+         afterAttack(){
+
+         },
+         beforeDestroy(){
+
+         },
+         active(){
+
+         },
+         afterDestroy(){
+
+         },
+         standbyPhase(){
+
+         },
+         mainPhase(){
+
+         },
+         endPhase(){
+
+         },
+         hurted(){
+
+         },
+         walk(){
+
+         },
+         stepOn(){
+
+         },
+         fly(){
+
+         },
+         teleport(){
+
+         },
+         changeStat(name,value){
+
+         }, 
+
+         /**
+          * Monster Piece Method
+          */
+
         engage(monster) {
             this.attackmode = true;
             this.setTarget(monster);
@@ -75,36 +126,7 @@ define(["entity/piece", "view/monsterview", "animation/animations"], function (P
             this.attackmode = false;
             this.removeTarget()
         },
-        idle() {
-            this.animate("idle", this.atkSpeed)
-        },
-        hurted(source) {
-            this.animate("hurted", this.atkSpeed)
-            if (this._onAttacked)
-                this._onAttacked()
-        },
-        killed(source) {
-            this.animate("killed", this.summonSpeed)
-        },
-        summon() {
-            var self = this
-            this.animate("summoned", this.summonSpeed)
-        },
-        walk(point) {
-            this.animate("walk", this.walkSpeed)
-
-        },
-        fly(point) {
-            this.animate("fly", this.walkSpeed)
-        },
-        teleport(point) {
-            this.animate("teleport", this.walkSpeed)
-        },
-
-        changestat(stat, value) {
-
-        },
-        useeffect(effect) {
+        idle(){
 
         },
         hasMoved() {

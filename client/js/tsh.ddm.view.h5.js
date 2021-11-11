@@ -60,7 +60,7 @@ define(["ddm", "jquery", "view/views", "view/boardview", "view/highlightview", "
             this.layers = {}
             this.views = {}
             this.entityOf = {}
-            this.dom = {}
+            this.dom = null
             this.effects = {}
             this.animation = {}
             this.popup = {}
@@ -94,24 +94,47 @@ define(["ddm", "jquery", "view/views", "view/boardview", "view/highlightview", "
             }
 
         },
-        initDOM() {
-            this.dom.DOMBoard = document.getElementById("board")
-            this.dom.DOMDiceOne = document.getElementById("dice1")
-            this.dom.DOMDiceTwo = document.getElementById("dice2")
-            this.dom.DOMDiceThree = document.getElementById("dice3")
-            this.dom.DOMCanvas = document.getElementById("canvas")
-
-            $('.popup .closebtn').click(function(){
-                $('.popup-controller').removeClass('open');
-            });
-
-            $('.popup-controller .outside').click(function(){
-                  $('.popup-controller').removeClass('open');
-            });
-          
+        initDOM() {            
+            $('#btnRoll').click(this.displayDicePool.bind(this))
+            this.selectedDicePoolAt(5)
         },
-        getDOM(name) {
-            return document.getElementById(name)
+        getDOMItems(update){
+            if(!this.dom || update){
+                this.dom = this.dom || {}
+
+                this.dom.jquery = this.dom.jquery || {}
+                this.dom.jquery.board   = $("#board")
+                this.dom.jquery.canvas  = $("#ddm-canvas")
+                
+                this.dom.jquery.audio   = $("#ddm-audio")
+
+                this.dom.jquery.btn         = this.dom.jquery.btn || {}
+                this.dom.jquery.btn.roll    = $('#btnRoll')
+
+                this.dom.jquery.dices   = this.dom.jquery.dices || {}
+                this.dom.jquery.dices.controller = $("#dicesId")
+                this.dom.jquery.dices.one        = $("#dice1")
+                this.dom.jquery.dices.two        = $("#dice2")
+                this.dom.jquery.dices.three      = $("#dice3")
+
+                this.dom.jquery.popup = this.dom.jquery.popup || {}
+                this.dom.jquery.popup.outside  = $(".popup-controller .outside")
+                this.dom.jquery.popup.closebtn = $(".popup-controller .closebtn")
+
+                this.dom.jquery.popup.gridpopup = this.dom.jquery.popup.gridpopup || {}
+                this.dom.jquery.popup.gridpopup = $(".popup-controller .popup-grid")
+                this.dom.jquery.popup.gridpopup.items = $(".popup-controller .popup-grid .item-grid")    
+            
+                this.dom.element = this.dom.element || {}
+                this.dom.element.board       = document.getElementById("board")
+                this.dom.element.canvas      = document.getElementById("ddm-canvas")
+
+                this.dom.element.dices       = this.dom.element.dices || {}
+                this.dom.element.dices.one   = document.getElementById("dice1")
+                this.dom.element.dices.two   = document.getElementById("dice2")
+                this.dom.element.dices.three = document.getElementById("dice3")
+            }
+            return this.dom
         },
         initCanvas() {
             if ($("#ddm-canvas").length == 0 || !canvas || !context) {
@@ -242,8 +265,6 @@ define(["ddm", "jquery", "view/views", "view/boardview", "view/highlightview", "
                 }
             }.bind(this))
             return lst;
-        },
-        getViewByEntity(entity){
         },
         registerViewIntoLayer(view, layer) {
             if (view == null) {
@@ -484,27 +505,52 @@ define(["ddm", "jquery", "view/views", "view/boardview", "view/highlightview", "
         },
         //////////////////////////////////////// DOM Event
         displayDice(interval) {
-            var dices = document.getElementById("dicesId");
-            dices.classList.toggle("show")
+            var $dicescontroller = this.getDOMItems().jquery.dices.controller
+            $dicescontroller.addClass('show')
             if (interval == undefined || interval == null)
                 return
-            setTimeout(() => { dices.classList.toggle("show") }, interval)
+            setTimeout(() => { 
+                $dicescontroller.removeClass("show") 
+            }, interval)
         },
         rollDice(index, face) {
             var DOMObject = undefined
             switch (index) {
-                case 0: DOMObject = this.dom.DOMDiceOne; break
-                case 1: DOMObject = this.dom.DOMDiceTwo; break
-                case 2: DOMObject = this.dom.DOMDiceThree; break
+                case 0: DOMObject = this.getDOMItems().jquery.dices.one; break
+                case 1: DOMObject = this.getDOMItems().jquery.dices.two; break
+                case 2: DOMObject = this.getDOMItems().jquery.dices.three; break
             }
             for (var i = 1; i <= 6; i++) {
-                DOMObject.classList.remove('show-' + i);
+                DOMObject.removeClass('show-' + i);
                 if (face === i) {
                     console.log("roll to ", 'show-' + i)
-                    DOMObject.classList.add('show-' + i);
+                    DOMObject.addClass('show-' + i);
                 }
             }
         },
+        displayDicePool(){
+            if($('.popup-controller')){
+                $('.popup-controller').addClass('open');
+            }
+        },
+        hideDicePool(){
+            if($('.popup-controller')){
+                $('.popup-controller').removeClass('open');
+            }
+        },
+        selectedDicePoolAt(index){
+            $('.popup-controller .popup-grid .item-grid').eq(index).addClass("selected")
+        },
+        deselectedDicePoolAt(index){
+            $('.popup-controller .popup-grid .item-grid').eq(index).removeClass("selected")
+        },
+        disableDicePoolAt(index){
+            $('.popup-controller .popup-grid .item-grid').eq(index).addClass("disable")
+        },
+        enableDicePoolAt(index){
+            $('.popup-controller .popup-grid .item-grid').eq(index).removeClass("disable")
+        },
+        
         //////////////////////////////////////// SPECIFY
         generateView(kind, config) {
             if (isViewKind(kind)) {

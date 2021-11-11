@@ -15,12 +15,12 @@ define(["ddm","jquery","entity/entityfactory","entity/monster","entity/land","en
     Tsh.Ddm.Entity = {
         
         init(app){
-            this.entities = {}
-            this.entityGrid     = null
-            this.groupGrid      = null
-            this.map            = null
+            this.entities         = {}
+            this.entityGrid       = null
+            this.groupGrid        = null
+            this.map              = null
             this.obsoleteEntities = null
-            
+
             /**@type {EntityGroup} */
             this.selected = {}
 
@@ -123,6 +123,9 @@ define(["ddm","jquery","entity/entityfactory","entity/monster","entity/land","en
                 delete this.entityGrid[row][col][entity.id]
             }
         },
+        isOutOfBound(col,row){
+            return col < 0 || row < 0 || col > 12 || row > 18
+        },
         /**
          * 
          * @param {number} col Column in board that contain entites
@@ -142,6 +145,10 @@ define(["ddm","jquery","entity/entityfactory","entity/monster","entity/land","en
             if(this.entityGrid == null){
                 return entity;
             }
+            if(this.isOutOfBound(col,row)){
+                return entity;
+            }
+
             entity.point = new Point(col,row)
 
             var entities =  this.entityGrid[row][col]
@@ -306,43 +313,35 @@ define(["ddm","jquery","entity/entityfactory","entity/monster","entity/land","en
             this.selected.monster = null
             this.selected.land    = null
         },
+
         //Creating Entity
-        spawnEntity(kind,id,x,y,name,controllerid,target){
+        requestSpawnEntityAsync(kind,id,x,y,name,controllerid,target){
             console.log("spawnEntity")
-            var result;
-            if(isLandKind(kind)){
-                var item    = EntityFactory.createEntity(kind,id)
-                result  = this.addLand(item,x,y,controllerid)
-                if(result){
-                    if(this._onSpawnLand)
-                        this._onSpawnLand(item,x,y)
-                }
-            }else if(isItemKind(kind)){
-                var item    = EntityFactory.createEntity(kind,id)
-                result  = this.addItem(item,x,y,controllerid)
-                if(result){
-                    if(this._onSpawItem)
-                        this._onSpawItem(item,x,y)
-                }
-            }else if(isMonsterKind(kind)){
-                var item    = EntityFactory.createEntity(kind,id)
-                result  = this.addMonster(item,x,y,controllerid,target)
-                if(result){
-                    if(this._onSpawnMonster)
-                        this._onSpawnMonster(item,x,y)
-                }
-            }else if(isMonsterLordKind(kind)){
-                var item = EntityFactory.createEntity(kind,id,name)
-                if(this.addMonster(item,x,y,controllerid,target)){
-                    if(this._onSpawnMonsterLord)
-                        this._onSpawnMonsterLord(item,x,y,target)
-                }
-            }else{
-                console.log("CANNOT FIND")
+            if(this.entityIdExists(id)){
+                console.log("ALREADY CREATED ",id)
+                return
             }
+
+            EntityFactory.createRequestEntityAsync(kind,id,name).then(entity =>{
+                if(isLandKind(kind)){
+                    if(this._onSpawnLand)
+                        this._onSpawnLand(entity,x,y)
+                }else if(isItemKind(kind)){
+                    if(this._onSpawItem)
+                        this._onSpawItem(entity,x,y)
+                }else if(isMonsterKind(kind)){
+                    if(this._onSpawnMonster)
+                        this._onSpawnMonster(entity,x,y)
+                }else if(isMonsterLordKind(kind)){
+                    if(this._onSpawnMonsterLord)
+                        this._onSpawnMonsterLord(entity,x,y,target)
+                }else{
+                    console.log("CANNOT FIND")
+                }    
+            })
         },
 
-        despawnEntity(id){
+        requestDespawnEntityAsync(id){
             var entity = this.getEntityById(id)
             if(entity){
                 if(this._onDespawnEntity)

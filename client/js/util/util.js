@@ -14,6 +14,16 @@ function extend(a, b) {
       return thing
     }
   }
+
+  function deepCopyTo(to,from){
+    if(typeof from === 'object' ){
+      Object.assign(to,Object.assign(Object.create(Object.getPrototypeOf(from)), from))
+      console.log("after copy ",to)
+    }else{
+      Object.assign(to,from)
+    }
+
+  }
   function throttle(f, interval, scope) {
     var timeout = 0
     var shouldFire = false
