@@ -7,8 +7,8 @@ define(function(){
         defend  : 20,
         level   : 4,
         crests  : ["attack", "attack", "defend", "summon", "summon"],
-        avatarimg: "DummyMonster6_avatarImg.png",
-        profileimg:"DummyMonster6_profileImg.png",
+        pieceimg: "MBB_014012.png",
+        portraitimg:"MBB_014012.png",
 
         
         init(id) {

@@ -44,7 +44,7 @@ var monsterDebugData = [
 ]
 var player1debug = {
     id:"player1",
-    pool :           ["dummymonster1","dummymonster2","dummymonster4","dummymonster6"],
+    pool :           ["dummymonster1","dummymonster2","dummymonster4","dummymonster6","dummymonster8","dummymonster10"],
     unavailablepool :["dummymonster2","dummymonster4"]
 }
 
@@ -137,7 +137,6 @@ define(["ddm","jquery"],function(Tsh,$){
 
         }
         this.init = function (app) {
-            var DOMBoard = Tsh.Ddm.View.getDOMItems().element.board
             this.CreateDebugDOM()
     
             $("#dbCreateLand").click(this.createViewLand.bind(this))
@@ -236,6 +235,8 @@ define(["ddm","jquery"],function(Tsh,$){
             if(id == Messages.WHO){
                 data.shift()
                 this.handleSpawnEntity(data)
+            }else if(id == Messages.QUERY){
+                this.sendPool(player1debug.id,player1debug.pool,player1debug.unavailablepool)
             }
         },
         this.handleSpawnEntity = function(data){

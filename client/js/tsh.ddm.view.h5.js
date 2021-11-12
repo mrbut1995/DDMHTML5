@@ -96,7 +96,6 @@ define(["ddm", "jquery", "view/views", "view/boardview", "view/highlightview", "
         },
         initDOM() {            
             $('#btnRoll').click(this.displayDicePool.bind(this))
-            this.selectedDicePoolAt(5)
         },
         getDOMItems(update){
             if(!this.dom || update){
@@ -108,8 +107,12 @@ define(["ddm", "jquery", "view/views", "view/boardview", "view/highlightview", "
                 
                 this.dom.jquery.audio   = $("#ddm-audio")
 
-                this.dom.jquery.btn         = this.dom.jquery.btn || {}
-                this.dom.jquery.btn.roll    = $('#btnRoll')
+                this.dom.jquery.btnPlayer                   = this.dom.jquery.btnPlayer || {}
+                this.dom.jquery.btnPlayer.controller        = $(".player-btns-container")
+                this.dom.jquery.btnPlayer.btnroll           = $('#btnRoll')
+                this.dom.jquery.btnPlayer.btnendphase       = $('#btnEndPhase')
+                this.dom.jquery.btnPlayer.btnstorage        = $('#btnStorage')
+                this.dom.jquery.btnPlayer.btninformation    = $('#btnInformation')
 
                 this.dom.jquery.dices   = this.dom.jquery.dices || {}
                 this.dom.jquery.dices.controller = $("#dicesId")
@@ -121,9 +124,9 @@ define(["ddm", "jquery", "view/views", "view/boardview", "view/highlightview", "
                 this.dom.jquery.popup.outside  = $(".popup-controller .outside")
                 this.dom.jquery.popup.closebtn = $(".popup-controller .closebtn")
 
-                this.dom.jquery.popup.gridpopup = this.dom.jquery.popup.gridpopup || {}
-                this.dom.jquery.popup.gridpopup = $(".popup-controller .popup-grid")
-                this.dom.jquery.popup.gridpopup.items = $(".popup-controller .popup-grid .item-grid")    
+                this.dom.jquery.popup.pool = this.dom.jquery.popup.pool || {}
+                this.dom.jquery.popup.pool.controller = $(".popup-controller .popup-grid")
+                this.dom.jquery.popup.pool.items      = $(".popup-controller .popup-grid .item-grid")    
             
                 this.dom.element = this.dom.element || {}
                 this.dom.element.board       = document.getElementById("board")
@@ -134,7 +137,7 @@ define(["ddm", "jquery", "view/views", "view/boardview", "view/highlightview", "
                 this.dom.element.dices.two   = document.getElementById("dice2")
                 this.dom.element.dices.three = document.getElementById("dice3")
             }
-            return this.dom
+            return this.dom.jquery
         },
         initCanvas() {
             if ($("#ddm-canvas").length == 0 || !canvas || !context) {
@@ -367,6 +370,16 @@ define(["ddm", "jquery", "view/views", "view/boardview", "view/highlightview", "
                 this._onViewDestroyed(view)
             }
         },
+        deselectedView(view){
+            if(view instanceof View){
+                
+            }
+        },
+        deselectedView(view){
+            if(view instanceof View){
+                
+            }
+        },
 
         //////////////////////////////////////// Specify View
         /**
@@ -385,6 +398,14 @@ define(["ddm", "jquery", "view/views", "view/boardview", "view/highlightview", "
         getHighlightViews() {
             return this.getViewsByClass(BoardView)[0]
         },
+
+        async updateAvatarViewAsync(){
+
+        },
+        async updateCrestInfoViewAsync(){
+ 
+        },
+ 
         //////////////////////////////////////// Highlight
 
         /**
@@ -505,7 +526,7 @@ define(["ddm", "jquery", "view/views", "view/boardview", "view/highlightview", "
         },
         //////////////////////////////////////// DOM Event
         displayDice(interval) {
-            var $dicescontroller = this.getDOMItems().jquery.dices.controller
+            var $dicescontroller = this.getDOMItems().dices.controller
             $dicescontroller.addClass('show')
             if (interval == undefined || interval == null)
                 return
@@ -516,9 +537,9 @@ define(["ddm", "jquery", "view/views", "view/boardview", "view/highlightview", "
         rollDice(index, face) {
             var DOMObject = undefined
             switch (index) {
-                case 0: DOMObject = this.getDOMItems().jquery.dices.one; break
-                case 1: DOMObject = this.getDOMItems().jquery.dices.two; break
-                case 2: DOMObject = this.getDOMItems().jquery.dices.three; break
+                case 0: DOMObject = this.getDOMItems().dices.one; break
+                case 1: DOMObject = this.getDOMItems().dices.two; break
+                case 2: DOMObject = this.getDOMItems().dices.three; break
             }
             for (var i = 1; i <= 6; i++) {
                 DOMObject.removeClass('show-' + i);
@@ -532,10 +553,16 @@ define(["ddm", "jquery", "view/views", "view/boardview", "view/highlightview", "
             if($('.popup-controller')){
                 $('.popup-controller').addClass('open');
             }
+            if(this._onDisplayDicePool){
+                this._onDisplayDicePool()
+            }
         },
         hideDicePool(){
             if($('.popup-controller')){
                 $('.popup-controller').removeClass('open');
+            }
+            if(this._onDisplayDicePool){
+                this._onHideDicePool()
             }
         },
         selectedDicePoolAt(index){
@@ -544,13 +571,61 @@ define(["ddm", "jquery", "view/views", "view/boardview", "view/highlightview", "
         deselectedDicePoolAt(index){
             $('.popup-controller .popup-grid .item-grid').eq(index).removeClass("selected")
         },
+        focusedDicePoolAt(index){
+            $('.popup-controller .popup-grid .item-grid').eq(index).addClass("focused")
+        },
+        unfocusedDicePoolAt(index){
+            $('.popup-controller .popup-grid .item-grid').eq(index).removeClass("focused")
+        },
         disableDicePoolAt(index){
             $('.popup-controller .popup-grid .item-grid').eq(index).addClass("disable")
         },
         enableDicePoolAt(index){
             $('.popup-controller .popup-grid .item-grid').eq(index).removeClass("disable")
         },
-        
+        updateImageDicePoolAt(index,src){
+            $('.popup-controller .popup-grid .item-grid .img-portrait').eq(index).attr("src",src)
+        },
+        updateNameDicePoolAt(index,name){
+            $('.popup-controller .popup-grid .item-grid .img-portrait').eq(index).html(name)
+        },
+        async updatePlayerPoolViewAsync(){
+            /**@type {PoolItem[]} */
+            var datas = Tsh.Ddm.Player.getFullPool()
+            var data_keys = Object.keys(datas)
+            
+            for(var i in data_keys){
+                 var data = datas[data_keys[i]]
+                 var name = data.name
+                 var unavailable = !data.available
+                 var selected    = data.selected
+
+                 if(selected){
+                    console.log("selected ",name)
+                     this.selectedDicePoolAt(i)
+                 }else{
+                     this.deselectedDicePoolAt(i)
+                 }
+ 
+                 if(unavailable){
+                     this.disableDicePoolAt(i)
+                 }else{
+                     this.enableDicePoolAt(i)
+                 }
+ 
+                 var blueprint = await Tsh.Ddm.Blueprint.requestBlueprintMonsterAsync(name)
+                 var metadata  = blueprint.metadata
+ 
+                 if(metadata.portraitimg){
+                    var path = "./client/img/portrait/"
+                    this.updateImageDicePoolAt(i,path + metadata.portraitimg)
+                 }
+                 if(metadata.name){
+                    this.updateNameDicePoolAt(i,metadata.name)
+                 }
+                 
+            }
+         }, 
         //////////////////////////////////////// SPECIFY
         generateView(kind, config) {
             if (isViewKind(kind)) {
@@ -595,6 +670,8 @@ define(["ddm", "jquery", "view/views", "view/boardview", "view/highlightview", "
         onViewDestroyed(callback) { this._onViewDestroyed = callback },
         onDirty(callback) { this._onDirty = callback },
         onInitialized(callback) { this._onInitialized = callback },
+        onDisplayDicePool(callback){this._onDisplayDicePool = callback},
+        onHideDicePool(callback){this._onHideDicePool = callback}
 
     }
 })

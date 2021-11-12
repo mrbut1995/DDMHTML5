@@ -29,8 +29,8 @@ define(function (Entity) {
             this.app = Tsh.Ddm
 
             //Define Property
-            
-            
+
+            this.initProperty()
             this.connectModule();
 
             Tsh.Ddm.Loader.init(Tsh.Ddm)
@@ -40,6 +40,8 @@ define(function (Entity) {
             Tsh.Ddm.Input.init(Tsh.Ddm)
 
             Tsh.Ddm.Animator.init(Tsh.Ddm)
+
+            /**@module tsh/ddm/client */
             Tsh.Ddm.Client.init(Tsh.Ddm)
             Tsh.Ddm.Player.init(Tsh.Ddm)
             Tsh.Ddm.Match.init(Tsh.Ddm)
@@ -51,7 +53,14 @@ define(function (Entity) {
             this.connectServer();
 
             Tsh.Ddm.Debug.init(Tsh.Ddm)
-            this.test = Tsh.Ddm.Loader.loadModule("entity/item")
+        },
+        initProperty(){
+            this.isplacing = false
+            this.placingshape = null
+            this.isselecting = false
+            this.selected = null
+            this.selectedgroup = {}
+
         },
         connectServer() {
             var self = this
@@ -167,9 +176,9 @@ define(function (Entity) {
 
                 });
                 Tsh.Ddm.Client.onPhaseChanged(function (playerid, changephase) {
-
                 });
-                Tsh.Ddm.Client.onPoolChanged(function(playerid,pool,unusedpool){
+                Tsh.Ddm.Client.onPoolChanged(async function(playerid,pool,unusedpool){
+                    Tsh.Ddm.Player.updatePlayerPool(pool,unusedpool)
                 });
                 Tsh.Ddm.Client.onGameEnd(function (state, playerid) {
 
@@ -179,9 +188,6 @@ define(function (Entity) {
 
                 });
             })
-            // Tsh.Ddm.Client.onWaitingConnecting(function(){
-
-            // }.bind(this))
             Tsh.Ddm.Client.onSynchronizingData(function (data) {
                 console.log("on Synchronizing Data");
 
@@ -224,7 +230,6 @@ define(function (Entity) {
                     entity.setGridPosition(col, row)
 
                     Tsh.Ddm.Entity.addEntity(entity)
-
 
                     entity.idle()
                     if (controllerid == Tsh.Ddm.Player.playerid) {
@@ -277,7 +282,6 @@ define(function (Entity) {
                     entity.setGridPosition(col, row)
 
                     Tsh.Ddm.Entity.addEntity(entity)
-
                 }.bind(this))
 
                 this.onSpawnLand(function (entity, col, row, controllerid) {
@@ -286,18 +290,14 @@ define(function (Entity) {
                     entity.setGridPosition(col, row)
 
                     Tsh.Ddm.Entity.addEntity(entity)
-
-
-
                 }.bind(this))
 
                 this.onSpawnItem(function (entity, col, row, controllerid) {
                     var _view = Tsh.Ddm.View.generateView(entity.view)
                     entity.setView(_view)
+                    entity.setGridPosition(col, row)
 
                     Tsh.Ddm.Entity.addEntity(entity)
-
-                    entity.setGridPosition(col, row)
                 }.bind(this))
 
                 this.onDespawnEntity(function (entity) {
@@ -327,8 +327,17 @@ define(function (Entity) {
                 this.onDirty(function () {
 
                 }.bind(this))
-            }.bind(Tsh.Ddm.View))
 
+                this.onDisplayDicePool(function(){
+                    Tsh.Ddm.Client.sendQuery(Tsh.Ddm.Player.playerid)
+                    Tsh.Ddm.Player.deselectAllPoolItem()
+                }.bind(this))
+
+                this.onHideDicePool(function(){
+                    Tsh.Ddm.Player.deselectAllPoolItem()
+                }.bind(this))
+            }.bind(Tsh.Ddm.View))
+            
             Tsh.Ddm.Input.onInitialized(function () {
                 this.onCanvasClicked(function (ev) {
                     let mouse = Tsh.Ddm.Input.mouse
@@ -376,7 +385,19 @@ define(function (Entity) {
 
                     }.bind(this))
                 })
+                this.onDicePoolInput(function(source,index){
+                    if(source == "btnRollSelected"){
+
+                    }else if(source == "btnCancelSelected"){
+                        
+                    }else if(source == "popup-grid"){
+                        console.log("SELECTED grid index ",index)
+                        Tsh.Ddm.Player.toggleSelectedPoolItem(index)
+                    }
+                })
             }.bind(Tsh.Ddm.Input))
+
+            Tsh.Ddm.Player.onInitialized(function(){})
         },
         run: function () {
             window.requestAnimationFrame(this.step.bind(this));
@@ -413,9 +434,6 @@ define(function (Entity) {
             Tsh.Ddm.View.rollDice(0, Math.floor(Math.random() * 6))
             Tsh.Ddm.View.rollDice(1, Math.floor(Math.random() * 6))
             Tsh.Ddm.View.rollDice(2, Math.floor(Math.random() * 6))
-        },
-        updateCursorLogic() {
-
         },
         restart() {
 
@@ -543,8 +561,8 @@ define(function (Entity) {
                 return viewgroup
             }
             viewgroup.point = entitygroup.point
-            if (entitygroup.top) {
-                viewgroup.topview = entitygroup.top.getView()
+            if (entitygroup.first) {
+                viewgroup.firstview = entitygroup.first.getView()
             }
             if (entitygroup.monster) {
                 viewgroup.monsterview = entitygroup.monster.getView()
@@ -723,7 +741,48 @@ define(function (Entity) {
             }else{
                 this.highlighPlaceableInRegion(Tsh.Ddm.Input.nearby.point)
             }
-        }
+        },
+        
+        //For Placing Mode
+        startedPlacing(){
+            this.isplacing = true
+        },
+        stopPlacing(){
+            this.isplacing = false
+        },
+        selectPieceAt(col,row){
+            if(Tsh.Ddm.Entity.outOfBound(col,row)){
+                console.log("[ERROR] Out of Bound ",col," ",row)
+            }
+            if(this.selected){
+                Tsh.Ddm.Entity.deselectedEntity(this.selected)
+                Tsh.Ddm.View  .deselectedView  (this.selected.getView())    
+                Tsh.Ddm.Input .deselectedInput (this.selected)
+                this.selected = null
+                this.selectedgroup = {}
+            }
+            var group = Tsh.Ddm.Entity.getEntityGroupAt(col,row)
+            this.selectedgroup = group
+            this.selected = group.top
+            if(selected){
+                Tsh.Ddm.Entity.selectedEntity(this.selected)
+                Tsh.Ddm.View  .selectedView  (this.selected.getView())
+                Tsh.Ddm.Input .selectedInput (this.selected)    
+            }                
+        },
+        deselectedPiece(){
+            this.selected = null
+            this.selectedgroup = {}
+            this.isselecting = false
+            Tsh.Ddm.Entity.deselectedEntity(this.selected)
+            Tsh.Ddm.View  .deselectedView  (this.selected.getView())
+            Tsh.Ddm.Input .deselectedInput (this.selected)    
+        },
+        onMouseHovering(){
+            if(this.isplacing){
+                
+            }
+        },
     }
 
     return Tsh

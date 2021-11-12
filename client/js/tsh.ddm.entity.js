@@ -135,6 +135,7 @@ define(["ddm","jquery","entity/entityfactory","entity/monster","entity/land","en
         getEntityGroupAt(col,row){
             var entity = {
                 point       : null,
+                first       : null,
                 top         : null,
                 monster     : null,
                 land        : null,
@@ -157,7 +158,7 @@ define(["ddm","jquery","entity/entityfactory","entity/monster","entity/land","en
             var keys = Object.keys(entities)
 
             if(keys.length > 0){
-                entity.top = entities[keys[0]]
+                entity.first = entities[keys[0]]
                 for(var i in keys){
                     var e = entities[keys[i]]
                     if(e instanceof Monster){
@@ -171,6 +172,17 @@ define(["ddm","jquery","entity/entityfactory","entity/monster","entity/land","en
                     }
                 }
             }
+
+            if(entity.monsterlord){
+                entity.top = entity.monsterlord
+            }else if(entity.monster){
+                entity.top = entity.monster
+            }else if(entity.item){
+                entity.top = entity.item
+            }else if(entity.land){
+                entity.top = entity.land
+            }
+
             return entity
         },
         /**
@@ -189,7 +201,7 @@ define(["ddm","jquery","entity/entityfactory","entity/monster","entity/land","en
             return lst 
         },
         getEntityAt(col,row){
-            return this.getEntityGroupAt(col,row).top;
+            return this.getEntityGroupAt(col,row).first;
         },
         getMonsterAt(col,row){
             return this.getEntityGroupAt(col,row).monster
@@ -267,7 +279,12 @@ define(["ddm","jquery","entity/entityfactory","entity/monster","entity/land","en
                 }
             }
         },
+        selectedEntity(entity){
 
+        },
+        deselectedEntity(entity){
+            
+        },
         //SPECIFY ENTITY
         isMonsterOnSameTile(monster,col,row){
             var Col = col || monster.point.col,
@@ -315,14 +332,15 @@ define(["ddm","jquery","entity/entityfactory","entity/monster","entity/land","en
         },
 
         //Creating Entity
-        requestSpawnEntityAsync(kind,id,x,y,name,controllerid,target){
+        async requestSpawnEntityAsync(kind,id,x,y,name,controllerid,target){
             console.log("spawnEntity")
             if(this.entityIdExists(id)){
                 console.log("ALREADY CREATED ",id)
                 return
             }
 
-            EntityFactory.createRequestEntityAsync(kind,id,name).then(entity =>{
+            var entity = await EntityFactory.createRequestEntityAsync(kind,id,name)
+            console.log("Request get entity")
                 if(isLandKind(kind)){
                     if(this._onSpawnLand)
                         this._onSpawnLand(entity,x,y)
@@ -338,10 +356,9 @@ define(["ddm","jquery","entity/entityfactory","entity/monster","entity/land","en
                 }else{
                     console.log("CANNOT FIND")
                 }    
-            })
         },
 
-        requestDespawnEntityAsync(id){
+        async requestDespawnEntityAsync(id){
             var entity = this.getEntityById(id)
             if(entity){
                 if(this._onDespawnEntity)

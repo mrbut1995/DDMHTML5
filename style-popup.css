@@ -30,7 +30,6 @@
     text-align: center;
     position: relative;
     min-height: 100vh;
-
   }
   .popup .content .container {
     padding: 100px 20px 140px;
@@ -85,7 +84,7 @@
         width: calc(75% – 40px);
         height: calc(75% – 40px);
         max-width: 1200px;
-        max-height: 600px;
+        max-height: 675px;
     }
   } 
   
@@ -100,13 +99,18 @@
     border: 1px solid #ddd;
     aspect-ratio: 1;
     transition: all 0.1s;
-
+}
+.popup-grid .item-grid .img-portrait{
+    width: 100%;
+    height: 100%;
+    
 }
 .popup-grid .item-grid:active{
   border: 3px solid rgb(236, 229, 229);
 }
 .popup-grid .item-grid.selected{
   border: 2px solid rgb(235, 221, 96);
+  width: inherit - 1px;
 }
 .popup-grid .item-grid.selected:active{
   border: 3px solid rgb(235, 221, 96);
@@ -116,7 +120,7 @@
   background: rgba(165, 173, 175, 0.637);
 
 }
-.popup-grid .item-grid:nth-child(odd) { 
+.popup-grid .item-grid:nth-child(odd):not([class*="disable"]) { 
     background: #f7f7f7; 
 }
 

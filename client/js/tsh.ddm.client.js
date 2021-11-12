@@ -1,7 +1,11 @@
 define(["ddm"],function(Tsh){
     Tsh = Tsh || {}
     Tsh.Ddm = Tsh.Ddm || {}
-    
+
+    /**
+     * @exports tsh/ddm/client
+     * @namespace Tsh.Ddm.Client
+     */
     Tsh.Ddm.Client = {
         init(app){
             this.connection = null;
@@ -225,16 +229,37 @@ define(["ddm"],function(Tsh){
             this.sendMessage([Messages.ATTACK,
                               source.id,target.id])
         },
-        sendQuery(ids){
-            var data = ids
-            data.unshift(Messages.QUERY)
-            this.sendMessage(data)
+        
+        /**
+         * @memberof Tsh.Ddm.Client
+         * @method sendQuery
+         * Request Server to get Data of player 
+         * @param {string} player Ids of  player that need information of to get Query
+         */
+        sendQuery(playerid){
+            this.sendMessage([Messages.QUERY,
+                              playerid])
         },
+        
+        /**
+         * Request Server to retrive the information of Entity
+         * @param {string[]} ids List of id of entity that need to retrive information 
+         */
         sendWho(ids){
             var data = ids
             data.unshift(Messages.WHO)
             this.sendMessage(data)
         },
+
+        /**
+         * Request server to Spawning Entity of given information
+         * @param {string} kind 
+         * @param {string} type 
+         * @param {number} col 
+         * @param {number} row 
+         * @param {number} controllerid 
+         * @param {object} target 
+         */
         sendSpawn(kind,type,col,row,controllerid,target){
             this.sendMessage([Messages.SPAWN,
                               kind,type,col,row,controllerid,target])
@@ -246,6 +271,16 @@ define(["ddm"],function(Tsh){
         sendPhase(playerid,phase){
             this.sendMessage([Messages.PHASE,
                              playerid,phase])
+        },
+        /**
+         * Request Server to update Player Pool
+         * @param {string} playerid Id of player want to update Pool State
+         * @param {string[]} pool 
+         * @param {string[]} unused 
+         */
+        sendPool(playerid,pool,unused){
+            this.sendMessage([Messages.POOL,
+                              playerid,pool,unused])
         },
         //Signal Handle
         onDispatch          (callback){this._onDispatch             = callback},

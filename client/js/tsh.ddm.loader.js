@@ -48,25 +48,36 @@ define(["ddm"], function (Tsh) {
             audio.src = url + Tsh.Ddm.Loader.soundFileExtn;
             return audio;
         },
-        loadModule: function(url,callback){
+        loadModuleAsync :async function(url){
+            var request = new Promise((r) => {
+                require([url],function(module){ // On success
+                    r({
+                        data: module,
+                        status:"complete"
+                    })
+                },function(){
+                    r({
+                        data: {},
+                        status:"error"
+                    })                
+                })
+            })
+
             if(url in this.store.module){
-                if(callback){
-                    setTimeout(callback,4)
-                }
+                console.log("[loadModuleAsync] this.store.module contain ",url)
                 return this.store.module[url]
             }
             this.loaded = false;
             this.totalCount++;
-            var result = {
+            var mod = {
                 data:{},
-                status: "loading",
+                status: "loading"
             }
-            this.store.module[url] = result
-
-            require([url],function(module){ // On success
-                deepCopyTo(result.data,module)
-                result.status = "complete"
-                Tsh.Ddm.Loader.totalCount++;
+            console.log("request load module ",url)
+            var result = await request
+            console.log("Result = ",result)
+            deepCopyTo(mod,result)
+            if(result.status == "complete"){
                 if (Tsh.Ddm.Loader.loadedCount === Tsh.Ddm.Loader.totalCount) {
                     // Loader has loaded completely..
                     // Reset and clear the loader
@@ -80,18 +91,9 @@ define(["ddm"], function (Tsh) {
                         Tsh.Ddm.Loader.onload = undefined;
                     }
                 }    
-                if(callback){
-                    callback()
-                }
-            },
-            function(module){ //On Non success;
-                result.status = "error"
-                if(callback){
-                    callback()
-                }
             }
-            );
-            return result;
+            this.store.module[url] = mod
+            return this.store.module[url]
         },
         
         itemLoaded: function (ev) {

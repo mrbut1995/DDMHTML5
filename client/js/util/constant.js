@@ -62,6 +62,11 @@ var Constants = new function () {
     ALL_TYPE: ["TYPE_1", "TYPE_2", "TYPE_3", "TYPE_4", "TYPE_5",
       "TYPE_6", "TYPE_7", "TYPE_8", "TYPE_9", "TYPE_10"]
   }
+
+  this.MAX_DICES_SELECTION = 3
+
+  this.MAX_DICES_POOL = 15
+
 }
 function stringsArrayToPoints(array){
   var lst = []

@@ -29,31 +29,43 @@ define(["ddm", "jquery", "entity/entity"], function (Tsh, $, Entity) {
             }
             this.inputListener = []
             this.pressAndHoldTimer = null
+
+            this.selected = {
+                entity      : null,
+                container   : null,
+                dom         : null,
+                index       : -1  ,
+            }
+
             this.app = app
             if (this._onInitialized) {
                 this._onInitialized()
             }
+
+            this.$dom = null;
         },
 
         connectInput($dom) {
-            console.log("$dom = ", $dom)
+            this.$dom = $dom
+            $dom.canvas.on("click", this.oncanvasmouseclicked.bind(this))
+            $dom.canvas.on("mousedown", this.oncanvasmousedown.bind(this));
+            $dom.canvas.on("mouseup", this.oncanvasmouseup.bind(this));
+            $dom.canvas.on("mousemove", this.oncanvasmousemove.bind(this));
+            $dom.canvas.on("mouseout", this.oncanvasmouseout.bind(this));
 
-            $dom.jquery.canvas.on("click", this.oncanvasmouseclicked.bind(this))
-            $dom.jquery.canvas.on("mousedown", this.oncanvasmousedown.bind(this));
-            $dom.jquery.canvas.on("mouseup", this.oncanvasmouseup.bind(this));
-            $dom.jquery.canvas.on("mousemove", this.oncanvasmousemove.bind(this));
-            $dom.jquery.canvas.on("mouseout", this.oncanvasmouseout.bind(this));
-
-            $dom.jquery.popup.gridpopup.items.on("click", function () {
-                var index = $(".popup-controller .popup-grid .item-grid").index(this)
+            $dom.popup.pool.items.on("click", function () {
+                var index = $(".popup-controller .popup-grid .item-grid").index($(this))
                 console.log("item clicked = ", index)
+                if(Tsh.Ddm.Input._onDicePoolInput){
+                    Tsh.Ddm.Input._onDicePoolInput("popup-grid",index)
+                }
             })
 
-            $dom.jquery.popup.closebtn.on("click", function () {
+            $dom.popup.closebtn.on("click", function () {
                 Tsh.Ddm.View.hideDicePool()
             })
 
-            $dom.jquery.popup.outside.on("click", function () {
+            $dom.popup.outside.on("click", function () {
                 Tsh.Ddm.View.hideDicePool()
             })
 
@@ -62,7 +74,6 @@ define(["ddm", "jquery", "entity/entity"], function (Tsh, $, Entity) {
 
         registerEntityInput(entity) {
             if (entity instanceof Entity) {
-                var view = entity.getView()
                 
             }
         },
@@ -165,8 +176,40 @@ define(["ddm", "jquery", "entity/entity"], function (Tsh, $, Entity) {
 
             return new Coord(x, y);
         },
+        selectedInput(entity){
+            if(entity instanceof Entity){
+                if(this.selected.entity){
 
+                }
+                this.selected.entity        = entity
+                this.selected.container     = Tsh.Ddm.View.getDOMItems().canvas
+                this.selected.dom           = Tsh.Ddm.View.getDOMItems().canvas
+                this.selected.index         = -1
+            }
+        },
+        deselectedInput(entity){
+            if(entity instanceof Entity){
+                if(this.selected.entity == entity){
 
+                }
+                this.selected.entity        = null
+                this.selected.container     = null
+                this.selected.dom           = null
+                this.selected.index         = -1
+            }
+        },
+        selectedPoolItem(index){
+            this.selected.entity      = null
+            this.selected.container   = Tsh.Ddm.View.getDOMItems().popup.pool.controller
+            this.selected.dom         = Tsh.Ddm.View.getDOMItems().popup.pool.items.eq(index)
+            this.selected.index       = index
+        },
+        deseletectPoolItem(){
+            this.selected.entity        = null
+            this.selected.container     = null
+            this.selected.dom           = null
+            this.selected.index         = -1
+        },
         /**
         * @private
         */
@@ -207,13 +250,14 @@ define(["ddm", "jquery", "entity/entity"], function (Tsh, $, Entity) {
             }.bind(this))
             this.nearby.all = this.nearby.absolute.concat([this.nearby.point])
         },
+        onInitialized(callback) { this._onInitialized = callback },
+
         onCanvasClicked(callback) { this._onMouseClicked = callback },
         onCanvasPressed(callback) { this._onMousePressed = callback },
         onCanvasReleased(callback) { this._onMouseReleased = callback },
         onCanvasHover(callback) { this._onCanvasHover = callback },
         onCanvasOut(callback) { this._onMouseOut = callback },
         onCanvasPressAndHold(callback) { this._onPressAndHold = callback },
-        onInitialized(callback) { this._onInitialized = callback },
-
+        onDicePoolInput(callback){this._onDicePoolInput = callback },
     }
 })

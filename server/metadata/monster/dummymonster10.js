@@ -2,13 +2,13 @@ define(function(){
     var DummyMonster = {
 
         //Predefine Stat
-        name    : "DummyMonster",
+        name    : "DummyMonster6",
         atk     : 10,
         defend  : 20,
         level   : 4,
         crests  : ["attack", "attack", "defend", "summon", "summon"],
-        pieceimg: "MBB_014003.png",
-        portraitimg:"MBB_014003.png",
+        pieceimg: "MBB_014034.png",
+        portraitimg:"MBB_014034.png",
 
         
         init(id) {

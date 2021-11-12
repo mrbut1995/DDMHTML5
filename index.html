@@ -18,10 +18,10 @@
 		<div id="board"></div>
 		<div class="player-ui ui player1" id="player1-ui">
 			<div class="player-btns-container">
-				<button id= "btnRoll" class="player-btn left-side">Roll</button>
-				<button class="player-btn highlight-btn right-side">End Phase</button>
-				<button class="player-btn right-side">Storage</button>
-				<button class="player-btn right-side">Information</button>
+				<button id= "btnRoll" 	     class="player-btn left-side">Roll</button>
+				<button id= "btnEndPhase"    class="player-btn highlight-btn right-side">End Phase</button>
+				<button id= "btnStorage"     class="player-btn right-side">Storage</button>
+				<button id= "btnInformation" class="player-btn right-side">Information</button>
 
 			</div>
 		</div>
@@ -106,7 +106,7 @@
 			</div>
 		</div>
 	</div>
-	<div id="pieceactionmenu">
+	<!-- <div id="pieceactionmenu">
 		<div class="btnaction"><img src="./client/img/AttackDeclarationIcon1.png" class="btnactioncontent"></div>
 		<div class="btnaction">
 			<div class="btnactioncontent"></div>
@@ -116,7 +116,7 @@
 		</div>
 	</div>
 	<div id="piecedescription">
-	</div>
+	</div> -->
 
 	<!--Logging Code-->
 	<!-- <div id="logsection">
@@ -147,30 +147,30 @@
 				<div class="container">
 					<span class="closebtn">&#9932;</span>
 					<div class="popup-grid">
-						<div class="item-grid">Item A</div>
-						<div class="item-grid">Item B</div>
-						<div class="item-grid">Item C</div>
-						<div class="item-grid">Item D</div>
-						<div class="item-grid">Item E</div>
-						<div class="item-grid">Item A</div>
-						<div class="item-grid">Item B</div>
-						<div class="item-grid">Item C</div>
-						<div class="item-grid">Item D</div>
-						<div class="item-grid">Item E</div>
-						<div class="item-grid">Item A</div>
-						<div class="item-grid">Item B</div>
-						<div class="item-grid">Item C</div>
-						<div class="item-grid">Item D</div>
-						<div class="item-grid">Item E</div>
-						<div class="item-grid">Item A</div>
-						<div class="item-grid">Item B</div>
-						<div class="item-grid">Item C</div>
-						<div class="item-grid">Item D</div>
-						<div class="item-grid">Item E</div>
+						<div class="item-grid"><img class="img-portrait">Item A</div>
+						<div class="item-grid"><img class="img-portrait">Item B</div>
+						<div class="item-grid"><img class="img-portrait">Item C</div>
+						<div class="item-grid"><img class="img-portrait">Item D</div>
+						<div class="item-grid"><img class="img-portrait">Item E</div>
+						<div class="item-grid"><img class="img-portrait">Item A</div>
+						<div class="item-grid"><img class="img-portrait">Item B</div>
+						<div class="item-grid"><img class="img-portrait">Item C</div>
+						<div class="item-grid"><img class="img-portrait">Item D</div>
+						<div class="item-grid"><img class="img-portrait">Item E</div>
+						<div class="item-grid"><img class="img-portrait">Item A</div>
+						<div class="item-grid"><img class="img-portrait">Item B</div>
+						<div class="item-grid"><img class="img-portrait">Item C</div>
+						<div class="item-grid"><img class="img-portrait">Item D</div>
+						<div class="item-grid"><img class="img-portrait">Item E</div>
+						<div class="item-grid"><img class="img-portrait">Item A</div>
+						<div class="item-grid"><img class="img-portrait">Item B</div>
+						<div class="item-grid"><img class="img-portrait">Item C</div>
+						<div class="item-grid"><img class="img-portrait">Item D</div>
+						<div class="item-grid"><img class="img-portrait">Item E</div>
 					</div>
 					<div class="btn-container">
-						<div class="btn">Roll</div>
-						<div class="btn">Cancel</div>
+						<div class="btn" id="btnRollSelected">Roll</div>
+						<div class="btn" id="btnCancelSelected">Cancel</div>
 					</div>
 				</div>
 			</div>

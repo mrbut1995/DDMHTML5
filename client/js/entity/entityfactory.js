@@ -1,10 +1,21 @@
-define(["entity/lands", "entity/monsters", "entity/items"], function (Lands, Monsters, Items) {
+define(["entity/lands", "entity/monsters", "entity/items","ddm"], function (Lands, Monsters, Items,Tsh) {
     console.log("LOAD ENTITY FACTORY")
     var EntityFactory = {};
-    EntityFactory.createRequestEntityAsync =async function (kind,id,name) {
-        await new Promise(r => setTimeout(r, 2000))
+    EntityFactory.createRequestEntityAsync = async function (kind, id, name) {
         if (!kind) {
             console.log("kind is undefined", true)
+        }
+        if (!(kind in EntityFactory.builders)) {
+            console.log("Request Prototype of ", kind ," check Tsh = ",Tsh)
+            var blueprint = await Tsh.Ddm.Blueprint.requestBlueprintMonsterAsync(kind)
+            console.log("Result request Monster Metadata ", blueprint)
+            if (blueprint && blueprint.classdata) {
+                console.log("Assign Builder for ",kind)
+                //Assign Builder 
+                EntityFactory.builders[kind] = function (id) {
+                    return new blueprint.classdata(id)
+                }
+            }
         }
         if (!isFunction(EntityFactory.builders[kind])) {
             console.log(kind + " is not a valid Entity type");
@@ -12,7 +23,7 @@ define(["entity/lands", "entity/monsters", "entity/items"], function (Lands, Mon
         }
         var object = null
         try {
-            object = EntityFactory.builders[kind](id,name)
+            object = EntityFactory.builders[kind](id, name)
         } catch (err) {
             console.log("[ERROR] Cannot created Object:", err)
         }
@@ -21,14 +32,6 @@ define(["entity/lands", "entity/monsters", "entity/items"], function (Lands, Mon
 
     //Builder Define
     EntityFactory.builders = {};
-
-    //Monster
-    EntityFactory.builders["dummymonster1"] = function (id) {
-        return new Monsters.dummymonster1.classdata(id)
-    }
-    EntityFactory.builders["dummymonster2"] = function (id) {
-        return new Monsters.dummymonster2.classdata(id)
-    }
 
     //Land
     EntityFactory.builders["NormalLand"] = function (id) {
