@@ -61,15 +61,31 @@ define(["ddm", "jquery", "entity/entity"], function (Tsh, $, Entity) {
                 }
             })
 
+            $dom.popup.pool.btnRoll.on("click",function(){
+                console.log("Btn Roll")
+                if(Tsh.Ddm.Input._onDicePoolInput){
+                    Tsh.Ddm.Input._onDicePoolInput("btnRollSelected",-1)
+                }
+            })
+            $dom.popup.pool.btnCancel.on("click",function(){
+                console.log("Btn Cancel")
+
+                if(Tsh.Ddm.Input._onDicePoolInput){
+                    Tsh.Ddm.Input._onDicePoolInput("btnCancelSelected",-1)
+                }
+            })
+
             $dom.popup.closebtn.on("click", function () {
-                Tsh.Ddm.View.hideDicePool()
+                Tsh.Ddm.Player.playerHideDicePool()
             })
 
             $dom.popup.outside.on("click", function () {
-                Tsh.Ddm.View.hideDicePool()
+                Tsh.Ddm.Player.playerHideDicePool()
             })
 
-
+            $dom.btnPlayer.btnroll.on("click",function(){
+                Tsh.Ddm.Player.playerDisplayDicePool()
+            })
         },
 
         registerEntityInput(entity) {

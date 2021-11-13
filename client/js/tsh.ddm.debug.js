@@ -44,6 +44,7 @@ var monsterDebugData = [
 ]
 var player1debug = {
     id:"player1",
+    name:"Player 1",
     pool :           ["dummymonster1","dummymonster2","dummymonster4","dummymonster6","dummymonster8","dummymonster10"],
     unavailablepool :["dummymonster2","dummymonster4"]
 }
@@ -159,7 +160,7 @@ define(["ddm","jquery"],function(Tsh,$){
                 Tsh.Ddm.Debug.receiveMessage(msg)
             }
             
-            Tsh.Ddm.Client.receiveWelcome(["P00001", "Player 1", "", "", "3", "[0,0,0,0,0]", "M00001"])
+            Tsh.Ddm.Client.receiveWelcome([player1debug.id, player1debug.name, player1debug.pool, "", "3", "[0,0,0,0,0]", "M00001"])
         }
 
         this.entityData = {}
@@ -170,6 +171,15 @@ define(["ddm","jquery"],function(Tsh,$){
             data[1] = playerid
             data[2] = pool
             data[3] = unusedpool
+            Tsh.Ddm.Client.receiveMessage(JSON.stringify(data))
+        },
+        this.sendRollResult = function(playerid,roll1,roll2,roll3){
+            var data = []
+            data[0] = Messages.ROLL
+            data[1] = playerid
+            data[2] = roll1
+            data[3] = roll2
+            data[4] = roll3
             Tsh.Ddm.Client.receiveMessage(JSON.stringify(data))
         },
         this.sendCreateMonster = function(id,lCol,lRow){
@@ -237,6 +247,8 @@ define(["ddm","jquery"],function(Tsh,$){
                 this.handleSpawnEntity(data)
             }else if(id == Messages.QUERY){
                 this.sendPool(player1debug.id,player1debug.pool,player1debug.unavailablepool)
+            }else if(id == Messages.ROLL){
+                this.sendRollResult(player1debug.id,Math.floor(Math.random() * 6),Math.floor(Math.random() * 6),Math.floor(Math.random() * 6))
             }
         },
         this.handleSpawnEntity = function(data){
@@ -262,7 +274,7 @@ define(["ddm","jquery"],function(Tsh,$){
                     if(landDebugData[i][j] == 1){
                         var eId = entityId()
                         this.entityData[eId] = {
-                                        id  : eId,
+                                        id  : eId + "",
                                         type: "NormalLand",
                                         col : j,
                                         row : i,
@@ -271,7 +283,7 @@ define(["ddm","jquery"],function(Tsh,$){
                     if(monsterDebugData[i][j] == 1){
                         var eId = entityId()
                         this.entityData[eId] = {
-                                        id  : eId,
+                                        id  : eId + "",
                                         type: "dummymonster1",
                                         col : j,
                                         row : i,

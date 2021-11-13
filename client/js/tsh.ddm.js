@@ -95,36 +95,44 @@ define(function (Entity) {
                     width: 13,
                     height: 19
                 })
+                var player = Tsh.Ddm.Player
+                var client = Tsh.Ddm.Client
                 //Connecting Player Handle
-                Tsh.Ddm.Player.onActive(function () {
+                player.onActive(function () {
 
                 })
-                Tsh.Ddm.Player.onLose(function () {
+                player.onLose(function () {
 
                 })
-                Tsh.Ddm.Player.onConnected(function () {
+                player.onConnected(function () {
 
                 })
-                Tsh.Ddm.Player.onDeclareEndPhase(function () {
+                player.onDeclareEndPhase(function () {
 
                 })
-                Tsh.Ddm.Player.onSelectedMonster(function (monster) {
+                player.onSelectedMonster(function (monster) {
 
                 })
-                Tsh.Ddm.Player.onDeselectedMonster(function (monster) {
+                player.onDeselectedMonster(function (monster) {
+
+                })
+                player.onRequestRollDice(function (selection){
+                    client.sendRoll(id,selection[0],selection[1],selection[2])
+                })
+                player.onPlayerRequestMessage(function(msg){
 
                 })
 
-                Tsh.Ddm.Client.onSpawnEntity(function (kind, id, x, y, name, controllerid, target) {
+                client.onSpawnEntity(function (kind, id, x, y, name, controllerid, target) {
                     console.log("Spawn entity ", id)
                     Tsh.Ddm.Entity.requestSpawnEntityAsync(kind, id, x, y, name, controllerid, target)
                 });
-                Tsh.Ddm.Client.onDespawnEntity(function (player, id) {
+                client.onDespawnEntity(function (player, id) {
                     console.log("Despawn entiy ", id)
                     Tsh.Ddm.Entity.requestDespawnEntityAsync(id)
                 })
 
-                Tsh.Ddm.Client.onEntityMove(function (playerid, id, x, y, type) {
+                client.onEntityMove(function (playerid, id, x, y, type) {
                     var entity = null;
                     if (playerid === Tsh.Ddm.Player.playerid) {
                         console.log("By client Player Control ", id)
@@ -148,43 +156,48 @@ define(function (Entity) {
                         }
                     }
                 });
-                Tsh.Ddm.Client.onEntityDestroy(function (player, id, x, y) {
+                client.onEntityDestroy(function (player, id, x, y) {
 
                 });
-                Tsh.Ddm.Client.onEntityAttack(function (player, id, x, y) {
+                client.onEntityAttack(function (player, id, x, y) {
 
                 });
-                Tsh.Ddm.Client.onEntityEffect(function (player, id, x, y) {
+                client.onEntityEffect(function (player, id, x, y) {
 
                 });
-                Tsh.Ddm.Client.onPropertyChanging(function (id, property, value) {
+                client.onPropertyChanging(function (id, property, value) {
 
                 });
-                Tsh.Ddm.Client.onEffectTrigger(function (player, id, x, y) {
+                client.onEffectTrigger(function (player, id, x, y) {
 
                 });
-                Tsh.Ddm.Client.onPlayerActive(function (playerid) {
+                client.onPlayerActive(function (playerid) {
 
                 });
-                Tsh.Ddm.Client.onPlayerDeactive(function (playerid) {
+                client.onPlayerDeactive(function (playerid) {
 
                 });
-                Tsh.Ddm.Client.onPlayerDie(function (playerid, result) {
+                client.onPlayerDie(function (playerid, result) {
 
                 });
-                Tsh.Ddm.Client.onRollDice(function (playerid, dice, result) {
-
+                client.onRollDice(function (playerid,roll1,roll2,roll3) {
+                    console.log("Roll result ",roll1," ",roll2," ",roll3)
+                    Tsh.Ddm.View.rollDiceAnimation([roll1,roll2,roll3],function(){
+                        if(playerid == id){
+                            Tsh.Ddm.Player.playerCheckRollResult([roll1,roll2,roll3])
+                        }
+                    }.bind(Tsh.Ddm.Game))
+                }.bind(this));
+                client.onPhaseChanged(function (playerid, changephase) {
                 });
-                Tsh.Ddm.Client.onPhaseChanged(function (playerid, changephase) {
-                });
-                Tsh.Ddm.Client.onPoolChanged(async function(playerid,pool,unusedpool){
+                client.onPoolChanged(async function(playerid,pool,unusedpool){
                     Tsh.Ddm.Player.updatePlayerPool(pool,unusedpool)
                 });
-                Tsh.Ddm.Client.onGameEnd(function (state, playerid) {
+                client.onGameEnd(function (state, playerid) {
 
                 });
 
-                Tsh.Ddm.Client.onDisconnected(function (message) {
+                client.onDisconnected(function (message) {
 
                 });
             })
@@ -387,12 +400,14 @@ define(function (Entity) {
                 })
                 this.onDicePoolInput(function(source,index){
                     if(source == "btnRollSelected"){
+                        Tsh.Ddm.Player.playerRollDice()
 
                     }else if(source == "btnCancelSelected"){
-                        
+                        Tsh.Ddm.Player.deselectAllPoolItem()
+
                     }else if(source == "popup-grid"){
-                        console.log("SELECTED grid index ",index)
                         Tsh.Ddm.Player.toggleSelectedPoolItem(index)
+
                     }
                 })
             }.bind(Tsh.Ddm.Input))
@@ -427,13 +442,6 @@ define(function (Entity) {
         showScreen: function () {
         },
         hideScreens: function () {
-        },
-        roll: function () {
-            console.log("roll")
-            Tsh.Ddm.View.displayDice(1300)
-            Tsh.Ddm.View.rollDice(0, Math.floor(Math.random() * 6))
-            Tsh.Ddm.View.rollDice(1, Math.floor(Math.random() * 6))
-            Tsh.Ddm.View.rollDice(2, Math.floor(Math.random() * 6))
         },
         restart() {
 

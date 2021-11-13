@@ -121,13 +121,13 @@ define(["ddm"],function(Tsh){
         receiveWelcome(data){
             var playerid = data[1],
                 name     = data[2],
-                contain  = data[3],
+                pool     = data[3],
                 avatar   = data[4],
                 lp       = data[5],
                 crests   = data[6],
                 matchid  = data[7]
             if(this._onWelcome){
-                this._onWelcome(playerid,name,contain,avatar,lp,crests,matchid)
+                this._onWelcome(playerid,name,pool,avatar,lp,crests,matchid)
             }
         },
         receiveDispatch(data){
@@ -197,11 +197,17 @@ define(["ddm"],function(Tsh){
         receivePlayerDie        (data){
 
         },
+        /**
+         * Request To display the result of Dice Rolling from server
+         * @param {object[]} data   Data send from server 
+         */
         receiveRollDice   (data){
-            var result = data;
-            result.shift()
+            var playerid = data[1],
+                roll1    = data[2],
+                roll2    = data[3],
+                roll3    = data[4]
             if(this._onRollDice){
-                this._onRollDice(result)
+                this._onRollDice(playerid,roll1,roll2,roll3)
             }
         },
         receivePhaseChanged(data){
@@ -282,6 +288,13 @@ define(["ddm"],function(Tsh){
             this.sendMessage([Messages.POOL,
                               playerid,pool,unused])
         },
+
+
+        /**
+         * Request API
+         */
+
+
         //Signal Handle
         onDispatch          (callback){this._onDispatch             = callback},
         onConnected         (callback){this._onConnected            = callback},

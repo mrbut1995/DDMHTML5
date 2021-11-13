@@ -18,7 +18,6 @@ define(["jquery", "ddm", "entity/monster", "entity/land", "entity/item"], functi
 
         async requestBlueprintMonsterAsync(name) {
             if (this.containBlueprintMonster(name)) {
-                console.log("Contain Blueprint Monster ", name)
                 return this.blueprint.monster[name]
             }
             
@@ -43,7 +42,6 @@ define(["jquery", "ddm", "entity/monster", "entity/land", "entity/item"], functi
 
         async requestBlueprintLandAsync(name) {
             if (this.containBlueprintLand(name)) {
-                console.log("Contain Blueprint Land ", name)
                 return this.blueprint.land[name]
             }
             var data = await Tsh.Ddm.Loader.loadModuleAsync("server-meta-data/land/" + name)
@@ -67,7 +65,6 @@ define(["jquery", "ddm", "entity/monster", "entity/land", "entity/item"], functi
 
         async requestBlueprintItemAsync(name) {
             if (this.containBlueprintItem(name)) {
-                console.log("Contain Blueprint Item ", name)
                 return this.blueprint.item[name]
             }
             var data = await Tsh.Ddm.Loader.loadModuleAsync("server-meta-data/item/" + name)

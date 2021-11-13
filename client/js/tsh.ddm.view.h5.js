@@ -1,4 +1,5 @@
 
+
 // //Include Module
 define(["ddm", "jquery", "view/views", "view/boardview", "view/highlightview", "view/viewfactory", "view/layer", "animation/effect", "entity/entity", "view/landview", "view/monsterview","view/itemview"], function
     (Tsh, $, Views, BoardView, HighlightView, ViewFactory, Layer, Effect, Entity, LandView, MonsterView,ItemView) {
@@ -95,7 +96,7 @@ define(["ddm", "jquery", "view/views", "view/boardview", "view/highlightview", "
 
         },
         initDOM() {            
-            $('#btnRoll').click(this.displayDicePool.bind(this))
+            // $('#btnRoll').click(this.displayDicePool.bind(this))
         },
         getDOMItems(update){
             if(!this.dom || update){
@@ -127,7 +128,9 @@ define(["ddm", "jquery", "view/views", "view/boardview", "view/highlightview", "
                 this.dom.jquery.popup.pool = this.dom.jquery.popup.pool || {}
                 this.dom.jquery.popup.pool.controller = $(".popup-controller .popup-grid")
                 this.dom.jquery.popup.pool.items      = $(".popup-controller .popup-grid .item-grid")    
-            
+                this.dom.jquery.popup.pool.btnRoll    = $(".popup-controller   #btnRollSelected")
+                this.dom.jquery.popup.pool.btnCancel  = $(".popup-controller   #btnCancelSelected")
+
                 this.dom.element = this.dom.element || {}
                 this.dom.element.board       = document.getElementById("board")
                 this.dom.element.canvas      = document.getElementById("ddm-canvas")
@@ -549,6 +552,38 @@ define(["ddm", "jquery", "view/views", "view/boardview", "view/highlightview", "
                 }
             }
         },
+        
+        rollDiceAnimation(results,callback){
+            var $dice1 = this.getDOMItems().dices.one,
+                $dice2 = this.getDOMItems().dices.two,
+                $dice3 = this.getDOMItems().dices.three,
+                $controller =  this.getDOMItems().dices.controller
+
+            if(!$controller.hasClass("show")){
+                $controller.addClass('show')
+                setTimeout(() => { 
+                    $controller.removeClass("show")
+                    if(callback)
+                        callback()
+                }, 1300)    
+            }
+
+            for(var i = 1;i <= 6; i++){
+                $dice1    .removeClass('show-',i)
+                $dice2    .removeClass('show-',i)
+                this.getDOMItems().dices.three  .removeClass('show-',i)
+                if(results[0] === i){
+                    $dice1.addClass('show-' + i);
+                }
+                if(results[1] === i){
+                    $dice2.addClass('show-' + i);
+                }
+                if(results[2] === i){
+                    $dice3.addClass('show-' + i);
+                }
+            }
+        },
+        //Dice Pool Popup DOM handle
         displayDicePool(){
             if($('.popup-controller')){
                 $('.popup-controller').addClass('open');
@@ -564,6 +599,9 @@ define(["ddm", "jquery", "view/views", "view/boardview", "view/highlightview", "
             if(this._onDisplayDicePool){
                 this._onHideDicePool()
             }
+        },
+        isDicePoolPopupDisplay(){
+            return $('.popup-controller').hasClass("open")
         },
         selectedDicePoolAt(index){
             $('.popup-controller .popup-grid .item-grid').eq(index).addClass("selected")
@@ -589,9 +627,13 @@ define(["ddm", "jquery", "view/views", "view/boardview", "view/highlightview", "
         updateNameDicePoolAt(index,name){
             $('.popup-controller .popup-grid .item-grid .img-portrait').eq(index).html(name)
         },
-        async updatePlayerPoolViewAsync(){
-            /**@type {PoolItem[]} */
-            var datas = Tsh.Ddm.Player.getFullPool()
+
+        /**
+         * 
+         * @param {PoolItemView[]} datas 
+         */
+        async updatePlayerPoolViewAsync(datas){
+            /**@type {PoolItemView[]} */
             var data_keys = Object.keys(datas)
             
             for(var i in data_keys){

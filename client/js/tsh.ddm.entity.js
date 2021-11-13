@@ -49,28 +49,18 @@ define(["ddm","jquery","entity/entityfactory","entity/monster","entity/land","en
         },
         
         forEachEntity(callback){
-            var keys = Object.keys(this.entities)
-            for(var i in keys){
-                var entity = this.entities[keys[i]]
-                callback(entity)
-            }
+            _.each(this.entities,callback)
         },
         findIfEntity(callback){
-            var keys = Object.keys(this.entities)
-            for(var i in keys){
-                var entity = this.entities[keys[i]]
-                if(callback(entity))
-                    return entity
-            }
-            return null
+            return _.find(this.entities,callback)
         },
+        
         update(delta){
             this.forEachEntity((entity)=>{
                 entity.update(delta)
             })
         },
         entityIdExists(id){
-            console.log("check id ",id)
             return id in this.entities
         },
         getEntityById(id){
@@ -155,24 +145,19 @@ define(["ddm","jquery","entity/entityfactory","entity/monster","entity/land","en
             var entities =  this.entityGrid[row][col]
             if(!entities)
                 return entity
-            var keys = Object.keys(entities)
-
-            if(keys.length > 0){
-                entity.first = entities[keys[0]]
-                for(var i in keys){
-                    var e = entities[keys[i]]
-                    if(e instanceof Monster){
-                        entity.monster = e
-                    }else if(e instanceof Land){
-                        entity.land = e
-                    }else if(e instanceof Item){
-                        entity.item = e
-                    }else if(e instanceof MonsterLord){
-                        entity.monsterlord = e
-                    }
+                
+            entity.first = _.first(entities)
+            _.each(entities,function(e){
+                if(e instanceof Monster){
+                    entity.monster = e
+                }else if(e instanceof Land){
+                    entity.land = e
+                }else if(e instanceof Item){
+                    entity.item = e
+                }else if(e instanceof MonsterLord){
+                    entity.monsterlord = e
                 }
-            }
-
+            })
             if(entity.monsterlord){
                 entity.top = entity.monsterlord
             }else if(entity.monster){
@@ -182,7 +167,6 @@ define(["ddm","jquery","entity/entityfactory","entity/monster","entity/land","en
             }else if(entity.land){
                 entity.top = entity.land
             }
-
             return entity
         },
         /**
@@ -192,12 +176,12 @@ define(["ddm","jquery","entity/entityfactory","entity/monster","entity/land","en
          */
         getEntityGroupsAtRegion(region){
             var lst = []
-            for(var i in region){
-                var p = region[i]
+            var self = this
+            _.each(region,p => {
                 if(isPoint(p)){
-                    lst.push(this.getEntityGroupAt(p.col,p.row))
+                    lst.push(self.getEntityGroupAt(p.col,p.row))
                 }
-            }
+            })
             return lst 
         },
         getEntityAt(col,row){
@@ -217,58 +201,38 @@ define(["ddm","jquery","entity/entityfactory","entity/monster","entity/land","en
         },
 
         entityIds(){
-            return Object.keys(this.entities)
+            return _.keys(this.entities)
         },
 
         containIds(lst){
-            var result = [];
             var ids = this.entityIds()
-            for(var i in lst){
-                if(ids.includes(lst[i] + "")){
-                    result.push(lst[i])
-                }
-            }
-            return result
+            return _.intersection(lst,ids)
         },
 
         notContainIds(lst){
-            var result = [];
             var ids = this.entityIds()
-            for(var i in lst){
-                if(!ids.includes(lst[i]  + "")){
-                    result.push(lst[i])
-                }
-            }
-            return result
+            return _.difference(lst, _.intersection(lst,ids))
         },
 
         removeObsoleteEntities(){
-            if(!this.obsoleteEntities){
+            if(this.obsoleteEntities.length == 0){
                 return;
             }
-            var ids = Object.keys(this.obsoleteEntities)
-            var num = ids.length
-            if(num > 0){
-                for(var i in ids){
-                    this.removeEntity(this.getEntityById(ids[i]))
-                }
-            }
-            this.obsoleteEntities = null;
+            _.each(this.obsoleteEntities,e => this.removeEntity(e))
+            this.obsoleteEntities = [];
         },
 
         updateList(lst){
             var knowIds = this.containIds(lst),
                 newIds  = this.notContainIds(lst),
-                ids = this.entityIds()
-            this.obsoleteEntities = {}
+                ids     = this.entityIds()
+            this.obsoleteEntities = []
 
             //Find obsolete Entity
-            for(var i in ids){
-                var id = ids[i]
-                if(!knowIds.includes(parseInt(id))){
-                    this.obsoleteEntities[id] = this.getEntityById(id)
-                }
-            }
+            this.obsoleteEntities = _.reject(this.entities,function(e){
+                return _.include(knowIds,e.id)
+            })
+
             //Remove all the obsolete
             this.removeObsoleteEntities()
 
@@ -289,31 +253,14 @@ define(["ddm","jquery","entity/entityfactory","entity/monster","entity/land","en
         isMonsterOnSameTile(monster,col,row){
             var Col = col || monster.point.col,
                 Row = row || monster.point.row,
-                list = this.entityGrid[Row][Col],
-                result =false;
-            var keys = Object.keys(list);
-            for(var i in keys){
-                var entity = keys[i]
-                if(entity instanceof Monster && entity.id !== monster.id){
-                    result = true;
-                }
-            }
-            return result;
+                list = this.entityGrid[Row][Col]
+            return _.findIndex(list,e => e instanceof Monster && e.id !== monster.id) != -1
         },
         isMonsterOnLand(monster,col,row){
             var Col = col || monster.point.col,
                 Row = row || monster.point.row,
-                list = this.entityGrid[Row][Col],
-                result =false;
-            var keys = Object.keys(list);
-            for(var i in keys){
-                var entity = keys[i]
-                if(entity instanceof Land){
-                    result = true;
-                }
-            }
-            return result;
-
+                list = this.entityGrid[Row][Col]
+            return _.findIndex(list,e => e instanceof Land) != -1
         },
              
         getSelected(){

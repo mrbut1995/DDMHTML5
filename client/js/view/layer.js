@@ -36,11 +36,7 @@ define(["view/view"],function(View){
             }
         },
         forEachView(callback){
-            var ids = Object.keys(this.views)
-            for(var i in ids){
-                var id = ids[i]
-                callback(this.views[id])
-            }
+            _.each(this.views,callback)
         },
         draw(maincanvas){
             this.maincanvas  = maincanvas

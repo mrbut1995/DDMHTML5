@@ -1,9 +1,14 @@
 /**
- * @typedef {object}  PoolItem
+ * @typedef {object}  PoolItemView
  * @property {string} name
  * @property {bool}   available
  * @property {bool}   selected
 */
+/**
+ * @typedef    {object}                      PoolViewData
+ * @property   {Map<string::PoolItemView>}   items
+ * @property   {bool}                        displayRoll
+ */
 
 
 define(["ddm"],function(Tsh){
@@ -47,8 +52,24 @@ define(["ddm"],function(Tsh){
            
            this.controlmonster    = {}
            this.controlland       = {}
-           this.movablemonster    = {}
-           this.monsterlord       = null
+
+           this.resolvedMonster   = {}
+
+           //Player Action
+           this.player_actions = {
+               roll           : {
+                    available : true
+               },
+               diceselection  : {
+                    available : true
+               },
+               summoning      : {
+                    available : true
+               },
+               piece          : {
+                    available  : true
+               },                   
+          }
 
            this.app = app
            if(this._onInitialized){
@@ -141,8 +162,66 @@ define(["ddm"],function(Tsh){
        displayCrestInfo(){
 
        },
-       displayPlayerPool(){
-       
+
+       allowedActionRoll(){
+          return this.player_actions.roll.available
+       },
+       allowedSelectionDice(){
+          return this.player_actions.diceselection.available
+       },
+       allowedSummoning(){
+          return this.player_actions.diceselection.available
+       },
+       allowedPieceAction(){
+          return this.player_actions.piece.available
+       },
+
+       resetAllowedActionRoll(){
+          this.player_actions.roll.available = true
+       },
+       resetAllowedSelectionDice(){
+          this.player_actions.diceselection.available = true
+       },
+       resetAllowedSummoning(){
+          this.player_actions.summoning.available = true
+       },
+       resetAllowedPieceAction(){
+          this.player_actions.piece.available = true
+       },
+
+       notAllowedActionRoll(){
+          this.player_actions.roll.available = false
+       },
+       notAllowedSelectionDice(){
+          this.player_actions.diceselection.available = false
+       },
+       notAllowedSummoning(){
+          this.player_actions.summoning.available = false
+       },
+       notAllowedPieceAction(){
+          this.player_actions.piece.available = false
+       },
+
+       actionablePieces(){
+          if(this.notAllowedPieceAction()){
+               return []
+          }
+       },
+
+       rolling(){
+          return this.isRolling
+       },
+       startedRolling(){
+          this.isRolling = true
+       },
+       endRolling(){
+          this.isRolling = false
+       },
+       reset(){
+
+       },
+       clear(){
+
        },
        updatePlayerPool(pool,unused){
           this.pool           = [...pool]
@@ -151,16 +230,15 @@ define(["ddm"],function(Tsh){
 
           this.updateFullPool()
           //Cloning data to pass Async function in case of multiple request update Player Pool
-          Tsh.Ddm.View.updatePlayerPoolViewAsync()
+          Tsh.Ddm.View.updatePlayerPoolViewAsync(this.getFullPool())
        },
        updateFullPool(){
           this.fullpool = {}
           for(var i = 0;i < this.pool.length;i++ ){
-               console.log("====> ",this.selectedpool,"  ",i,"  = ",this.selectedpool.includes(i))
                var item = {
                     name      : this.pool[i],
                     available : !this.unavailable.includes(this.pool[i]),
-                    selected  : this.selectedpool.includes(i)
+                    selected  : this.selectedpool.includes(this.pool[i])
                }
                this.fullpool[item.name] = item
           }
@@ -181,8 +259,8 @@ define(["ddm"],function(Tsh){
                return
           }
           var isAvailable = !this.unavailable.includes(this.pool[index])
-          if(!this.selectedpool.includes(index) && isAvailable){
-               this.selectedpool.push(index)
+          if(! this.selectedpool.includes(this.pool[index]) && isAvailable){
+               this.selectedpool.push(this.pool[index])
                this.selectedpool.length = Math.min(3,this.selectedpool.length)
           }else{
                
@@ -191,7 +269,7 @@ define(["ddm"],function(Tsh){
           if(this._onSelectedPool){
                this._onSelectedPool()
           }
-          Tsh.Ddm.View.updatePlayerPoolViewAsync()
+          Tsh.Ddm.View.updatePlayerPoolViewAsync(this.getFullPool())
        },
        deselectPoolItem(index){
           if(index < 0 || index > this.pool.length){
@@ -199,7 +277,7 @@ define(["ddm"],function(Tsh){
                return
           }
           for(var i = 0 ;i < this.selectedpool.length;i++){
-               if(this.selectedpool[i] == index){
+               if(this.selectedpool[i] == this.pool[index]){
                     this.selectedpool.splice(i,1)
                }
           }
@@ -207,13 +285,13 @@ define(["ddm"],function(Tsh){
           if(this._onSelectedPool){
                this._onSelectedPool()
           }
-          Tsh.Ddm.View.updatePlayerPoolViewAsync()
+          Tsh.Ddm.View.updatePlayerPoolViewAsync(this.getFullPool())
        },
        containSeletectPoolItem(index){
-          return this.selectedpool.includes(index)
+          return this.selectedpool.includes(this.pool[index])
        },
        isDoneSelected(){
-          return this.selectedpool.length == 0
+          return this.selectedpool.length >= 3
        },
        toggleSelectedPoolItem(index){
           if(index < 0 || index > this.pool.length){
@@ -231,7 +309,54 @@ define(["ddm"],function(Tsh){
        deselectAllPoolItem(){
           this.selectpool = []
           this.updateFullPool()
-          Tsh.Ddm.View.updatePlayerPoolViewAsync()
+          Tsh.Ddm.View.updatePlayerPoolViewAsync(this.getFullPool())
+       },
+
+       /**
+        * Player Action Handle
+        */
+
+
+       playerDisplayDicePool(){
+          if(this.allowedSelectionDice() && !Tsh.Ddm.View.isDicePoolPopupDisplay()){
+               Tsh.Ddm.View.displayDicePool()
+          }
+       },
+       playerHideDicePool(){
+          if(Tsh.Ddm.View.isDicePoolPopupDisplay()){
+               Tsh.Ddm.View.hideDicePool()
+          }
+       },
+       
+       playerRollDice(){
+          if(this.isDoneSelected() && this.allowedSelectionDice() && this.allowedActionRoll()){
+               this.playerHideDicePool()
+               this.startWaitingForRollResult()
+
+               if(this._onRequestRollDice){
+                    console.log("player:",this.id," request to roll dice")
+                    this._onRequestRollDice(deepCopy(this.selectedpool))                    
+               }
+
+               //Done Player Selection Roll
+               this.notAllowedSelectionDice()
+               this.notAllowedActionRoll()               
+          }else{
+               console.log("player:",this.id," request message")
+               if(this._onPlayerRequestMessage){
+                    this._onPlayerRequestMessage("Cannot Roll Dice yet")
+               }
+          }
+       },
+       playerCheckRollResult(results){
+          var roll1 = results[0],
+              roll2 = results[1],
+              roll3 = results[2]
+          if(this.rolling()){
+
+               this.endRolling()
+          }
+          
        },
        //Signal
        onLoaded         (callback) {this._onLoaded              = callback},
@@ -248,5 +373,6 @@ define(["ddm"],function(Tsh){
 
        onSelectedPool    (callback) {this._onSelectedPool       = callback},
        onRequestRollDice (callback) {this._onRequestRollDice    = callback},
+       onPlayerRequestMessage (callback) {this._onPlayerRequestMessage = callback},
      }
 })
