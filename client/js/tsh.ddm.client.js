@@ -7,6 +7,7 @@ define(["ddm"],function(Tsh){
      * @namespace Tsh.Ddm.Client
      */
     Tsh.Ddm.Client = {
+
         init(app){
             this.connection = null;
             // this.host = host;
@@ -64,10 +65,28 @@ define(["ddm"],function(Tsh){
             var url = "ws://"+ this.host +":"+ this.port +"/",
             self = this;
 
-            if(window.MozWebSocket){
-                this.connect    = new MozWebSocket(url)
+            if(Tsh.Ddm.Debug){
+                console.log("is debugging connection")
+                Tsh.Ddm.Debug.debugConnection()
+            }
+            else if(window.MozWebSocket){
+                this.connection = new MozWebSocket(url)
             }else{
                 this.connection = new WebSocket(url);
+            }
+
+            if(dispatcherMode){
+
+            }else{
+                this.connection.onopen = function(){
+
+                }
+                this.connection.onmessage = function(){
+
+                }
+                this.connection.onerror = function(){
+
+                }
             }
         },
         sendMessage(json){
@@ -80,6 +99,21 @@ define(["ddm"],function(Tsh){
                 }
                 this.connection.send(data)
             }
+        },
+        async sendMessageWithFeedback(json){
+            var r = {
+                status : "NOT_CONNECTED",
+                result : [],
+            }
+            if(this.connection.readyState !== 1){
+                console.log("CONNECTION IS NOT CONNECTED")
+                return r;
+            }
+            var request = new Promise((res,rej) =>{
+                
+            })
+            r = await request
+            return r;
         },
         receiveMessage(message){
             var data,action;
@@ -291,9 +325,21 @@ define(["ddm"],function(Tsh){
 
 
         /**
-         * Request API
+         * Async Request  API
          */
-
+        async requestRoll(playerid,roll1,roll2,roll3){
+            var request = new Promise((req) =>{
+                var r={}
+                this.sendMessageWithFeedback([Messages.POOL,playerid,pool,unused],function(result){
+                    r.status = "OK"
+                })
+                setTimeout(()=>{
+                    r.status = "ERROR"
+                    r.result = []
+                    req(result)
+                },5000)
+            })
+        },
 
         //Signal Handle
         onDispatch          (callback){this._onDispatch             = callback},

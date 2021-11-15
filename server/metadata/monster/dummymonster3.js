@@ -6,7 +6,9 @@ define(function(){
         atk     : 10,
         defend  : 20,
         level   : 4,
-        crests  : ["attack", "attack", "defend", "summon", "summon"],
+        dice : {
+            faces: ["attack", "attack", "defend", "summon", "summon","movement"],
+        },
         pieceimg: "MBB_014009.png",
         portraitimg:"MBB_014009.png",
         

@@ -14,7 +14,6 @@ define(["ddm","view/boardview"],function(Tsh,BoardView){
         },
         connectBoardView(view){
             if(view instanceof BoardView){
-                console.log("Connect to",view)
                 this.view = view
             }
         },

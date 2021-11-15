@@ -1,7 +1,9 @@
 requirejs.config({
   paths: {
     'message': './message',
-    'jquery': 'https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min',
+    'jquery': 'https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min',
+    'underscore':"https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.13.1/underscore",
+    // "underscore":"./lib/underscore.min",
     'ddm': "./tsh.ddm",
 
     //Module 
@@ -38,20 +40,38 @@ requirejs.config({
     'ddm-input': ['ddm'],
     'ddm-entity': ['ddm'],
     'ddm-board': ['ddm'],
-    'ddm-blueprint': ['ddm']
+    'ddm-blueprint': ['ddm'],
+    "underscore": {
+      exports: '_'
+    },
   },
 });
 
 
+require(["underscore"], _ => window._ = _)
+
 window.onload = function () {
   console.log("window.onLoad")
   var tsh_module = ["ddm-view", "ddm-logic", "ddm-loader", "ddm-input", "ddm-debug", "ddm-entity", "ddm-player", "ddm-client", "ddm-match", "ddm-animator", "ddm-path", "ddm-board", "ddm-blueprint"]
-  var required_lib = ['lib/class', 'util/util', 'util/constant', 'util/struct', 'util/gametype', "message", "jquery","lib/underscore.min"]
+  var required_lib = ['lib/class', 'util/util', 'util/constant', 'util/struct', 'util/gametype', "message", "jquery"]
   var ddm = ["ddm"]
   ddm.push(...required_lib)
   ddm.push(...tsh_module)
   require(ddm, function (Tsh) {
+
     Tsh.Ddm.Game.init()
     Tsh.Ddm.Game.run()
+
+    var mapA = [
+      {data : {x : 15}},
+      {data : {x : 16}},
+      {data : {x : 17}},
+      {data : {x : 18}},
+    ]
+
+    _.each(mapA,function(item){item.data = {x: item.data.x * 2}})
+    var ref = mapA[1]
+    // mapA[1].data.x = 26
+    console.log("ref = ",ref)
   })
 }

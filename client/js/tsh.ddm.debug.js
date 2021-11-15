@@ -61,10 +61,7 @@ define(["ddm","jquery"],function(Tsh,$){
         this.debugPieceSelected = null
         this.isSelectingPiece = false
         this.debugHighlightOnMove = false
-    
         var rot = 0
-    
-
         this.CreateDebugDOM = function(){
             var pieceDebugDOM = document.createElement('div');
             $(pieceDebugDOM)
@@ -152,17 +149,45 @@ define(["ddm","jquery"],function(Tsh,$){
             $("#dbAttack").click(this.btnSelectedPieceAttack.bind(this))
             $("#btnRollDice").click(this.btnRoll.bind(this))
             $("#dbDisplayPool").click(this.btnDisplayPool.bind(this))
+            
+        }
+        this.debugConnection = function(){
             Tsh.Ddm.Client.enable()
             Tsh.Ddm.Debug.loadPrefabData()
-            Tsh.Ddm.Client.connection = {}
-            Tsh.Ddm.Client.connection.readyState = 1
-            Tsh.Ddm.Client.connection.send = function(msg){
-                Tsh.Ddm.Debug.receiveMessage(msg)
+            var debugClientConnectionHandle = {
+                readyState : 1,
+                send : function(msg){
+                    if(debugSeverConnectionHandle.onmessage){
+                        debugSeverConnectionHandle.onmessage(msg)
+                    }
+                },
+    
+                onopen      : null,
+                onmessage   : null,
+                onerror     : null,
+                onclose     : null,
             }
-            
-            Tsh.Ddm.Client.receiveWelcome([player1debug.id, player1debug.name, player1debug.pool, "", "3", "[0,0,0,0,0]", "M00001"])
-        }
+    
+            var debugSeverConnectionHandle = {
+                readyState : 1,
+                send : function(msg){
+                    if(debugClientConnectionHandle.onmessage){
+                        debugClientConnectionHandle.onmessage(msg)
+                    }
+                },
 
+                onopen      : null,
+                onmessage   : function(msg){
+                    Tsh.Ddm.Debug.receiveMessage(msg)
+                },
+                onerror     : null,
+                onclose     : null,
+            }
+
+            Tsh.Ddm.Client.connection = debugClientConnectionHandle;
+            Tsh.Ddm.Client.enable()
+            Tsh.Ddm.Client.receiveWelcome([Messages.WELCOME,player1debug.id, player1debug.name, player1debug.pool, "", "3", "[0,0,0,0,0]", "M00001"])
+        }
         this.entityData = {}
         this.sendPool = function(playerid,pool,unusedpool){
             console.log("sendPool")

@@ -41,6 +41,7 @@ define(function (Entity) {
 
             Tsh.Ddm.Animator.init(Tsh.Ddm)
 
+
             /**@module tsh/ddm/client */
             Tsh.Ddm.Client.init(Tsh.Ddm)
             Tsh.Ddm.Player.init(Tsh.Ddm)
@@ -50,9 +51,10 @@ define(function (Entity) {
             Tsh.Ddm.Path.init(Tsh.Ddm)
             Tsh.Ddm.Board.init(Tsh.Ddm)
 
+            Tsh.Ddm.Debug.init(Tsh.Ddm)
+
             this.connectServer();
 
-            Tsh.Ddm.Debug.init(Tsh.Ddm)
         },
         initProperty(){
             this.isplacing = false
@@ -117,22 +119,22 @@ define(function (Entity) {
 
                 })
                 player.onRequestRollDice(function (selection){
-                    client.sendRoll(id,selection[0],selection[1],selection[2])
+                     client.sendRoll(id,selection[0],selection[1],selection[2])
                 })
                 player.onPlayerRequestMessage(function(msg){
 
                 })
 
-                client.onSpawnEntity(function (kind, id, x, y, name, controllerid, target) {
+                Tsh.Ddm.Client.onSpawnEntity(function (kind, id, x, y, name, controllerid, target) {
                     console.log("Spawn entity ", id)
                     Tsh.Ddm.Entity.requestSpawnEntityAsync(kind, id, x, y, name, controllerid, target)
                 });
-                client.onDespawnEntity(function (player, id) {
+                Tsh.Ddm.Client.onDespawnEntity(function (player, id) {
                     console.log("Despawn entiy ", id)
                     Tsh.Ddm.Entity.requestDespawnEntityAsync(id)
                 })
 
-                client.onEntityMove(function (playerid, id, x, y, type) {
+                Tsh.Ddm.Client.onEntityMove(function (playerid, id, x, y, type) {
                     var entity = null;
                     if (playerid === Tsh.Ddm.Player.playerid) {
                         console.log("By client Player Control ", id)
@@ -156,48 +158,48 @@ define(function (Entity) {
                         }
                     }
                 });
-                client.onEntityDestroy(function (player, id, x, y) {
+                Tsh.Ddm.Client.onEntityDestroy(function (player, id, x, y) {
 
                 });
-                client.onEntityAttack(function (player, id, x, y) {
+                Tsh.Ddm.Client.onEntityAttack(function (player, id, x, y) {
 
                 });
-                client.onEntityEffect(function (player, id, x, y) {
+                Tsh.Ddm.Client.onEntityEffect(function (player, id, x, y) {
 
                 });
-                client.onPropertyChanging(function (id, property, value) {
+                Tsh.Ddm.Client.onPropertyChanging(function (id, property, value) {
 
                 });
-                client.onEffectTrigger(function (player, id, x, y) {
+                Tsh.Ddm.Client.onEffectTrigger(function (player, id, x, y) {
 
                 });
-                client.onPlayerActive(function (playerid) {
+                Tsh.Ddm.Client.onPlayerActive(function (playerid) {
 
                 });
-                client.onPlayerDeactive(function (playerid) {
+                Tsh.Ddm.Client.onPlayerDeactive(function (playerid) {
 
                 });
-                client.onPlayerDie(function (playerid, result) {
+                Tsh.Ddm.Client.onPlayerDie(function (playerid, result) {
 
                 });
-                client.onRollDice(function (playerid,roll1,roll2,roll3) {
-                    console.log("Roll result ",roll1," ",roll2," ",roll3)
+                Tsh.Ddm.Client.onRollDice(function (playerid,roll1,roll2,roll3) {
+                    console.log("Roll result ",roll1," ",roll2," ",roll3," ",playerid," ",id)
                     Tsh.Ddm.View.rollDiceAnimation([roll1,roll2,roll3],function(){
                         if(playerid == id){
-                            Tsh.Ddm.Player.playerCheckRollResult([roll1,roll2,roll3])
+                            Tsh.Ddm.Player.requestPlayerCheckRollResult([roll1,roll2,roll3])
                         }
                     }.bind(Tsh.Ddm.Game))
                 }.bind(this));
-                client.onPhaseChanged(function (playerid, changephase) {
+                Tsh.Ddm.Client.onPhaseChanged(function (playerid, changephase) {
                 });
-                client.onPoolChanged(async function(playerid,pool,unusedpool){
-                    Tsh.Ddm.Player.updatePlayerPool(pool,unusedpool)
+                Tsh.Ddm.Client.onPoolChanged(async function(playerid,pool,unused){
+                    self.requestUpdatePlayerPool(playerid,pool,unused)
                 });
-                client.onGameEnd(function (state, playerid) {
+                Tsh.Ddm.Client.onGameEnd(function (state, playerid) {
 
                 });
 
-                client.onDisconnected(function (message) {
+                Tsh.Ddm.Client.onDisconnected(function (message) {
 
                 });
             })
@@ -205,6 +207,8 @@ define(function (Entity) {
                 console.log("on Synchronizing Data");
 
             }.bind(this))
+
+            Tsh.Ddm.Client.connect()
         },
 
         connectModule() {
@@ -334,20 +338,21 @@ define(function (Entity) {
                     }
                     Tsh.Ddm.Animator.registerViewAnimator(view)
                 }.bind(this))
+                
                 this.onViewDestroyed(function (view) {
                     Tsh.Ddm.Animator.unregisterViewAnimator(view)
                 }.bind(this))
+
                 this.onDirty(function () {
 
                 }.bind(this))
 
                 this.onDisplayDicePool(function(){
                     Tsh.Ddm.Client.sendQuery(Tsh.Ddm.Player.playerid)
-                    Tsh.Ddm.Player.deselectAllPoolItem()
                 }.bind(this))
 
                 this.onHideDicePool(function(){
-                    Tsh.Ddm.Player.deselectAllPoolItem()
+
                 }.bind(this))
             }.bind(Tsh.Ddm.View))
             
@@ -400,14 +405,11 @@ define(function (Entity) {
                 })
                 this.onDicePoolInput(function(source,index){
                     if(source == "btnRollSelected"){
-                        Tsh.Ddm.Player.playerRollDice()
-
+                        Tsh.Ddm.Player.requestPlayerRollDice()
                     }else if(source == "btnCancelSelected"){
                         Tsh.Ddm.Player.deselectAllPoolItem()
-
                     }else if(source == "popup-grid"){
                         Tsh.Ddm.Player.toggleSelectedPoolItem(index)
-
                     }
                 })
             }.bind(Tsh.Ddm.Input))
@@ -748,6 +750,27 @@ define(function (Entity) {
                 this.highlighPlaceableInRegion(Tsh.Ddm.Input.nearby.all)
             }else{
                 this.highlighPlaceableInRegion(Tsh.Ddm.Input.nearby.point)
+            }
+        },
+        
+        async requestUpdatePlayerPool(playerid,contains,unused){
+            var self = this
+            
+            var pool = await Promise.all( _.map(contains,async function(data){
+                console.log("[0][requestUpdatePlayerPool] test = ")
+                var result = await Tsh.Ddm.Blueprint.requestBlueprintMonsterAsync(data)
+                var metadata = result.metadata
+                console.log("[1][requestUpdatePlayerPool] test = ",result)
+                var item = {}
+                item.name = data
+                item.available   = !_.contains(unused,data),
+                item.portraitimg = _.property("portraitimg")(metadata)
+                item.pieceimg    = _.property("pieceimg")   (metadata)
+                item.dice        = _.property("dice")       (metadata)
+                return item
+            }))
+            if(playerid == Tsh.Ddm.Player.id){
+                Tsh.Ddm.Player.playerRequestUpdatePool(pool)
             }
         },
         

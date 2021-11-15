@@ -11,16 +11,15 @@
  */
 
 
+
 define(["ddm"],function(Tsh){
      Tsh.Ddm.Player = {
        init(app){
            this.id = ""
            this.name = ""
 
-           
-           this.pool         = []
-           this.unavailable  = []
-           this.selectedpool = []
+           this.pool           = []
+           this.selectionpool  = []
 
            this.fullpool     = {}
 
@@ -46,7 +45,7 @@ define(["ddm"],function(Tsh){
            this.isSummoning = false
            this.isRolling   = false
            this.isMoving    = false
-           
+
            this.selectedMonster   = null
            this.selectedEntityGroup = null
            
@@ -56,21 +55,16 @@ define(["ddm"],function(Tsh){
            this.resolvedMonster   = {}
 
            //Player Action
-           this.player_actions = {
-               roll           : {
-                    available : true
-               },
-               diceselection  : {
-                    available : true
-               },
-               summoning      : {
-                    available : true
-               },
-               piece          : {
-                    available  : true
-               },                   
+           this.actions_available = {
+               roll           :  true,
+               diceselection  :  true,
+               summoning      :  true,
+               piece          :  true              
           }
 
+          this.summoning_mode = {
+               summonable_dices : []
+          }
            this.app = app
            if(this._onInitialized){
                this._onInitialized()
@@ -164,42 +158,42 @@ define(["ddm"],function(Tsh){
        },
 
        allowedActionRoll(){
-          return this.player_actions.roll.available
+          return this.actions_available.roll
        },
        allowedSelectionDice(){
-          return this.player_actions.diceselection.available
+          return this.actions_available.diceselection
        },
        allowedSummoning(){
-          return this.player_actions.diceselection.available
+          return this.actions_available.diceselection
        },
        allowedPieceAction(){
-          return this.player_actions.piece.available
+          return this.actions_available.piece
        },
 
        resetAllowedActionRoll(){
-          this.player_actions.roll.available = true
+          this.actions_available.roll = true
        },
        resetAllowedSelectionDice(){
-          this.player_actions.diceselection.available = true
+          this.actions_available.diceselection = true
        },
        resetAllowedSummoning(){
-          this.player_actions.summoning.available = true
+          this.actions_available.summoning = true
        },
        resetAllowedPieceAction(){
-          this.player_actions.piece.available = true
+          this.actions_available.piece = true
        },
 
        notAllowedActionRoll(){
-          this.player_actions.roll.available = false
+          this.actions_available.roll = false
        },
        notAllowedSelectionDice(){
-          this.player_actions.diceselection.available = false
+          this.actions_available.diceselection = false
        },
        notAllowedSummoning(){
-          this.player_actions.summoning.available = false
+          this.actions_available.summoning = false
        },
        notAllowedPieceAction(){
-          this.player_actions.piece.available = false
+          this.actions_available.piece = false
        },
 
        actionablePieces(){
@@ -223,75 +217,72 @@ define(["ddm"],function(Tsh){
        clear(){
 
        },
-       updatePlayerPool(pool,unused){
-          this.pool           = [...pool]
-          this.unavailable    = [...unused]
-          this.selectedpool   = []
-
-          this.updateFullPool()
-          //Cloning data to pass Async function in case of multiple request update Player Pool
-          Tsh.Ddm.View.updatePlayerPoolViewAsync(this.getFullPool())
-       },
-       updateFullPool(){
-          this.fullpool = {}
-          for(var i = 0;i < this.pool.length;i++ ){
-               var item = {
-                    name      : this.pool[i],
-                    available : !this.unavailable.includes(this.pool[i]),
-                    selected  : this.selectedpool.includes(this.pool[i])
-               }
-               this.fullpool[item.name] = item
-          }
-       },
        getPoolItemAt(index){
           return deepCopy(this.pool[index])
        },
-       getPool(){
-          return this.pool.map( a => {return {...a}})
-       },
-       getFullPool(){
-          return deepCopy(this.fullpool)
+
+       getPoolViewData(){
+         var viewdata =  _.map(this.pool,item =>
+            (item)
+         )
+         return viewdata
        },
 
+       getDiceViewData(){
+         var viewdata = _.map(this.selectionpool,item =>
+            ({
+                  faces : item.dice.faces
+            })
+         )
+         return viewdata
+       },
        selectPoolItem(index){
+         var self = this
+
           if(index < 0 || index > this.pool.length){
                console.log("[ERROR] Out of Bound")
                return
           }
-          var isAvailable = !this.unavailable.includes(this.pool[index])
-          if(! this.selectedpool.includes(this.pool[index]) && isAvailable){
-               this.selectedpool.push(this.pool[index])
-               this.selectedpool.length = Math.min(3,this.selectedpool.length)
-          }else{
-               
-          }
-          this.updateFullPool()
-          if(this._onSelectedPool){
-               this._onSelectedPool()
-          }
-          Tsh.Ddm.View.updatePlayerPoolViewAsync(this.getFullPool())
+         if(self.selectionpool.length < 3){
+            var item       =  _.values(this.pool)[index]
+            var available  =  _.property("available")(item)
+            if(available){
+               item.selected = true
+            }
+         }
+         
+         self.selectionpool = _.where(this.pool,{selected:true})
+
+         if(this._onselectiondice){
+            this._onselectiondice()
+         }
+         Tsh.Ddm.View.updatePlayerPoolViewAsync(this.getPoolViewData())
        },
        deselectPoolItem(index){
+          var self = this
+
           if(index < 0 || index > this.pool.length){
                console.log("[ERROR] Out of Bound")
                return
           }
-          for(var i = 0 ;i < this.selectedpool.length;i++){
-               if(this.selectedpool[i] == this.pool[index]){
-                    this.selectedpool.splice(i,1)
-               }
+
+          var item       =  _.values(this.pool)[index]
+          item.selected  =  false
+
+          self.selectionpool = _.where(this.pool,{selected:true})
+
+          if(this._onselectiondice){
+               this._onselectiondice()
           }
-          this.updateFullPool()
-          if(this._onSelectedPool){
-               this._onSelectedPool()
-          }
-          Tsh.Ddm.View.updatePlayerPoolViewAsync(this.getFullPool())
+          Tsh.Ddm.View.updatePlayerPoolViewAsync(this.getPoolViewData())
        },
        containSeletectPoolItem(index){
-          return this.selectedpool.includes(this.pool[index])
+         return _.property("selected")(this.pool[index])
        },
        isDoneSelected(){
-          return this.selectedpool.length >= 3
+          var self = this
+
+          return self.selectionpool.length >= 3
        },
        toggleSelectedPoolItem(index){
           if(index < 0 || index > this.pool.length){
@@ -307,35 +298,64 @@ define(["ddm"],function(Tsh){
           }
        },
        deselectAllPoolItem(){
-          this.selectpool = []
-          this.updateFullPool()
-          Tsh.Ddm.View.updatePlayerPoolViewAsync(this.getFullPool())
+         _.each(this.pool,
+            item => item.selected = false
+         )
+         self.selectionpool = _.where(this.pool,{selected:true})
+
+         Tsh.Ddm.View.updatePlayerPoolViewAsync(this.getPoolViewData())
        },
 
-       /**
-        * Player Action Handle
-        */
 
+      async playerRequestDiceData(dices){
+         _.each(dices,function(){
 
-       playerDisplayDicePool(){
+         }.bind(this))
+      },
+      async playerDisplayDicePool(){
           if(this.allowedSelectionDice() && !Tsh.Ddm.View.isDicePoolPopupDisplay()){
                Tsh.Ddm.View.displayDicePool()
           }
        },
-       playerHideDicePool(){
+       async playerHideDicePool(){
           if(Tsh.Ddm.View.isDicePoolPopupDisplay()){
                Tsh.Ddm.View.hideDicePool()
           }
        },
        
-       playerRollDice(){
+       async playerRequestUpdatePool(datas){
+         this.pool           = _.map(datas, item => ({
+            name        : _.property("name")(item),
+            available   : _.property("available")(item),
+            portraitimg : _.property("portraitimg")(item),
+            pieceimg    : _.property("pieceimg")(item),
+            dice        : _.property("dice")(item),
+
+            selected     : false,
+            used         : false,
+
+            rollaction   : {
+               faceresult  : "unknown",
+               summonable  : false    ,
+               used        : false    ,
+            }
+         }))
+
+         //Cloning data to pass Async function in case of multiple request update Player Pool
+         Tsh.Ddm.View.updatePlayerPoolViewAsync(this.getPoolViewData())
+      },
+
+       async requestPlayerRollDice(){
           if(this.isDoneSelected() && this.allowedSelectionDice() && this.allowedActionRoll()){
+               
+               Tsh.Ddm.View.updateRollingDice(this.getDiceViewData())
+
                this.playerHideDicePool()
-               this.startWaitingForRollResult()
+               this.startedRolling()
 
                if(this._onRequestRollDice){
                     console.log("player:",this.id," request to roll dice")
-                    this._onRequestRollDice(deepCopy(this.selectedpool))                    
+                    this._onRequestRollDice(this.selectionpool)                    
                }
 
                //Done Player Selection Roll
@@ -348,12 +368,19 @@ define(["ddm"],function(Tsh){
                }
           }
        },
-       playerCheckRollResult(results){
-          var roll1 = results[0],
-              roll2 = results[1],
-              roll3 = results[2]
-          if(this.rolling()){
+       async requestPlayerCheckRollResult(results){
+          var self = this
 
+          if(this.rolling()){
+               //Update status of selection pool
+               _.each(this.selectionpool,function(item,i){
+                  var faces = item.dice.faces,
+                      nresult = results[i]
+                  
+                     item.rollaction.faceresult = faces[nresult]
+                     item.rollaction.summonable = faces[nresult] == "summon"
+                     item.rollaction.used       = false
+               })
                this.endRolling()
           }
           
@@ -371,8 +398,8 @@ define(["ddm"],function(Tsh){
        onDeselectedMonster(callback){this._onDeselectedMonster  = callback},
        onInitialized   (callback){this._onInitialized = callback},
 
-       onSelectedPool    (callback) {this._onSelectedPool       = callback},
-       onRequestRollDice (callback) {this._onRequestRollDice    = callback},
+       onselectiondice    (callback)      {this._onselectiondice       = callback},
+       onRequestRollDice (callback)      {this._onRequestRollDice    = callback},
        onPlayerRequestMessage (callback) {this._onPlayerRequestMessage = callback},
      }
 })

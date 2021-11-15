@@ -1,5 +1,5 @@
 /* Dice CSS*/
-#dicesId {
+.controller.roll.dices {
     position: absolute;
       top: 20%;
       left: 50%;
@@ -12,9 +12,10 @@
       top: 200px;
   }
   
-  #dicesId.show{
+  .controller.roll.dices.show{
     visibility: visible;
   }
+  
   .dice {
       position: relative;
       width: 100px;

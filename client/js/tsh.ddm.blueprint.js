@@ -17,6 +17,10 @@ define(["jquery", "ddm", "entity/monster", "entity/land", "entity/item"], functi
         },
 
         async requestBlueprintMonsterAsync(name) {
+            if(name == undefined){
+                console.log("[ERROR] name is undefined")
+                return
+            }
             if (this.containBlueprintMonster(name)) {
                 return this.blueprint.monster[name]
             }

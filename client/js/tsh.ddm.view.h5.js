@@ -1,8 +1,6 @@
-
-
 // //Include Module
-define(["ddm", "jquery", "view/views", "view/boardview", "view/highlightview", "view/viewfactory", "view/layer", "animation/effect", "entity/entity", "view/landview", "view/monsterview","view/itemview"], function
-    (Tsh, $, Views, BoardView, HighlightView, ViewFactory, Layer, Effect, Entity, LandView, MonsterView,ItemView) {
+define(["ddm", "jquery", "view/views", "view/boardview", "view/highlightview", "view/viewfactory", "view/layer", "animation/effect", "entity/entity", "view/landview", "view/monsterview", "view/itemview"], function
+    (Tsh, $, Views, BoardView, HighlightView, ViewFactory, Layer, Effect, Entity, LandView, MonsterView, ItemView) {
 
 
     Tsh = Tsh || {}
@@ -95,49 +93,49 @@ define(["ddm", "jquery", "view/views", "view/boardview", "view/highlightview", "
             }
 
         },
-        initDOM() {            
+        initDOM() {
             // $('#btnRoll').click(this.displayDicePool.bind(this))
         },
-        getDOMItems(update){
-            if(!this.dom || update){
+        getDOMItems(update) {
+            if (!this.dom || update) {
                 this.dom = this.dom || {}
 
                 this.dom.jquery = this.dom.jquery || {}
-                this.dom.jquery.board   = $("#board")
-                this.dom.jquery.canvas  = $("#ddm-canvas")
-                
-                this.dom.jquery.audio   = $("#ddm-audio")
+                this.dom.jquery.board = $("#board")
+                this.dom.jquery.canvas = $("#ddm-canvas")
 
-                this.dom.jquery.btnPlayer                   = this.dom.jquery.btnPlayer || {}
-                this.dom.jquery.btnPlayer.controller        = $(".player-btns-container")
-                this.dom.jquery.btnPlayer.btnroll           = $('#btnRoll')
-                this.dom.jquery.btnPlayer.btnendphase       = $('#btnEndPhase')
-                this.dom.jquery.btnPlayer.btnstorage        = $('#btnStorage')
-                this.dom.jquery.btnPlayer.btninformation    = $('#btnInformation')
+                this.dom.jquery.audio = $("#ddm-audio")
 
-                this.dom.jquery.dices   = this.dom.jquery.dices || {}
-                this.dom.jquery.dices.controller = $("#dicesId")
-                this.dom.jquery.dices.one        = $("#dice1")
-                this.dom.jquery.dices.two        = $("#dice2")
-                this.dom.jquery.dices.three      = $("#dice3")
+                this.dom.jquery.btnPlayer = this.dom.jquery.btnPlayer || {}
+                this.dom.jquery.btnPlayer.controller = $(".player-btns-container")
+                this.dom.jquery.btnPlayer.btnroll = $('#btnRoll')
+                this.dom.jquery.btnPlayer.btnendphase = $('#btnEndPhase')
+                this.dom.jquery.btnPlayer.btnstorage = $('#btnStorage')
+                this.dom.jquery.btnPlayer.btninformation = $('#btnInformation')
+
+                this.dom.jquery.dices = this.dom.jquery.dices || {}
+                this.dom.jquery.dices.controller = $(".controller.roll.dices")
+                this.dom.jquery.dices.one = $(".dice.dice-one")
+                this.dom.jquery.dices.two = $(".dice.dice-two")
+                this.dom.jquery.dices.three = $(".dice.dice-three")
 
                 this.dom.jquery.popup = this.dom.jquery.popup || {}
-                this.dom.jquery.popup.outside  = $(".popup-controller .outside")
+                this.dom.jquery.popup.outside = $(".popup-controller .outside")
                 this.dom.jquery.popup.closebtn = $(".popup-controller .closebtn")
 
                 this.dom.jquery.popup.pool = this.dom.jquery.popup.pool || {}
                 this.dom.jquery.popup.pool.controller = $(".popup-controller .popup-grid")
-                this.dom.jquery.popup.pool.items      = $(".popup-controller .popup-grid .item-grid")    
-                this.dom.jquery.popup.pool.btnRoll    = $(".popup-controller   #btnRollSelected")
-                this.dom.jquery.popup.pool.btnCancel  = $(".popup-controller   #btnCancelSelected")
+                this.dom.jquery.popup.pool.items = $(".popup-controller .popup-grid .item-grid")
+                this.dom.jquery.popup.pool.btnRoll = $(".popup-controller   #btnRollSelected")
+                this.dom.jquery.popup.pool.btnCancel = $(".popup-controller   #btnCancelSelected")
 
                 this.dom.element = this.dom.element || {}
-                this.dom.element.board       = document.getElementById("board")
-                this.dom.element.canvas      = document.getElementById("ddm-canvas")
+                this.dom.element.board = document.getElementById("board")
+                this.dom.element.canvas = document.getElementById("ddm-canvas")
 
-                this.dom.element.dices       = this.dom.element.dices || {}
-                this.dom.element.dices.one   = document.getElementById("dice1")
-                this.dom.element.dices.two   = document.getElementById("dice2")
+                this.dom.element.dices = this.dom.element.dices || {}
+                this.dom.element.dices.one = document.getElementById("dice1")
+                this.dom.element.dices.two = document.getElementById("dice2")
                 this.dom.element.dices.three = document.getElementById("dice3")
             }
             return this.dom.jquery
@@ -373,14 +371,14 @@ define(["ddm", "jquery", "view/views", "view/boardview", "view/highlightview", "
                 this._onViewDestroyed(view)
             }
         },
-        deselectedView(view){
-            if(view instanceof View){
-                
+        deselectedView(view) {
+            if (view instanceof View) {
+
             }
         },
-        deselectedView(view){
-            if(view instanceof View){
-                
+        deselectedView(view) {
+            if (view instanceof View) {
+
             }
         },
 
@@ -402,25 +400,25 @@ define(["ddm", "jquery", "view/views", "view/boardview", "view/highlightview", "
             return this.getViewsByClass(BoardView)[0]
         },
 
-        async updateAvatarViewAsync(){
+        async updateAvatarViewAsync() {
 
         },
-        async updateCrestInfoViewAsync(){
- 
+        async updateCrestInfoViewAsync() {
+
         },
- 
+
         //////////////////////////////////////// Highlight
 
         /**
          * Check if is currently Highlight or not
          * @returns {boolean}
          */
-        isHighlight(){
+        isHighlight() {
             return this.highlight.land.length > 0 ||
-            this.highlight.lanmonsterd.length > 0 ||
-            this.highlight.monsterlord.length > 0 ||
-            this.highlight.item.length > 0 ||
-            this.highlight.board.length > 0
+                this.highlight.lanmonsterd.length > 0 ||
+                this.highlight.monsterlord.length > 0 ||
+                this.highlight.item.length > 0 ||
+                this.highlight.board.length > 0
         },
         /**
          * Highlight list of Land View
@@ -457,7 +455,7 @@ define(["ddm", "jquery", "view/views", "view/boardview", "view/highlightview", "
          * @param {MonsterLordView[]} list 
          * @param {string} type
          */
-         highlightMonsterView(list, type) {
+        highlightMonsterView(list, type) {
             for (var i in list) {
                 var monsterlordview = list[i]
                 if (monsterlordview instanceof Views.MonsterLordView) {
@@ -533,8 +531,8 @@ define(["ddm", "jquery", "view/views", "view/boardview", "view/highlightview", "
             $dicescontroller.addClass('show')
             if (interval == undefined || interval == null)
                 return
-            setTimeout(() => { 
-                $dicescontroller.removeClass("show") 
+            setTimeout(() => {
+                $dicescontroller.removeClass("show")
             }, interval)
         },
         rollDice(index, face) {
@@ -552,79 +550,136 @@ define(["ddm", "jquery", "view/views", "view/boardview", "view/highlightview", "
                 }
             }
         },
-        
-        rollDiceAnimation(results,callback){
+
+        rollDiceAnimation(results, callback) {
             var $dice1 = this.getDOMItems().dices.one,
                 $dice2 = this.getDOMItems().dices.two,
                 $dice3 = this.getDOMItems().dices.three,
-                $controller =  this.getDOMItems().dices.controller
+                $controller = this.getDOMItems().dices.controller
 
-            if(!$controller.hasClass("show")){
+            if (!$controller.hasClass("show")) {
                 $controller.addClass('show')
-                setTimeout(() => { 
+                setTimeout(() => {
                     $controller.removeClass("show")
-                    if(callback)
+                    if (callback)
                         callback()
-                }, 1300)    
+                }, 1300)
             }
 
-            for(var i = 1;i <= 6; i++){
-                $dice1    .removeClass('show-',i)
-                $dice2    .removeClass('show-',i)
-                this.getDOMItems().dices.three  .removeClass('show-',i)
-                if(results[0] === i){
+            for (var i = 1; i <= 6; i++) {
+                $dice1.removeClass('show-', i)
+                $dice2.removeClass('show-', i)
+                this.getDOMItems().dices.three.removeClass('show-', i)
+                if (results[0] === i) {
                     $dice1.addClass('show-' + i);
                 }
-                if(results[1] === i){
+                if (results[1] === i) {
                     $dice2.addClass('show-' + i);
                 }
-                if(results[2] === i){
+                if (results[2] === i) {
                     $dice3.addClass('show-' + i);
                 }
             }
         },
         //Dice Pool Popup DOM handle
-        displayDicePool(){
-            if($('.popup-controller')){
+        displayDicePool() {
+            if ($('.popup-controller')) {
                 $('.popup-controller').addClass('open');
             }
-            if(this._onDisplayDicePool){
+            if (this._onDisplayDicePool) {
                 this._onDisplayDicePool()
             }
         },
-        hideDicePool(){
-            if($('.popup-controller')){
+        hideDicePool() {
+            if ($('.popup-controller')) {
                 $('.popup-controller').removeClass('open');
             }
-            if(this._onDisplayDicePool){
+            if (this._onDisplayDicePool) {
                 this._onHideDicePool()
             }
         },
-        isDicePoolPopupDisplay(){
+        updateDiceFace(diceindex,faceindex,facetype){
+            var $dice1 = this.getDOMItems().dices.one,
+                $dice2 = this.getDOMItems().dices.two,
+                $dice3 = this.getDOMItems().dices.three,
+                $selectiondice
+
+            var pathimgface = "client/img/dice_face_1.png"
+            var strside = ".side .one"
+
+            if(facetype == "summon"){
+                pathimgface = "client/img/dice_face_1.png"
+            } else if(facetype == "movement"){
+                pathimgface = "client/img/dice_face_2.png"
+            }else if(facetype == "magic"){
+                pathimgface = "client/img/dice_face_3.png"
+            }else if(facetype == "attack"){
+                pathimgface = "client/img/dice_face_4.png"
+            }else if(facetype == "defend"){
+                pathimgface = "client/img/dice_face_5.png"
+            }else if(facetype == "trap"){
+                pathimgface = "client/img/dice_face_6.png"
+            }
+
+            switch(faceindex){
+                case 0:
+                    strside = ".side.one"
+                    break;
+                case 1:
+                    strside = ".side.two"
+                    break;
+                case 2:
+                    strside = ".side.three"
+                    break;
+                case 3:
+                    strside = ".side.four"
+                    break;
+                case 4:
+                    strside = ".side.five"
+                    break;
+                case 5:
+                    strside = ".side.six"
+                    break;
+            }
+            
+            if(diceindex == 0){
+                $selectiondice = $dice1
+            }else if(diceindex == 1){
+                $selectiondice = $dice2
+            }else if(diceindex == 2){
+                $selectiondice = $dice3
+            }else{
+                $selectiondice = $dice1
+            }
+
+            $selectiondice.find(strside).find("img").attr("src",pathimgface)
+        },
+
+        isDicePoolPopupDisplay() {
             return $('.popup-controller').hasClass("open")
         },
-        selectedDicePoolAt(index){
+        selectedDicePoolAt(index) {
             $('.popup-controller .popup-grid .item-grid').eq(index).addClass("selected")
         },
-        deselectedDicePoolAt(index){
+        deselectedDicePoolAt(index) {
             $('.popup-controller .popup-grid .item-grid').eq(index).removeClass("selected")
         },
-        focusedDicePoolAt(index){
+        focusedDicePoolAt(index) {
             $('.popup-controller .popup-grid .item-grid').eq(index).addClass("focused")
         },
-        unfocusedDicePoolAt(index){
+        unfocusedDicePoolAt(index) {
             $('.popup-controller .popup-grid .item-grid').eq(index).removeClass("focused")
         },
-        disableDicePoolAt(index){
+        disableDicePoolAt(index) {
             $('.popup-controller .popup-grid .item-grid').eq(index).addClass("disable")
         },
-        enableDicePoolAt(index){
+        enableDicePoolAt(index) {
             $('.popup-controller .popup-grid .item-grid').eq(index).removeClass("disable")
         },
-        updateImageDicePoolAt(index,src){
-            $('.popup-controller .popup-grid .item-grid .img-portrait').eq(index).attr("src",src)
+        updateImageDicePoolAt(index, src) {
+            $('.popup-controller .popup-grid .item-grid .img-portrait').eq(index).attr("src", src)
         },
-        updateNameDicePoolAt(index,name){
+        updateNameDicePoolAt(index, name) {
             $('.popup-controller .popup-grid .item-grid .img-portrait').eq(index).html(name)
         },
 
@@ -632,42 +687,50 @@ define(["ddm", "jquery", "view/views", "view/boardview", "view/highlightview", "
          * 
          * @param {PoolItemView[]} datas 
          */
-        async updatePlayerPoolViewAsync(datas){
+        async updatePlayerPoolViewAsync(datas) {
             /**@type {PoolItemView[]} */
-            var data_keys = Object.keys(datas)
-            
-            for(var i in data_keys){
-                 var data = datas[data_keys[i]]
-                 var name = data.name
-                 var unavailable = !data.available
-                 var selected    = data.selected
 
-                 if(selected){
-                    console.log("selected ",name)
-                     this.selectedDicePoolAt(i)
-                 }else{
-                     this.deselectedDicePoolAt(i)
-                 }
- 
-                 if(unavailable){
-                     this.disableDicePoolAt(i)
-                 }else{
-                     this.enableDicePoolAt(i)
-                 }
- 
-                 var blueprint = await Tsh.Ddm.Blueprint.requestBlueprintMonsterAsync(name)
-                 var metadata  = blueprint.metadata
- 
-                 if(metadata.portraitimg){
-                    var path = "./client/img/portrait/"
-                    this.updateImageDicePoolAt(i,path + metadata.portraitimg)
-                 }
-                 if(metadata.name){
-                    this.updateNameDicePoolAt(i,metadata.name)
-                 }
-                 
-            }
-         }, 
+            var self = this
+
+            _.each(datas, function (data,i) {
+                var name = data.name
+                var unavailable  =    !_.property("available")(data)
+                var selected     =    _.property("selected")(data)
+                var portraitimg  =    _.property("portraitimg")(data)
+            
+                if (selected) {
+                    self.selectedDicePoolAt(i)
+                } else {
+                    self.deselectedDicePoolAt(i)
+                }
+
+                if(unavailable){
+                    self.disableDicePoolAt(i)
+                }else{
+                    self.enableDicePoolAt(i)
+                }
+
+                if(portraitimg){
+                     var path = "./client/img/portrait/"
+                     self.updateImageDicePoolAt(i,path + portraitimg)
+                }else{
+                }
+                self.updateNameDicePoolAt(i,name)
+
+            }.bind(this))
+        },
+
+        async updateRollingDice(datas){
+            var self = this
+            console.log("*test ",datas)
+            _.each(datas, function(data,i){
+                var faces = _.property("faces")(data)
+                _.each(faces,function(face,iFace){
+                    console.log("test = update ",face," for ",iFace)
+                    self.updateDiceFace(i,iFace,face)
+                })
+            }.bind(this))
+        },
         //////////////////////////////////////// SPECIFY
         generateView(kind, config) {
             if (isViewKind(kind)) {
@@ -712,8 +775,8 @@ define(["ddm", "jquery", "view/views", "view/boardview", "view/highlightview", "
         onViewDestroyed(callback) { this._onViewDestroyed = callback },
         onDirty(callback) { this._onDirty = callback },
         onInitialized(callback) { this._onInitialized = callback },
-        onDisplayDicePool(callback){this._onDisplayDicePool = callback},
-        onHideDicePool(callback){this._onHideDicePool = callback}
+        onDisplayDicePool(callback) { this._onDisplayDicePool = callback },
+        onHideDicePool(callback) { this._onHideDicePool = callback }
 
     }
 })

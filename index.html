@@ -4,11 +4,12 @@
 <head>
 	<meta charset="UTF-8">
 	<title>DDM HTML5 Fangame</title>
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js"></script>
 	<script src="client/js/lib/require.js" data-main="client/js/main"></script>
 	<link rel="stylesheet" href="style-h5.css" />
 	<link rel="stylesheet" href="style-popup.css" />
 	<link rel="stylesheet" href="style-dice.css" />
+	<link rel="stylesheet" href="style-summon.css" />
+
 </head>
 
 <body>
@@ -38,7 +39,7 @@
 	</div>
 
 	<!--Rollind Code-->
-	<div class="dices" id="dicesId">
+	<div class="controller roll dices" >
 		<div class="dicecontainer">
 			<div id='dice1' class="dice dice-one">
 				<div id="dice-one-side-one" class='side one'>
@@ -103,6 +104,42 @@
 				<div id="dice-three-side-five" class='side six'>
 					<img src="client/img/dice_face_6.png">
 				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="controller summonning selection">
+		<div class='cube one'>
+			<div class='face front'>
+				<img src="client/img/dice_face_1.png">
+			</div>
+			<div class='face side'>
+				<img src="client/img/dice_face_2.png">
+			</div>
+			<div class='face top'>
+				<img src="client/img/dice_face_3.png">
+			</div>
+		</div>
+		<div class='cube two'>
+			<div class='face front'>
+				<img src="client/img/dice_face_1.png">
+			</div>
+			<div class='face side'>
+				<img src="client/img/dice_face_2.png">
+			</div>
+			<div class='face top'>
+				<img src="client/img/dice_face_3.png">
+			</div>
+		</div>
+		<div class='cube three'>
+			<div class='face front'>
+				<img src="client/img/dice_face_1.png">
+			</div>
+			<div class='face side'>
+				<img src="client/img/dice_face_2.png">
+			</div>
+			<div class='face top'>
+				<img src="client/img/dice_face_3.png">
 			</div>
 		</div>
 	</div>
