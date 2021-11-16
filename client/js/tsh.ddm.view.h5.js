@@ -129,6 +129,12 @@ define(["ddm", "jquery", "view/views", "view/boardview", "view/highlightview", "
                 this.dom.jquery.popup.pool.btnRoll = $(".popup-controller   #btnRollSelected")
                 this.dom.jquery.popup.pool.btnCancel = $(".popup-controller   #btnCancelSelected")
 
+                this.dom.jquery.summoning       = this.dom.jquery.summoning || {}
+                this.dom.jquery.summoning.cubes = this.dom.jquery.summoning.cubes || {}
+                this.dom.jquery.summoning.cubes.one   = $(".controller.summonning.selection .cube.one")
+                this.dom.jquery.summoning.cubes.two   = $(".controller.summonning.selection .cube.two")
+                this.dom.jquery.summoning.cubes.three = $(".controller.summonning.selection .cube.three")
+
                 this.dom.element = this.dom.element || {}
                 this.dom.element.board = document.getElementById("board")
                 this.dom.element.canvas = document.getElementById("ddm-canvas")
@@ -654,7 +660,57 @@ define(["ddm", "jquery", "view/views", "view/boardview", "view/highlightview", "
 
             $selectiondice.find(strside).find("img").attr("src",pathimgface)
         },
+        
+        updateSummoningDice(datas,ignoreshow){
+            var self = this
+            console.log("view data = ",datas)
+            _.each(datas,function(data,i){
+                var src             = data.srcImg
+                var summonselection = data.summon.selected
+                var isSummon        = data.summon.active
 
+                if(ignoreshow){
+                }else{
+                    if(isSummon){
+                        self.showDiceSummoning(i)
+                    }else{
+                        self.hideDiceSummoning(i)
+                    }
+                }
+
+                if(summonselection){
+                    self.selectingDiceSummoning(i)
+                }else{
+                    self.deselectingDiceSummoning(i)
+                }
+
+                if(src){
+                    self.updateDiceSummoning(i,src)
+                }
+            })
+        },
+
+
+        /**JQUERY Method */
+        selectingDiceSummoning(index){
+            $(".controller.summonning.selection .cube").eq(index).addClass("highlight")
+        },
+        deselectingDiceSummoning(index){
+            $(".controller.summonning.selection .cube").eq(index).removeClass("highlight")
+        },
+        updateDiceSummoning(index,src){
+            $(".controller.summonning.selection .cube .monster.display img").eq(index).attr("src", src)
+        },
+        showDiceSummoning(index){
+            $(".controller.summonning.selection .cube").eq(index).addClass("show")
+        },
+        hideDiceSummoning(index){
+            $(".controller.summonning.selection .cube").eq(index).removeClass("show")
+        },
+        hideAllSummoningDice(){
+            $(".controller.summonning.selection .cube").removeClass("show")
+            $(".controller.summonning.selection .cube").removeClass("highlight")
+        },
         isDicePoolPopupDisplay() {
             return $('.popup-controller').hasClass("open")
         },
@@ -726,7 +782,6 @@ define(["ddm", "jquery", "view/views", "view/boardview", "view/highlightview", "
             _.each(datas, function(data,i){
                 var faces = _.property("faces")(data)
                 _.each(faces,function(face,iFace){
-                    console.log("test = update ",face," for ",iFace)
                     self.updateDiceFace(i,iFace,face)
                 })
             }.bind(this))

@@ -68,7 +68,7 @@ define(["animation/animation","animation/timeranimation","animation/transitionan
                 if(this.target != null){
                     return this.coordFrom = this.target.toCoord(coord)
                 }else{
-                    return new Coord(0,0)
+                    return Coord.zero()
                 }
             }
         }),

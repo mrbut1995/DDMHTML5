@@ -15,7 +15,7 @@ define(["jquery","ddm-view"],function($,Tsh){
                 view                        : null,
 
                 id                          : id,
-                coord                       : new Coord(0,0),
+                coord                       : Coord.zero(),
                 size                        : new Size(0,0),
                 focused                     : false,
                 type                        : "",

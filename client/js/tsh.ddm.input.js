@@ -27,6 +27,7 @@ define(["ddm", "jquery", "entity/entity"], function (Tsh, $, Entity) {
                 land: null,
                 item: null
             }
+            this.outOfBound = false
             this.inputListener = []
             this.pressAndHoldTimer = null
 
@@ -76,16 +77,27 @@ define(["ddm", "jquery", "entity/entity"], function (Tsh, $, Entity) {
             })
 
             $dom.popup.closebtn.on("click", function () {
-                Tsh.Ddm.Player.playerHideDicePool()
+                Tsh.Ddm.Game.inputReqHideDicePool()
             })
 
             $dom.popup.outside.on("click", function () {
-                Tsh.Ddm.Player.playerHideDicePool()
+                Tsh.Ddm.Game.inputReqHideDicePool()
             })
 
             $dom.btnPlayer.btnroll.on("click",function(){
-                Tsh.Ddm.Player.playerDisplayDicePool()
+                Tsh.Ddm.Game.inputReqDisplayDicePool()
             })
+
+            $dom.summoning.cubes.one.on("click",function(){
+                Tsh.Ddm.Game.inputReqSelectingSummoningMonster(0)
+            })
+            $dom.summoning.cubes.two.on("click",function(){
+                Tsh.Ddm.Game.inputReqSelectingSummoningMonster(1)
+            })
+            $dom.summoning.cubes.three.on("click",function(){
+                Tsh.Ddm.Game.inputReqSelectingSummoningMonster(2)
+            })
+
         },
 
         registerEntityInput(entity) {
@@ -247,16 +259,18 @@ define(["ddm", "jquery", "entity/entity"], function (Tsh, $, Entity) {
         _updateHover() {
             var col = this.mouse.col,
                 row = this.mouse.row
-            this.hovering.point = new Point(col, row)
-            this.hovering.monster = Tsh.Ddm.Entity.getMonsterAt(col, row)
-            this.hovering.monsterlord = Tsh.Ddm.Entity.getMonsterLordAt(col, row)
-            this.hovering.land = Tsh.Ddm.Entity.getLandAt(col, row)
-            this.hovering.item = Tsh.Ddm.Entity.getItemAt(col, row)
+            this.hovering.point         = new Point(col, row)
+            this.hovering.monster       = Tsh.Ddm.Entity.getMonsterAt(col, row)
+            this.hovering.monsterlord   = Tsh.Ddm.Entity.getMonsterLordAt(col, row)
+            this.hovering.land          = Tsh.Ddm.Entity.getLandAt(col, row)
+            this.hovering.item          = Tsh.Ddm.Entity.getItemAt(col, row)
         },
         /**
          * @private
          */
         _updateNearby() {
+            if(this.mouse.col < 0 || this.mouse.row < 0 || this.mouse.col > 13 || this.mouse.row > 19)
+                return
             this.nearby.point[0].col = this.mouse.col
             this.nearby.point[0].row = this.mouse.row
             this.nearby.absolute = []
@@ -264,7 +278,7 @@ define(["ddm", "jquery", "entity/entity"], function (Tsh, $, Entity) {
                 var p = relativeToAbsolutePoint(this.nearby.point[0], pRelative)
                 this.nearby.absolute.push(p)
             }.bind(this))
-            this.nearby.all = this.nearby.absolute.concat([this.nearby.point])
+            this.nearby.all = this.nearby.absolute.concat(this.nearby.point)
         },
         onInitialized(callback) { this._onInitialized = callback },
 

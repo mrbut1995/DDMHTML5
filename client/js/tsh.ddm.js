@@ -56,13 +56,17 @@ define(function (Entity) {
             this.connectServer();
 
         },
-        initProperty(){
-            this.isplacing = false
-            this.placingshape = null
-            this.isselecting = false
-            this.selected = null
-            this.selectedgroup = {}
-
+        initProperty() {
+            this.inputmode = {
+                rolling: false,
+                summoning: false,
+                diceselecting: false,
+            }
+            this.inputvalue = {
+                summoning : {
+                    path : []
+                }
+            }
         },
         connectServer() {
             var self = this
@@ -118,10 +122,11 @@ define(function (Entity) {
                 player.onDeselectedMonster(function (monster) {
 
                 })
-                player.onRequestRollDice(function (selection){
-                     client.sendRoll(id,selection[0],selection[1],selection[2])
+                player.onRequestRollDice(function (selection) {
+                    console.log("Request roll ", selection)
+                    client.sendRoll(id, selection[0], selection[1], selection[2])
                 })
-                player.onPlayerRequestMessage(function(msg){
+                player.onPlayerRequestMessage(function (msg) {
 
                 })
 
@@ -182,18 +187,26 @@ define(function (Entity) {
                 Tsh.Ddm.Client.onPlayerDie(function (playerid, result) {
 
                 });
-                Tsh.Ddm.Client.onRollDice(function (playerid,roll1,roll2,roll3) {
-                    console.log("Roll result ",roll1," ",roll2," ",roll3," ",playerid," ",id)
-                    Tsh.Ddm.View.rollDiceAnimation([roll1,roll2,roll3],function(){
-                        if(playerid == id){
-                            Tsh.Ddm.Player.requestPlayerCheckRollResult([roll1,roll2,roll3])
+                Tsh.Ddm.Client.onRollDice(function (playerid, roll1, roll2, roll3) {
+
+                    Tsh.Ddm.View.rollDiceAnimation([roll1, roll2, roll3], function () {
+                        if (playerid == id) {
+                            Tsh.Ddm.Player.updateRollingResult([roll1, roll2, roll3])
+                            self.endRollingMode()
+
+                            if(Tsh.Ddm.Player.isSelectionSummonable()){
+                                self.startSummoningMode()
+
+                                var viewdata = Tsh.Ddm.Player.viewdataSummoning()
+                                Tsh.Ddm.View.updateSummoningDice(viewdata)
+                            }
                         }
                     }.bind(Tsh.Ddm.Game))
                 }.bind(this));
                 Tsh.Ddm.Client.onPhaseChanged(function (playerid, changephase) {
                 });
-                Tsh.Ddm.Client.onPoolChanged(async function(playerid,pool,unused){
-                    self.requestUpdatePlayerPool(playerid,pool,unused)
+                Tsh.Ddm.Client.onPoolChanged(async function (playerid, pool, unused) {
+                    self.requestUpdatePlayerPool(playerid, pool, unused)
                 });
                 Tsh.Ddm.Client.onGameEnd(function (state, playerid) {
 
@@ -338,7 +351,7 @@ define(function (Entity) {
                     }
                     Tsh.Ddm.Animator.registerViewAnimator(view)
                 }.bind(this))
-                
+
                 this.onViewDestroyed(function (view) {
                     Tsh.Ddm.Animator.unregisterViewAnimator(view)
                 }.bind(this))
@@ -347,74 +360,58 @@ define(function (Entity) {
 
                 }.bind(this))
 
-                this.onDisplayDicePool(function(){
+                this.onDisplayDicePool(function () {
                     Tsh.Ddm.Client.sendQuery(Tsh.Ddm.Player.playerid)
                 }.bind(this))
 
-                this.onHideDicePool(function(){
+                this.onHideDicePool(function () {
 
                 }.bind(this))
             }.bind(Tsh.Ddm.View))
-            
+
             Tsh.Ddm.Input.onInitialized(function () {
                 this.onCanvasClicked(function (ev) {
-                    let mouse = Tsh.Ddm.Input.mouse
                     console.log("onCanvasClicked")
-                    Tsh.Ddm.View.requestViewsAt(mouse.x, mouse.y, function (views) {
-                        for (var i in views) {
-                            if (views[i].type == "monster") {
-                                var monster = Tsh.Ddm.Entity.getEntityByView(views[i])
-                                Tsh.Ddm.Debug.onMonsterClickedDebug(monster)
-                                return;
-                            } else {
-                                console.log("NOT MONSTER TYPE => SKIP")
-                            }
-                        }
-                    }.bind(this))
+                    let entites = Tsh.Ddm.Input.hovering
+                    if (entites.monster) {
+                        Tsh.Ddm.Debug.onMonsterClickedDebug(entites.monster)
+                    } else {
+
+                    }
                 })
                 this.onCanvasPressed(function (ev) {
-                    let mouse = Tsh.Ddm.Input.mouse
-                    Tsh.Ddm.View.requestViewsAt(mouse.x, mouse.y, function (views) {
-
-                    }.bind(this))
+                    let entites = Tsh.Ddm.Input.hovering
+                    
+                    if(self.isSummoningMode()){
+                        
+                    }
                 })
                 this.onCanvasReleased(function (ev) {
-                    let mouse = Tsh.Ddm.Input.mouse
-                    Tsh.Ddm.View.requestViewsAt(mouse.x, mouse.y, function (views) {
 
-                    }.bind(this))
                 })
                 this.onCanvasHover(function (ev) {
-                    let mouse = Tsh.Ddm.Input.mouse
-                    Tsh.Ddm.View.requestViewsAt(mouse.x, mouse.y, function (views) {
-
-                    }.bind(this))
-                    Tsh.Ddm.Debug.onCanvasHoverDebug(mouse)
+                    if (self.isSummoningMode()) {
+                        self.highlighMouseHover(true)
+                    }
                 })
                 this.onCanvasOut(function (ev) {
-                    let mouse = Tsh.Ddm.Input.mouse
-                    Tsh.Ddm.View.requestViewsAt(mouse.x, mouse.y, function (views) {
 
-                    }.bind(this))
                 })
                 this.onCanvasPressAndHold(function (ev) {
-                    let mouse = Tsh.Ddm.Input.mouse
-                    Tsh.Ddm.View.requestViewsAt(mouse.x, mouse.y, function (views) {
 
-                    }.bind(this))
                 })
-                this.onDicePoolInput(function(source,index){
-                    if(source == "btnRollSelected"){
-                        Tsh.Ddm.Player.requestPlayerRollDice()
-                    }else if(source == "btnCancelSelected"){
+                this.onDicePoolInput(function (source, index) {
+                    if (source == "btnRollSelected") {
+                        Tsh.Ddm.Game.inputReqPlayerRollDice()
+                    } else if (source == "btnCancelSelected") {
                         Tsh.Ddm.Player.deselectAllPoolItem()
-                    }else if(source == "popup-grid"){
+                    } else if (source == "popup-grid") {
                         Tsh.Ddm.Player.toggleSelectedPoolItem(index)
                     }
                 })
             }.bind(Tsh.Ddm.Input))
 
-            Tsh.Ddm.Player.onInitialized(function(){})
+            Tsh.Ddm.Player.onInitialized(function () { })
         },
         run: function () {
             window.requestAnimationFrame(this.step.bind(this));
@@ -447,6 +444,91 @@ define(function (Entity) {
         },
         restart() {
 
+        },
+
+        /**
+         * Input Mode Handle
+         */
+        isSummoningMode() {
+            return this.inputmode.summoning
+        },
+        startSummoningMode() {
+            this.inputmode.summoning = true
+        },
+        endSummoningMode() {
+            this.inputmode.summoning = false
+        },
+        isRollingMode() {
+            return this.inputmode.rolling
+        },
+        startRollingMode() {
+            this.inputmode.rolling = true
+        },
+        endRollingMode() {
+            this.inputmode.rolling = false
+        },
+        isDiceSelectingMode() {
+            return this.inputmode.diceselecting
+        },
+        startDiceSelectingMode() {
+            this.inputmode.diceselecting = true
+        },
+        endDiceSelectingMode() {
+            this.inputmode.diceselecting = false
+        },
+        resetInputMode() {
+            this.inputmode.rolling = false
+            this.inputmode.summoning = false
+            this.inputmode.diceselecting = false
+        },
+
+        async inputReqDisplayDicePool() {
+            if (Tsh.Ddm.Player.allowedSelectionDice()
+                && !Tsh.Ddm.View.isDicePoolPopupDisplay()) {
+                Tsh.Ddm.View.displayDicePool()
+            }
+        },
+        async inputReqHideDicePool() {
+            if (Tsh.Ddm.View.isDicePoolPopupDisplay()) {
+                Tsh.Ddm.View.hideDicePool()
+            }
+        },
+        async inputReqSelectingSummoningMonster(index) {
+            if (this.isSummoningMode()) {
+                Tsh.Ddm.Player.toggleSummoningDiceSelecting(index)
+            } else {
+                console.log("[ERROR] Currently does not summoning")
+            }
+        },
+        async inputReqPlayerRollDice() {
+            if (Tsh.Ddm.Player.checkDiceSelecting()) {
+                if (Tsh.Ddm.Player.allowedActionRoll()) {
+
+                    this.startRollingMode()
+
+                    var viewdata = Tsh.Ddm.Player.viewdataRolling()
+                    Tsh.Ddm.View.updateRollingDice(viewdata)
+
+                    console.log("player:", this.id, " request to roll dice")
+                    var selection = []
+                    var selectionpool = Tsh.Ddm.Player.getSelectionPool()
+
+                    selection[0] = selectionpool[0].monster
+                    selection[1] = selectionpool[1].monster
+                    selection[2] = selectionpool[2].monster
+
+                    Tsh.Ddm.Client.sendRoll(Tsh.Ddm.Player.id, selection[0], selection[1], selection[2])
+
+                    this.inputReqHideDicePool()
+                } else {
+                    console.log("Not allowed to Roll")
+                }
+
+                //Done Player Selection Roll
+                Tsh.Ddm.Player.notAllowedSelectionDice()
+            } else {
+                console.log("Cannot Roll Dice yet")
+            }
         },
 
         /**
@@ -574,6 +656,9 @@ define(function (Entity) {
             if (entitygroup.first) {
                 viewgroup.firstview = entitygroup.first.getView()
             }
+            if (entitygroup.top) {
+                viewgroup.topview = entitygroup.top.getView()
+            }
             if (entitygroup.monster) {
                 viewgroup.monsterview = entitygroup.monster.getView()
             }
@@ -612,11 +697,13 @@ define(function (Entity) {
             var items = []
             for (var i in list) {
                 var e = list[i]
-                if(this.isGroupFlat(e)){
+                if(!e.point)
+                    continue
+                if (this.isGroupFlat(e)) {
                     var v = this.getGroupView(e)
-                    if(this.isGroupEmpty(e)){
+                    if (this.isGroupEmpty(e)) {
                         points.push(v.point)
-                    }else{
+                    } else {
                         lands.push(v.landview)
                         monsters.push(v.monsterview)
                         items.push(v.itemview)
@@ -640,11 +727,13 @@ define(function (Entity) {
             var items = []
             for (var i in list) {
                 var e = list[i]
-                if(this.isGroupMovable(e)){
+                if(!e.point)
+                    continue
+                if (this.isGroupMovable(e)) {
                     var v = this.getGroupView(e)
-                    if(this.isGroupEmpty(e)){
+                    if (this.isGroupEmpty(e)) {
                         points.push(v.point)
-                    }else{
+                    } else {
                         lands.push(v.landview)
                         monsters.push(v.monsterview)
                         items.push(v.itemview)
@@ -669,11 +758,13 @@ define(function (Entity) {
             var items = []
             for (var i in list) {
                 var e = list[i]
-                if(this.isGroupNonmovable(e)){
+                if(!e.point)
+                    continue
+                if (this.isGroupNonmovable(e)) {
                     var v = this.getGroupView(e)
-                    if(this.isGroupEmpty(e)){
+                    if (this.isGroupEmpty(e)) {
                         points.push(v.point)
-                    }else{
+                    } else {
                         lands.push(v.landview)
                         monsters.push(v.monsterview)
                         items.push(v.itemview)
@@ -697,11 +788,13 @@ define(function (Entity) {
             var items = []
             for (var i in list) {
                 var e = list[i]
-                if(this.isGroupPlaceable(e)){
+                if(!e.point)
+                    continue
+                if (this.isGroupPlaceable(e)) {
                     var v = this.getGroupView(e)
-                    if(this.isGroupEmpty(e)){
+                    if (this.isGroupEmpty(e)) {
                         points.push(v.point)
-                    }else{
+                    } else {
                         lands.push(v.landview)
                         monsters.push(v.monsterview)
                         items.push(v.itemview)
@@ -725,11 +818,13 @@ define(function (Entity) {
             var items = []
             for (var i in list) {
                 var e = list[i]
-                if(this.isGroupUnplaceable(e)){
+                if(!e.point)
+                    continue
+                if (this.isGroupUnplaceable(e)) {
                     var v = this.getGroupView(e)
-                    if(this.isGroupEmpty(e)){
+                    if (this.isGroupEmpty(e)) {
                         points.push(v.point)
-                    }else{
+                    } else {
                         lands.push(v.landview)
                         monsters.push(v.monsterview)
                         items.push(v.itemview)
@@ -745,75 +840,72 @@ define(function (Entity) {
         /**
          * Highlight following Mouse
          */
-        highlighMouseHover(isHighlightNearby){
-            if(isHighlightNearby){
+        highlighMouseHover(isHighlightNearby) {
+            if (isHighlightNearby) {
                 this.highlighPlaceableInRegion(Tsh.Ddm.Input.nearby.all)
-            }else{
+            } else {
                 this.highlighPlaceableInRegion(Tsh.Ddm.Input.nearby.point)
             }
         },
-        
-        async requestUpdatePlayerPool(playerid,contains,unused){
+
+        async requestUpdatePlayerPool(playerid, contains, unused) {
             var self = this
-            
-            var pool = await Promise.all( _.map(contains,async function(data){
+
+            var ittemdatas = await Promise.all(_.map(contains, async function (data) {
                 console.log("[0][requestUpdatePlayerPool] test = ")
                 var result = await Tsh.Ddm.Blueprint.requestBlueprintMonsterAsync(data)
                 var metadata = result.metadata
-                console.log("[1][requestUpdatePlayerPool] test = ",result)
+                console.log("[1][requestUpdatePlayerPool] test = ", result)
                 var item = {}
-                item.name = data
-                item.available   = !_.contains(unused,data),
-                item.portraitimg = _.property("portraitimg")(metadata)
-                item.pieceimg    = _.property("pieceimg")   (metadata)
-                item.dice        = _.property("dice")       (metadata)
+                item.monster = data
+                item.name = _.property("name")(metadata)
+                item.available = !_.contains(unused, data),
+                    item.portraitimg = _.property("portraitimg")(metadata)
+                item.pieceimg = _.property("pieceimg")(metadata)
+                item.dice = _.property("dice")(metadata)
                 return item
             }))
-            if(playerid == Tsh.Ddm.Player.id){
-                Tsh.Ddm.Player.playerRequestUpdatePool(pool)
+            if (playerid == Tsh.Ddm.Player.id) {
+                Tsh.Ddm.Player.updatePoolAsync(ittemdatas)
             }
         },
-        
+
         //For Placing Mode
-        startedPlacing(){
-            this.isplacing = true
-        },
-        stopPlacing(){
-            this.isplacing = false
-        },
-        selectPieceAt(col,row){
-            if(Tsh.Ddm.Entity.outOfBound(col,row)){
-                console.log("[ERROR] Out of Bound ",col," ",row)
+        selectPieceAt(col, row) {
+            if (Tsh.Ddm.Entity.outOfBound(col, row)) {
+                console.log("[ERROR] Out of Bound ", col, " ", row)
             }
-            if(this.selected){
+            if (this.selected) {
                 Tsh.Ddm.Entity.deselectedEntity(this.selected)
-                Tsh.Ddm.View  .deselectedView  (this.selected.getView())    
-                Tsh.Ddm.Input .deselectedInput (this.selected)
+                Tsh.Ddm.View.deselectedView(this.selected.getView())
+                Tsh.Ddm.Input.deselectedInput(this.selected)
                 this.selected = null
                 this.selectedgroup = {}
             }
-            var group = Tsh.Ddm.Entity.getEntityGroupAt(col,row)
+            var group = Tsh.Ddm.Entity.getEntityGroupAt(col, row)
             this.selectedgroup = group
             this.selected = group.top
-            if(selected){
+            if (selected) {
                 Tsh.Ddm.Entity.selectedEntity(this.selected)
-                Tsh.Ddm.View  .selectedView  (this.selected.getView())
-                Tsh.Ddm.Input .selectedInput (this.selected)    
-            }                
+                Tsh.Ddm.View.selectedView(this.selected.getView())
+                Tsh.Ddm.Input.selectedInput(this.selected)
+            }
         },
-        deselectedPiece(){
+        deselectedPiece() {
             this.selected = null
             this.selectedgroup = {}
             this.isselecting = false
             Tsh.Ddm.Entity.deselectedEntity(this.selected)
-            Tsh.Ddm.View  .deselectedView  (this.selected.getView())
-            Tsh.Ddm.Input .deselectedInput (this.selected)    
+            Tsh.Ddm.View.deselectedView(this.selected.getView())
+            Tsh.Ddm.Input.deselectedInput(this.selected)
         },
-        onMouseHovering(){
-            if(this.isplacing){
-                
-            }
+
+        mouseClicked() {
+
         },
+        mousePressedAndHold() {
+
+        }
     }
 
     return Tsh

@@ -16,6 +16,9 @@ Coord.fromString = function(str){
     var y = parseFloat(str.match(/[+-]?\d+(\.\d+)?/g)[1]);
     return new Coord(x,y)
 }
+Coord.zero = function(){
+    return new Coord(0,0)
+}
 
 var Size = function(w,h){
     this.w      = w
@@ -30,6 +33,15 @@ var Rect = function (coord, width, height) {
     this.contain = function (coord) {
         return this.x <= coord.x && coord.x <= this.x + this.w
             && this.y <= coord.y && coord.y <= this.y + this.h
+    }
+
+    this.point = function(){
+        return {
+            left: this.x,
+            top : this.y,
+            right: this.x + this.width,
+            bottom: this.y + this.height
+        }
     }
 }
 function Point(col, row) {

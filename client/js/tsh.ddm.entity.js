@@ -114,7 +114,7 @@ define(["ddm","jquery","entity/entityfactory","entity/monster","entity/land","en
             }
         },
         isOutOfBound(col,row){
-            return col < 0 || row < 0 || col > 12 || row > 18
+            return col < 0 || row < 0 || col > 12 || row > 18 || col === undefined || row === undefined
         },
         /**
          * 
@@ -175,13 +175,14 @@ define(["ddm","jquery","entity/entityfactory","entity/monster","entity/land","en
          * @return {EntityGroup[]}
          */
         getEntityGroupsAtRegion(region){
-            var lst = []
             var self = this
-            _.each(region,p => {
-                if(isPoint(p)){
-                    lst.push(self.getEntityGroupAt(p.col,p.row))
-                }
-            })
+            var lst = _.map(region, p => self.getEntityGroupAt(p.col,p.row))
+            // _.each(region,p => {
+            //     if(isPoint(p)){
+            //         lst.push(self.getEntityGroupAt(p.col,p.row))
+            //     }
+            // })
+            console.log("lst = ",lst)
             return lst 
         },
         getEntityAt(col,row){

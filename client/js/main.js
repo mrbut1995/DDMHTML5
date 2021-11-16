@@ -62,16 +62,5 @@ window.onload = function () {
     Tsh.Ddm.Game.init()
     Tsh.Ddm.Game.run()
 
-    var mapA = [
-      {data : {x : 15}},
-      {data : {x : 16}},
-      {data : {x : 17}},
-      {data : {x : 18}},
-    ]
-
-    _.each(mapA,function(item){item.data = {x: item.data.x * 2}})
-    var ref = mapA[1]
-    // mapA[1].data.x = 26
-    console.log("ref = ",ref)
   })
 }

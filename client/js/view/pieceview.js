@@ -20,7 +20,7 @@ define(["view/view","animation/animations"],function(View,Animations){
         toCoord(point){
             if(this.board() == null){
                 console.log("[ERROR] Not belong to any board")
-                return new Coord(0,0)
+                return Coord.zero()
             }
             return this.board().coordFrom(point)
         }

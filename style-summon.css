@@ -2,19 +2,55 @@
     position: absolute;
     top: 50px;
     left: 50px;
+    /* visibility: hidden; */
 }
-
+.controller.summonning.selection.show {
+    visibility: visible;
+}
 .controller.summonning.selection .cube{
     overflow: hidden;
-    height: 115px;
-    width: 115px;
-  }
+    display: none;
+    height: 120px;
+    width: 200px;
+    margin-top: 5px;
+    transition: all 0.3s;
+}
+
+.controller.summonning.selection .cube.show{
+    display: block;
+}
+
+.controller.summonning.selection .cube.highlight{
+    left:150px;
+    box-shadow: 0px 0px 10px red;
+    margin-left: 50px;
+}
+
 .controller.summonning.selection .cube .face{
     transform-origin : 0 0;
-    position: absolute;
     height: 50px;
     width: 50px;
+    position: relative;
+    left:50px
 }
+
+.controller.summonning.selection  .monster.display{
+    overflow: hidden;
+    display: block;
+    width: auto;
+    height: auto;
+    max-width: 175px;
+    max-height: 105px;
+    position: relative; 
+    left: 25px;
+    bottom: 135px;
+}
+.controller.summonning.selection  .monster.display img{
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow( 2px 2px 2px black);
+}
+
 .controller.summonning.selection .cube .face.side{
     background:  #3e8fe1;
     transform: rotate(90deg) skewX(-30deg) scaleY(0.864);
@@ -22,10 +58,12 @@
 .controller.summonning.selection .cube .face.front{
     background:#2870bd;
     transform: rotate(-30deg) skewX(-30deg) scaleY(0.864);
+    top:50px;
 }
 .controller.summonning.selection .cube .face.top{
     background-color: #80bdfe;
     transform: rotate(210deg) skewX(-30deg) scaleY(0.864);
+    bottom: 50px;
 }
 .controller.summonning.selection .cube .face img{
     width: 100%;

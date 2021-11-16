@@ -12,394 +12,455 @@
 
 
 
-define(["ddm"],function(Tsh){
-     Tsh.Ddm.Player = {
-       init(app){
-           this.id = ""
-           this.name = ""
+define(["ddm"], function (Tsh) {
+   Tsh = Tsh || {}
+   Tsh.Ddm = Tsh.Ddm || {}
 
-           this.pool           = []
-           this.selectionpool  = []
+   Tsh.Ddm.Player = {
+      init(app) {
+         this.id = ""
+         this.name = ""
 
-           this.fullpool     = {}
+         this.pool = []
+         this.selectionpool = []
 
-           this.crests =  {
-                attack :  0,
-                defend :  0,
-                movement: 0,
-                summon:   0,
-                magic:    0,
-                trap:     0
-           }
+         this.fullpool = {}
 
-           this.avatar = null
-           this.avatarSource = ""
-           this.lp = 0
+         this.crests = {
+            attack: 0,
+            defend: 0,
+            movement: 0,
+            summon: 0,
+            magic: 0,
+            trap: 0
+         }
 
-           this.isActive     = true
-           this.isLose       = false
-           this.isConnect    = false
-           
-           this.isCurrentTurn = false
+         this.avatar = null
+         this.avatarSource = ""
+         this.lp = 0
 
-           this.isSummoning = false
-           this.isRolling   = false
-           this.isMoving    = false
+         this.isActive = true
+         this.isLose = false
+         this.isConnect = false
 
-           this.selectedMonster   = null
-           this.selectedEntityGroup = null
-           
-           this.controlmonster    = {}
-           this.controlland       = {}
+         this.isCurrentTurn = false
 
-           this.resolvedMonster   = {}
+         this.isSummoning = false
+         this.isRolling = false
+         this.isMoving = false
 
-           //Player Action
-           this.actions_available = {
-               roll           :  true,
-               diceselection  :  true,
-               summoning      :  true,
-               piece          :  true              
-          }
+         this.selectedMonster = null
+         this.selectedEntityGroup = null
 
-          this.summoning_mode = {
-               summonable_dices : []
-          }
-           this.app = app
-           if(this._onInitialized){
-               this._onInitialized()
-           }
-       },
-       /**
-        * Get value of crest
-        * @param   {string} name name of crest user want to get
-        * @returns {number} value of crest user want to get
-        */
-       getCrest(name){
-          if(name in this.crests){
-               return this.crests[name]
-          }else{
-               return -1
-          }
-       },
+         this.controlmonster = {}
+         this.controlland = {}
 
-       /**
-        * Set Value of crest
-        * @param {string} name  Name of Crest user want set
-        * @param {number} value Value want to set to crest
-        */
-       setCrest(name,value){
-          if(name in this.crests){
-               this.crests[name] = value
-          }
-       },
+         this.resolvedMonster = {}
 
-       getCrests(){
-          return this.crests;
-       },
-       getAvatar(){
+         //Player Action
+         this.actions_available = {
+            roll: true,
+            diceselection: true,
+            summoning: true,
+            piece: true
+         }
 
-       },
-       getAvatarSource(){
+         this.summoningtarget = null
 
-       },
-       setAvatarSource(src){
-            this.avatar = avatar;
-       },
-       active(){
-            this.isActive = true
-            if(this._onActive){
-                this._onActive()
-            }
-       },
-       deactive(){
-            this.isActive = false
-            if(this._onDeactive){
-                this._onDeactive()
-            }
-       },
-       getIsActive(){
-            return this.isActive
-       },
-       toggleActive(){
-            if(this.getIsActive()){
-                this.deactive()
-            }else{
-                this.active()
-            }
-       },
-       selected(monster){
-            
-       },
-       assignMonster(monster){
-        
-       },
-       resignMonster(monster){
+         this.app = app
+         if (this._onInitialized) {
+            this._onInitialized()
+         }
+      },
+      /**
+       * Get value of crest
+       * @param   {string} name name of crest user want to get
+       * @returns {number} value of crest user want to get
+       */
+      getCrest(name) {
+         if (name in this.crests) {
+            return this.crests[name]
+         } else {
+            return -1
+         }
+      },
 
-       },
-       assignLand(land){
+      /**
+       * Set Value of crest
+       * @param {string} name  Name of Crest user want set
+       * @param {number} value Value want to set to crest
+       */
+      setCrest(name, value) {
+         if (name in this.crests) {
+            this.crests[name] = value
+         }
+      },
 
-       },
-       resignLand(land){
+      getCrests() {
+         return this.crests;
+      },
+      getAvatar() {
 
-       },
-       getControlMonsters(){
-            return this.controlmonster
-       },
-       getControlLands(){
-            return this.controlland
-       },
+      },
+      getAvatarSource() {
 
-       displayAvatar(){
-          
-       },
-       displayCrestInfo(){
+      },
+      setAvatarSource(src) {
+         this.avatar = avatar;
+      },
+      active() {
+         this.isActive = true
+         if (this._onActive) {
+            this._onActive()
+         }
+      },
+      deactive() {
+         this.isActive = false
+         if (this._onDeactive) {
+            this._onDeactive()
+         }
+      },
+      getIsActive() {
+         return this.isActive
+      },
+      toggleActive() {
+         if (this.getIsActive()) {
+            this.deactive()
+         } else {
+            this.active()
+         }
+      },
+      selected(monster) {
 
-       },
+      },
+      assignMonster(monster) {
 
-       allowedActionRoll(){
-          return this.actions_available.roll
-       },
-       allowedSelectionDice(){
-          return this.actions_available.diceselection
-       },
-       allowedSummoning(){
-          return this.actions_available.diceselection
-       },
-       allowedPieceAction(){
-          return this.actions_available.piece
-       },
+      },
+      resignMonster(monster) {
 
-       resetAllowedActionRoll(){
-          this.actions_available.roll = true
-       },
-       resetAllowedSelectionDice(){
-          this.actions_available.diceselection = true
-       },
-       resetAllowedSummoning(){
-          this.actions_available.summoning = true
-       },
-       resetAllowedPieceAction(){
-          this.actions_available.piece = true
-       },
+      },
+      assignLand(land) {
 
-       notAllowedActionRoll(){
-          this.actions_available.roll = false
-       },
-       notAllowedSelectionDice(){
-          this.actions_available.diceselection = false
-       },
-       notAllowedSummoning(){
-          this.actions_available.summoning = false
-       },
-       notAllowedPieceAction(){
-          this.actions_available.piece = false
-       },
+      },
+      resignLand(land) {
 
-       actionablePieces(){
-          if(this.notAllowedPieceAction()){
-               return []
-          }
-       },
+      },
+      getControlMonsters() {
+         return this.controlmonster
+      },
+      getControlLands() {
+         return this.controlland
+      },
 
-       rolling(){
-          return this.isRolling
-       },
-       startedRolling(){
-          this.isRolling = true
-       },
-       endRolling(){
-          this.isRolling = false
-       },
-       reset(){
+      displayAvatar() {
 
-       },
-       clear(){
+      },
+      displayCrestInfo() {
 
-       },
-       getPoolItemAt(index){
-          return deepCopy(this.pool[index])
-       },
+      },
 
-       getPoolViewData(){
-         var viewdata =  _.map(this.pool,item =>
-            (item)
-         )
+      allowedActionRoll() {
+         return this.actions_available.roll
+      },
+      allowedSelectionDice() {
+         return this.actions_available.diceselection
+      },
+      allowedSummoning() {
+         return this.actions_available.diceselection
+      },
+      allowedPieceAction() {
+         return this.actions_available.piece
+      },
+
+      resetAllowedActionRoll() {
+         this.actions_available.roll = true
+      },
+      resetAllowedSelectionDice() {
+         this.actions_available.diceselection = true
+      },
+      resetAllowedSummoning() {
+         this.actions_available.summoning = true
+      },
+      resetAllowedPieceAction() {
+         this.actions_available.piece = true
+      },
+
+      notAllowedActionRoll() {
+         this.actions_available.roll = false
+      },
+      notAllowedSelectionDice() {
+         this.actions_available.diceselection = false
+      },
+      notAllowedSummoning() {
+         this.actions_available.summoning = false
+      },
+      notAllowedPieceAction() {
+         this.actions_available.piece = false
+      },
+
+      actionablePieces() {
+         if (this.notAllowedPieceAction()) {
+            return []
+         }
+      },
+
+      rolling() {
+         return this.isRolling
+      },
+      startedRolling() {
+         this.isRolling = true
+      },
+      endRolling() {
+         this.isRolling = false
+      },
+      summoning() {
+         return this.isSummoning
+      },
+      startedSummoning() {
+         this.isSummoning = true
+      },
+      endSummoning() {
+         this.isSummoning = false
+      },
+      reset() {
+
+      },
+      clear() {
+
+      },
+
+      getPoolItemAt(index) {
+         return deepCopy(this.pool[index])
+      },
+      getSelectionPool() {
+         return this.selectionpool
+      },
+      getPool() {
+         return this.pool
+      },
+      getSummoningTarget(){
+         return this.summoningtarget
+      },
+      /**View Data */
+      viewdataPool() {
+         var viewdata = _.map(this.pool, function (item, i) {
+            return item
+         })
          return viewdata
-       },
+      },
 
-       getDiceViewData(){
-         var viewdata = _.map(this.selectionpool,item =>
-            ({
-                  faces : item.dice.faces
-            })
-         )
+      viewdataRolling() {
+         var viewdata = _.map(this.selectionpool, function (item, i) {
+            var itemsviewdata = {}
+
+            itemsviewdata.faces = item.dice.faces
+
+            return itemsviewdata;
+         })
          return viewdata
-       },
-       selectPoolItem(index){
+      },
+
+      viewdataSummoning() {
+         var viewdata = _.map(this.selectionpool, function (item, i) {
+
+            var dice = {}
+            dice.srcImg = "client/img/piece/" + item.pieceimg
+            dice.summon = {}
+            dice.summon.selected = item.summon.selected
+            dice.summon.active = item.summon.active
+
+            return dice
+         })
+         return viewdata
+      },
+
+
+      updateSelectionPool() {
+         var self = this
+         self.selectionpool = _.where(this.pool, { selected: true })
+      },
+      selectPoolItem(index) {
          var self = this
 
-          if(index < 0 || index > this.pool.length){
-               console.log("[ERROR] Out of Bound")
-               return
-          }
-         if(self.selectionpool.length < 3){
-            var item       =  _.values(this.pool)[index]
-            var available  =  _.property("available")(item)
-            if(available){
+         if (index < 0 || index > this.pool.length) {
+            console.log("[ERROR] Out of Bound")
+            return
+         }
+         if (self.selectionpool.length < 3) {
+            var item = _.values(this.pool)[index]
+            var available = _.property("available")(item)
+            if (available) {
                item.selected = true
             }
          }
-         
-         self.selectionpool = _.where(this.pool,{selected:true})
 
-         if(this._onselectiondice){
+         this.updateSelectionPool()
+
+         if (this._onselectiondice) {
             this._onselectiondice()
          }
-         Tsh.Ddm.View.updatePlayerPoolViewAsync(this.getPoolViewData())
-       },
-       deselectPoolItem(index){
-          var self = this
+         Tsh.Ddm.View.updatePlayerPoolViewAsync(this.viewdataPool())
+      },
+      deselectPoolItem(index) {
+         var self = this
 
-          if(index < 0 || index > this.pool.length){
-               console.log("[ERROR] Out of Bound")
-               return
-          }
+         if (index < 0 || index > this.pool.length) {
+            console.log("[ERROR] Out of Bound")
+            return
+         }
 
-          var item       =  _.values(this.pool)[index]
-          item.selected  =  false
+         var item = _.values(this.pool)[index]
+         item.selected = false
 
-          self.selectionpool = _.where(this.pool,{selected:true})
+         this.updateSelectionPool()
 
-          if(this._onselectiondice){
-               this._onselectiondice()
-          }
-          Tsh.Ddm.View.updatePlayerPoolViewAsync(this.getPoolViewData())
-       },
-       containSeletectPoolItem(index){
+         if (this._onselectiondice) {
+            this._onselectiondice()
+         }
+         Tsh.Ddm.View.updatePlayerPoolViewAsync(this.viewdataPool())
+      },
+      containSeletectPoolItem(index) {
          return _.property("selected")(this.pool[index])
-       },
-       isDoneSelected(){
-          var self = this
-
-          return self.selectionpool.length >= 3
-       },
-       toggleSelectedPoolItem(index){
-          if(index < 0 || index > this.pool.length){
-               console.log("[ERROR] Out of Bound")
-               return
-          }
-          if(this.containSeletectPoolItem(index)){
-               console.log("deselected")
-               this.deselectPoolItem(index)
-          }else{
-               console.log("selected")
-               this.selectPoolItem(index)
-          }
-       },
-       deselectAllPoolItem(){
+      },
+      checkDiceSelecting() {
+         return this.selectionpool.length >= 3 && this.allowedSelectionDice()
+      },
+      isSelectionSummonable() {
+         return _.filter(this.selectionpool, i => i.summon.active == true).length > 0
+      },
+      toggleSelectedPoolItem(index) {
+         if (index < 0 || index > this.pool.length) {
+            console.log("[ERROR] Out of Bound")
+            return
+         }
+         if (this.containSeletectPoolItem(index)) {
+            console.log("deselected")
+            this.deselectPoolItem(index)
+         } else {
+            console.log("selected")
+            this.selectPoolItem(index)
+         }
+      },
+      deselectAllPoolItem() {
          _.each(this.pool,
             item => item.selected = false
          )
-         self.selectionpool = _.where(this.pool,{selected:true})
+         this.updateSelectionPool()
 
-         Tsh.Ddm.View.updatePlayerPoolViewAsync(this.getPoolViewData())
-       },
-
-
-      async playerRequestDiceData(dices){
-         _.each(dices,function(){
-
-         }.bind(this))
+         Tsh.Ddm.View.updatePlayerPoolViewAsync(this.viewdataPool())
       },
-      async playerDisplayDicePool(){
-          if(this.allowedSelectionDice() && !Tsh.Ddm.View.isDicePoolPopupDisplay()){
-               Tsh.Ddm.View.displayDicePool()
-          }
-       },
-       async playerHideDicePool(){
-          if(Tsh.Ddm.View.isDicePoolPopupDisplay()){
-               Tsh.Ddm.View.hideDicePool()
-          }
-       },
-       
-       async playerRequestUpdatePool(datas){
-         this.pool           = _.map(datas, item => ({
-            name        : _.property("name")(item),
-            available   : _.property("available")(item),
-            portraitimg : _.property("portraitimg")(item),
-            pieceimg    : _.property("pieceimg")(item),
-            dice        : _.property("dice")(item),
+      selectingSummoningDice(index) {
+         var self = this
+         if (index < 0 || index > this.selectionpool.length) {
+            console.log("[ERROR] Out of Bound index = ", i)
+            return
+         }
 
-            selected     : false,
-            used         : false,
+         _.each(self.selectionpool, function (item, i) {
+            item.summon.selected = (i == index)
+         })
 
-            rollaction   : {
-               faceresult  : "unknown",
-               summonable  : false    ,
-               used        : false    ,
-            }
+         this.summoningtarget = self.selectionpool[index]
+
+         var viewdata = self.viewdataSummoning()
+         Tsh.Ddm.View.updateSummoningDice(viewdata)
+      },
+      deselectingSummoningDice(index) {
+         var self = this
+         if (index < 0 || index > this.selectionpool.length) {
+            console.log("[ERROR] Out of Bound index = ", i)
+            return
+         }
+         _.each(self.selectionpool, function (item) {
+            item.summon.selected = false
+         })
+         this.summoningtarget = null
+         var viewdata = self.viewdataSummoning()
+         Tsh.Ddm.View.updateSummoningDice(viewdata)
+      },
+
+      isSummoningDiceSelecting(index) {
+         if (index < 0 || index > this.selectionpool.length) {
+            console.log("[ERROR] Out of Bound index = ", i)
+            return false
+         }
+         return this.selectionpool[index].summon.selected
+      },
+
+      toggleSummoningDiceSelecting(index) {
+         if (this.isSummoningDiceSelecting(index)) {
+            this.deselectingSummoningDice(index)
+         } else {
+            this.selectingSummoningDice(index)
+         }
+      },
+
+      async updatePoolAsync(datas) {
+         this.pool = _.map(datas, item => ({
+
+            monster: _.property("monster")(item),
+            name: _.property("name")(item),
+            available: _.property("available")(item),
+            portraitimg: _.property("portraitimg")(item),
+            pieceimg: _.property("pieceimg")(item),
+            dice: _.property("dice")(item),
+
+            selected: false,
+            used: false,
+
+            roll: {
+               active: true,
+               value: 0,
+               result: "unknow",
+            },
+
+            summon: {
+               active: false,
+               selected: false,
+               used: false,
+            },
          }))
 
          //Cloning data to pass Async function in case of multiple request update Player Pool
-         Tsh.Ddm.View.updatePlayerPoolViewAsync(this.getPoolViewData())
+         Tsh.Ddm.View.updatePlayerPoolViewAsync(this.viewdataPool())
       },
 
-       async requestPlayerRollDice(){
-          if(this.isDoneSelected() && this.allowedSelectionDice() && this.allowedActionRoll()){
-               
-               Tsh.Ddm.View.updateRollingDice(this.getDiceViewData())
 
-               this.playerHideDicePool()
-               this.startedRolling()
+      async updateRollingResult(results) {
+         var self = this
 
-               if(this._onRequestRollDice){
-                    console.log("player:",this.id," request to roll dice")
-                    this._onRequestRollDice(this.selectionpool)                    
-               }
+         //Update status of selection pool
+         _.each(self.selectionpool, function (item, i) {
+            var faces = item.dice.faces,
+               nresult = results[i]
 
-               //Done Player Selection Roll
-               this.notAllowedSelectionDice()
-               this.notAllowedActionRoll()               
-          }else{
-               console.log("player:",this.id," request message")
-               if(this._onPlayerRequestMessage){
-                    this._onPlayerRequestMessage("Cannot Roll Dice yet")
-               }
-          }
-       },
-       async requestPlayerCheckRollResult(results){
-          var self = this
+            //Update Roll data of selection pool
+            item.roll.active = false
+            item.roll.value = results[i]
+            item.roll.result = faces[nresult]
 
-          if(this.rolling()){
-               //Update status of selection pool
-               _.each(this.selectionpool,function(item,i){
-                  var faces = item.dice.faces,
-                      nresult = results[i]
-                  
-                     item.rollaction.faceresult = faces[nresult]
-                     item.rollaction.summonable = faces[nresult] == "summon"
-                     item.rollaction.used       = false
-               })
-               this.endRolling()
-          }
-          
-       },
-       //Signal
-       onLoaded         (callback) {this._onLoaded              = callback},
-       onActive         (callback) {this._onActive              = callback},
-       onDeactive       (callback) {this._onDeactive            = callback},
-       onLose           (callback) {this._onLose                = callback},
-       onConnected      (callback) {this._onConnected           = callback},
-       onDeclareEndPhase(callback) {this._onDeclareEndPhase     = callback},
-       onCrestsChanged  (callback) {this._onCrestChanged        = callback},
+            item.summon.active = faces[nresult] == "summon"
+            item.summon.selected = false
+            item.summon.used = false
+         })
 
-       onSelectedMonster(callback) {this._onSelectedMonster     = callback},
-       onDeselectedMonster(callback){this._onDeselectedMonster  = callback},
-       onInitialized   (callback){this._onInitialized = callback},
+         self.notAllowedActionRoll()
+      },
+      //Signal
+      onLoaded(callback) { this._onLoaded = callback },
+      onActive(callback) { this._onActive = callback },
+      onDeactive(callback) { this._onDeactive = callback },
+      onLose(callback) { this._onLose = callback },
+      onConnected(callback) { this._onConnected = callback },
+      onDeclareEndPhase(callback) { this._onDeclareEndPhase = callback },
+      onCrestsChanged(callback) { this._onCrestChanged = callback },
 
-       onselectiondice    (callback)      {this._onselectiondice       = callback},
-       onRequestRollDice (callback)      {this._onRequestRollDice    = callback},
-       onPlayerRequestMessage (callback) {this._onPlayerRequestMessage = callback},
-     }
+      onSelectedMonster(callback) { this._onSelectedMonster = callback },
+      onDeselectedMonster(callback) { this._onDeselectedMonster = callback },
+      onInitialized(callback) { this._onInitialized = callback },
+
+      onselectiondice(callback) { this._onselectiondice = callback },
+      onRequestRollDice(callback) { this._onRequestRollDice = callback },
+      onPlayerRequestMessage(callback) { this._onPlayerRequestMessage = callback },
+   }
 })
