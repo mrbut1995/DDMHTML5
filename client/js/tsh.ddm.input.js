@@ -13,6 +13,9 @@ define(["ddm", "jquery", "entity/entity"], function (Tsh, $, Entity) {
                 col: 0,
                 row: 0,
             }
+            this.wheel = {
+                delta : 0
+            }
             this.nearby = {
                 point: [{ col: 0, row: 0 }],
                 relative: [],
@@ -53,6 +56,7 @@ define(["ddm", "jquery", "entity/entity"], function (Tsh, $, Entity) {
             $dom.canvas.on("mouseup", this.oncanvasmouseup.bind(this));
             $dom.canvas.on("mousemove", this.oncanvasmousemove.bind(this));
             $dom.canvas.on("mouseout", this.oncanvasmouseout.bind(this));
+            $dom.canvas.on("mousewheel",this.oncanvaswheel.bind(this));
 
             $dom.popup.pool.items.on("click", function () {
                 var index = $(".popup-controller .popup-grid .item-grid").index($(this))
@@ -77,25 +81,25 @@ define(["ddm", "jquery", "entity/entity"], function (Tsh, $, Entity) {
             })
 
             $dom.popup.closebtn.on("click", function () {
-                Tsh.Ddm.Game.inputReqHideDicePool()
+                Tsh.Ddm.Game.playerInputHideDicePool()
             })
 
             $dom.popup.outside.on("click", function () {
-                Tsh.Ddm.Game.inputReqHideDicePool()
+                Tsh.Ddm.Game.playerInputHideDicePool()
             })
 
             $dom.btnPlayer.btnroll.on("click",function(){
-                Tsh.Ddm.Game.inputReqDisplayDicePool()
+                Tsh.Ddm.Game.playerInputDisplayDicePool()
             })
 
             $dom.summoning.cubes.one.on("click",function(){
-                Tsh.Ddm.Game.inputReqSelectingSummoningMonster(0)
+                Tsh.Ddm.Game.playerInputSelectingSummoningMonster(0)
             })
             $dom.summoning.cubes.two.on("click",function(){
-                Tsh.Ddm.Game.inputReqSelectingSummoningMonster(1)
+                Tsh.Ddm.Game.playerInputSelectingSummoningMonster(1)
             })
             $dom.summoning.cubes.three.on("click",function(){
-                Tsh.Ddm.Game.inputReqSelectingSummoningMonster(2)
+                Tsh.Ddm.Game.playerInputSelectingSummoningMonster(2)
             })
 
         },
@@ -125,7 +129,7 @@ define(["ddm", "jquery", "entity/entity"], function (Tsh, $, Entity) {
             if (this._onMousePressed) {
                 this._onMousePressed(ev)
             }
-            this.pressAndHoldTimer = setTimeout((e => this.onmousepressandhold(ev)).bind(this), 300)
+            this.pressAndHoldTimer = setTimeout((e => this.oncanvasmousepressandhold(ev)).bind(this), 300)
             ev.preventDefault();
         },
         forEachInputListener(callback) {
@@ -166,7 +170,14 @@ define(["ddm", "jquery", "entity/entity"], function (Tsh, $, Entity) {
             }
             ev.preventDefault();
         },
-        onmousepressandhold: function (ev) {
+        oncanvaswheel: function (ev){
+            console.log("oncanvaswheel ev = ",ev )
+            if(this._onCanvasWheel){
+                this._onCanvasWheel
+            }
+            ev.preventDefault()
+        },
+        oncanvasmousepressandhold: function (ev) {
             if (this._onMousePressAndHold) {
                 this._onMousePressAndHold(ev)
             }
@@ -238,6 +249,9 @@ define(["ddm", "jquery", "entity/entity"], function (Tsh, $, Entity) {
             this.selected.dom           = null
             this.selected.index         = -1
         },
+        setNearbyRelative(lst){
+            this.nearby.relative = lst
+        },
         /**
         * @private
         */
@@ -288,6 +302,7 @@ define(["ddm", "jquery", "entity/entity"], function (Tsh, $, Entity) {
         onCanvasHover(callback) { this._onCanvasHover = callback },
         onCanvasOut(callback) { this._onMouseOut = callback },
         onCanvasPressAndHold(callback) { this._onPressAndHold = callback },
+        onCanvasWheel(callback){this._onCanvasWheel = callback},
         onDicePoolInput(callback){this._onDicePoolInput = callback },
     }
 })

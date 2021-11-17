@@ -176,14 +176,7 @@ define(["ddm","jquery","entity/entityfactory","entity/monster","entity/land","en
          */
         getEntityGroupsAtRegion(region){
             var self = this
-            var lst = _.map(region, p => self.getEntityGroupAt(p.col,p.row))
-            // _.each(region,p => {
-            //     if(isPoint(p)){
-            //         lst.push(self.getEntityGroupAt(p.col,p.row))
-            //     }
-            // })
-            console.log("lst = ",lst)
-            return lst 
+            return _.map(region, p => self.getEntityGroupAt(p.col,p.row)) 
         },
         getEntityAt(col,row){
             return this.getEntityGroupAt(col,row).first;

@@ -59,8 +59,6 @@ var Constants = new function () {
     TYPE_8: ["(0, -1)", "(-1, -1)","(1, 0)",  "(1, 1)",  "(2, 1)"],
     TYPE_9: ["(-1, 0)", "(0, 1)",  "(1, 0)",  "(1, -1)", "(2, -1)"],
     TYPE_10:["(-1, 0)", "(0, -1)", "(1, 0)",  "(1, 1)",  "(2, 1)"],
-    ALL_TYPE: ["TYPE_1", "TYPE_2", "TYPE_3", "TYPE_4", "TYPE_5",
-      "TYPE_6", "TYPE_7", "TYPE_8", "TYPE_9", "TYPE_10"]
   }
 
   this.MAX_DICES_SELECTION = 3
@@ -72,6 +70,17 @@ function stringsArrayToPoints(array){
   var lst = []
   for(var i in array){
     lst.push(Point.fromString(array[i]))
+  }
+  return lst
+}
+
+function getRelativeList(index){
+  var lst = []
+  console.log(" _.keys(this.RELATIVE_PATTERN) = ", _.keys(Constants.RELATIVE_PATTERN))
+  var key = _.keys(Constants.RELATIVE_PATTERN)[index]
+  var pattern = Constants.RELATIVE_PATTERN[key]
+  if(pattern){
+    lst = _.map(pattern,str => Point.fromString(str))
   }
   return lst
 }

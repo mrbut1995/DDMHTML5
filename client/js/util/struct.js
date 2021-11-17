@@ -74,3 +74,50 @@ Point.fromString = function(str){
     var row = parseFloat(str.match(/[+-]?\d+(\.\d+)?/g)[1]);
     return new Point(col,row)
 }
+
+function Region(list){
+    this.array =  _.uniq(_.filter(list, p => isPoint(p)))
+  
+    this.toArray = function(){
+        return this.array
+    }
+    this.nearby = function(distance){
+        var self = this
+        var list = []
+        _.each(this.array,function(p){
+            if(isPoint(p)){
+                var startRow = p.row - distance
+                var endRow = p.row + distance
+                for(var i = startRow ; i <= endRow;i++){
+                    var startCol = p.col - distance
+                    var endCol = p.col + distance
+                    for(var j = startCol ; j <= endCol; j++){
+                        list.push(new Point(j,i))
+                    }
+                }
+            }
+        })
+        list = _.uniq(list, p => p.col +","+ p.row)
+        list = _.filter(list,function(item1){
+            return _.find(self.array,function(item2){
+                return (item1.col == item2.col && item1.row == item2.row)
+            }) == undefined
+        },)
+        return list
+    }
+    this.forEachNearby = function(distance,callback){
+        var lst = this.nearby(distance)
+        _.each(lst,callback)        
+    }
+    this.forEachPoint  = function(callback){
+        _.each(this.array,callback)
+    }
+    this.toString         = function(){
+    }
+}
+Region.fromStringArray = function(array){
+
+}
+Region.fromString = function(array){
+    
+}

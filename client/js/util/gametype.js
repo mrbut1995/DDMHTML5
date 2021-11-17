@@ -68,7 +68,16 @@ var Types = {
 }
 
 function isMonsterKind(kind){
-  return ["dummymonster1","dummymonster2"].includes(kind)
+  return ["dummymonster1",
+          "dummymonster2",
+          "dummymonster3",
+          "dummymonster4",
+          "dummymonster5",
+          "dummymonster6",
+          "dummymonster7",
+          "dummymonster8",
+          "dummymonster9",
+          "dummymonster10"].includes(kind)
 } 
 function isMonsterLordKind(kind){
   return ["MonsterLord"].includes(kind)

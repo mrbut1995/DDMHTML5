@@ -4,11 +4,6 @@ define(["entity/piece", "view/monsterview", "animation/animations"], function (P
 
             var self = this
 
-            this.stat = {
-                attack: 0,
-                defend: 0,
-                move: 3
-            }
             this.movetype = "walk"
 
             //View

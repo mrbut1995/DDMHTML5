@@ -242,37 +242,6 @@ define(["ddm"], function (Tsh) {
          return this.summoningtarget
       },
       /**View Data */
-      viewdataPool() {
-         var viewdata = _.map(this.pool, function (item, i) {
-            return item
-         })
-         return viewdata
-      },
-
-      viewdataRolling() {
-         var viewdata = _.map(this.selectionpool, function (item, i) {
-            var itemsviewdata = {}
-
-            itemsviewdata.faces = item.dice.faces
-
-            return itemsviewdata;
-         })
-         return viewdata
-      },
-
-      viewdataSummoning() {
-         var viewdata = _.map(this.selectionpool, function (item, i) {
-
-            var dice = {}
-            dice.srcImg = "client/img/piece/" + item.pieceimg
-            dice.summon = {}
-            dice.summon.selected = item.summon.selected
-            dice.summon.active = item.summon.active
-
-            return dice
-         })
-         return viewdata
-      },
 
 
       updateSelectionPool() {
@@ -299,7 +268,7 @@ define(["ddm"], function (Tsh) {
          if (this._onselectiondice) {
             this._onselectiondice()
          }
-         Tsh.Ddm.View.updatePlayerPoolViewAsync(this.viewdataPool())
+         Tsh.Ddm.Game.updateDiceSelectingScreen()
       },
       deselectPoolItem(index) {
          var self = this
@@ -317,7 +286,7 @@ define(["ddm"], function (Tsh) {
          if (this._onselectiondice) {
             this._onselectiondice()
          }
-         Tsh.Ddm.View.updatePlayerPoolViewAsync(this.viewdataPool())
+         Tsh.Ddm.Game.updateDiceSelectingScreen()
       },
       containSeletectPoolItem(index) {
          return _.property("selected")(this.pool[index])
@@ -347,7 +316,7 @@ define(["ddm"], function (Tsh) {
          )
          this.updateSelectionPool()
 
-         Tsh.Ddm.View.updatePlayerPoolViewAsync(this.viewdataPool())
+         Tsh.Ddm.Game.updateDiceSelectingScreen()
       },
       selectingSummoningDice(index) {
          var self = this
@@ -362,8 +331,7 @@ define(["ddm"], function (Tsh) {
 
          this.summoningtarget = self.selectionpool[index]
 
-         var viewdata = self.viewdataSummoning()
-         Tsh.Ddm.View.updateSummoningDice(viewdata)
+         Tsh.Ddm.Game.updateSummoningScreen()
       },
       deselectingSummoningDice(index) {
          var self = this
@@ -375,8 +343,8 @@ define(["ddm"], function (Tsh) {
             item.summon.selected = false
          })
          this.summoningtarget = null
-         var viewdata = self.viewdataSummoning()
-         Tsh.Ddm.View.updateSummoningDice(viewdata)
+         
+         Tsh.Ddm.Game.updateSummoningScreen()
       },
 
       isSummoningDiceSelecting(index) {
@@ -398,7 +366,7 @@ define(["ddm"], function (Tsh) {
       async updatePoolAsync(datas) {
          this.pool = _.map(datas, item => ({
 
-            monster: _.property("monster")(item),
+            kind: _.property("kind")(item),
             name: _.property("name")(item),
             available: _.property("available")(item),
             portraitimg: _.property("portraitimg")(item),
@@ -410,7 +378,7 @@ define(["ddm"], function (Tsh) {
 
             roll: {
                active: true,
-               value: 0,
+               value: -1,
                result: "unknow",
             },
 
@@ -422,7 +390,7 @@ define(["ddm"], function (Tsh) {
          }))
 
          //Cloning data to pass Async function in case of multiple request update Player Pool
-         Tsh.Ddm.View.updatePlayerPoolViewAsync(this.viewdataPool())
+         Tsh.Ddm.Game.updateDiceSelectingScreen()
       },
 
 

@@ -172,7 +172,9 @@ define(["ddm","jquery"],function(Tsh,$){
                 readyState : 1,
                 send : function(msg){
                     if(debugClientConnectionHandle.onmessage){
-                        debugClientConnectionHandle.onmessage(msg)
+                        var e = {}
+                        e.data = msg
+                        debugClientConnectionHandle.onmessage(e)
                     }
                 },
 
@@ -187,6 +189,8 @@ define(["ddm","jquery"],function(Tsh,$){
             Tsh.Ddm.Client.connection = debugClientConnectionHandle;
             Tsh.Ddm.Client.enable()
             Tsh.Ddm.Client.receiveWelcome([Messages.WELCOME,player1debug.id, player1debug.name, player1debug.pool, "", "3", "[0,0,0,0,0]", "M00001"])
+        
+            this.connection = debugSeverConnectionHandle
         }
         this.entityData = {}
         this.sendPool = function(playerid,pool,unusedpool){
@@ -196,7 +200,7 @@ define(["ddm","jquery"],function(Tsh,$){
             data[1] = playerid
             data[2] = pool
             data[3] = unusedpool
-            Tsh.Ddm.Client.receiveMessage(JSON.stringify(data))
+            this.connection.send(JSON.stringify(data))
         },
         this.sendRollResult = function(playerid,roll1,roll2,roll3){
             var data = []
@@ -205,7 +209,7 @@ define(["ddm","jquery"],function(Tsh,$){
             data[2] = roll1
             data[3] = roll2
             data[4] = roll3
-            Tsh.Ddm.Client.receiveMessage(JSON.stringify(data))
+            this.connection.send(JSON.stringify(data))
         },
         this.sendCreateMonster = function(id,lCol,lRow){
             console.log("createViewMonster")
@@ -218,7 +222,7 @@ define(["ddm","jquery"],function(Tsh,$){
             data[5] = ""
             data[6] = "player1"
             data[7] = "player2"
-            Tsh.Ddm.Client.receiveMessage(JSON.stringify(data))
+            this.connection.send(JSON.stringify(data))
         },
         this.sendCreateLand    = function(id,pCol,pRow){
             var data = []
@@ -230,8 +234,20 @@ define(["ddm","jquery"],function(Tsh,$){
             data[5] = ""
             data[6] = "player1"
             data[7] = "player2"
-            Tsh.Ddm.Client.receiveMessage(JSON.stringify(data))
+            this.connection.send(JSON.stringify(data))
         },
+        this.sendCreateEntity   = function(id,kind,col,row){
+            var data = []
+            data[0] = Messages.SPAWN
+            data[1] = kind
+            data[2] = id
+            data[3] = col
+            data[4] = row
+            data[5] = ""
+            data[6] = "player1"
+            data[7] = "player2"
+            this.connection.send(JSON.stringify(data))
+        }
         this.sendMoveTo = function(toCol,toRow){
             var data = []
             data[0] = Messages.MOVE
@@ -240,21 +256,21 @@ define(["ddm","jquery"],function(Tsh,$){
             data[3] = toCol
             data[4] = toRow
             data[5] = "walk"
-            Tsh.Ddm.Client.receiveMessage(JSON.stringify(data))
+            this.connection.send(JSON.stringify(data))
         }
         this.sendDestroy = function(){
             var data = []
             data[0] = Messages.DESPAWN
             data[1] = ""
             data[2] = this.debugPieceSelected.id 
-            Tsh.Ddm.Client.receiveMessage(JSON.stringify(data))
+            this.connection.send(JSON.stringify(data))
         }
         this.sendAttack = function(selectedid,targetid){
             var data = []
             data[0] = Messages.ATTACK
             data[1] = selectedid
             data[2] = targetid
-            Tsh.Ddm.Client.receiveMessage(JSON.stringify(data))
+            this.connection.send(JSON.stringify(data))
         }
         this.sendList = function(){
             var data = []
@@ -262,7 +278,7 @@ define(["ddm","jquery"],function(Tsh,$){
             for(var i in Object.keys(this.entityData)){
                 data.push(this.entityData[Object.keys(this.entityData)[i]].id)
             }
-            Tsh.Ddm.Client.receiveMessage(JSON.stringify(data))
+            this.connection.send(JSON.stringify(data))
         }
         this.receiveMessage = function(msg){
             var data = JSON.parse(msg)
@@ -274,6 +290,25 @@ define(["ddm","jquery"],function(Tsh,$){
                 this.sendPool(player1debug.id,player1debug.pool,player1debug.unavailablepool)
             }else if(id == Messages.ROLL){
                 this.sendRollResult(player1debug.id,Math.floor(Math.random() * 6),Math.floor(Math.random() * 6),Math.floor(Math.random() * 6))
+            }else if(id == Messages.SPAWN){
+                var kind = data[1],
+                    type = data[2],
+                    col  = data[3],
+                    row  = data[4],
+                    controllerid = data[5],
+                    target = data[6]
+
+                var eId = entityId()
+
+                this.entityData[eId] = {
+                    id : eId + "",
+                    type : kind,
+                    col  : col,
+                    row  : row,
+                    controllerid : controllerid
+                }
+                this.sendCreateEntity(eId,kind,col,row)
+                console.log("Add to Database = ",this.entityData[eId])
             }
         },
         this.handleSpawnEntity = function(data){
@@ -281,11 +316,11 @@ define(["ddm","jquery"],function(Tsh,$){
             for(var i in data){
                 var e = this.entityData[data[i]]
                 if(e){
-                    if(e.type == "NormalLand"){
-                        this.sendCreateLand(e.id,e.col,e.row)
-                    }else if(e.type == "dummymonster1"){
-                        this.sendCreateMonster(e.id,e.col,e.row)
-                    }    
+                    var kind = e.type,
+                        id   = e.id,
+                        col  = e.col,
+                        row  = e.row
+                    this.sendCreateEntity(id,kind,col,row)
                 }
             }
         },

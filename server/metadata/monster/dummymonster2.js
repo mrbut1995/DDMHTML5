@@ -5,7 +5,10 @@ define(function(){
         name    : "DummyMonster2",
         atk     : 10,
         defend  : 20,
-        level   : 4,
+        lvl     : 4,
+        hp      : 20,
+        movement: "normal",
+
         dice : {
             faces: ["attack", "attack", "defend", "summon", "summon","movement"],
         },
