@@ -649,23 +649,88 @@ define(["ddm", "jquery", "view/views", "view/boardview", "view/highlightview", "
 
         /**JQUERY Method */
         displayDicePool() {
-            $('.popup-controller').addClass('open');
+            if(!this.isDicePoolDisplay())
+                $('.popup-controller').addClass('show');
         },
         hideDicePool() {
-            $('.popup-controller').removeClass('open');
+            if(this.isDicePoolDisplay())
+                $('.popup-controller').removeClass('show');
         },
         isDicePoolDisplay(){
-            return $('.popup-controller').hasClass('open')
+            return $('.popup-controller').hasClass('show')
+        },
+        isDiceSelectingScreen(){
+            return this.misDiceSelectingScreen == true
+        },
+        setIsDiceSelectingScreen(value){
+            this.misDiceSelectingScreen = value
         },
 
         displayDiceRolling(){
-            $('.controller.roll.dices').addClass('show')
+            if(!this.isDiceRollingDisplay())
+                $('.controller.roll.dices').addClass('show')
         },
         hideDiceRolling(){
-            $('.controller.roll.dices').removeClass('show')
+            if(this.isDiceRollingDisplay())
+                $('.controller.roll.dices').removeClass('show')
         },
         isDiceRollingDisplay(){
             return $('.controller.roll.dices').hasClass('show');
+        },
+        isDiceRollingScreen(){
+            return this.misDiceRollingScreen == true
+        },
+        setIsDiceRollingScreen(value){
+            this.misDiceRollingScreen = value
+        },
+
+        
+        isPieceActionScreen(){
+            return this.misPieceActionScreen == true
+        },
+        setIsPieceActionScreen(value){
+            this.misPieceActionScreen = value
+        },
+
+        showDiceSummoningController(){
+            if(!this.isDiceSummoningDisplay())
+                $(".controller.summonning.selection").addClass("show")
+        },
+        hideDiceSummoningController(){
+            if(this.isDiceSummoningDisplay()){
+                $(".controller.summonning.selection").removeClass("show")
+                this.hideAllSummoningDice()
+            }
+        },
+        isDiceSummoningDisplay(){
+           return $(".controller.summonning.selection").hasClass("show")
+        },
+        // isDicePoolPopupDisplay() {
+        //     return $('.popup-controller').hasClass("open")
+        // },
+        isDiceSummoningScreen(){
+            return this.misDiceSummoningScreen == true
+        },
+        setIsDiceSummoningScreen(value){
+            this.misDiceSummoningScreen = value
+        },
+
+        showMainModeController(){
+            if(this.isMainModeControllerDisplay())
+                $(".controller.input.main.current-self").addClass("show")
+        },
+        hideMainModeController(){
+            if(!this.isMainModeControllerDisplay())
+                $(".controller.input.main.current-self").removeClass("show")
+        },
+        isMainModeControllerDisplay(){
+            return $(".controller.input.main.current-self").hasClass("show")
+        },
+        isMainModeScreen(){
+            return this.misMainModeScreen == true
+        },
+        setIsMainModeScreen(value){
+            this.misMainModeScreen = value
         },
 
         selectingDiceSummoning(index){
@@ -678,13 +743,6 @@ define(["ddm", "jquery", "view/views", "view/boardview", "view/highlightview", "
         updateDiceSummoning(index,src){
             $(".controller.summonning.selection .cube .monster.display img").eq(index).attr("src", src)
         },
-        showDiceSummoningController(){
-            $(".controller.summonning.selection").addClass("show")
-        },
-        hideDiceSummoningController(){
-            $(".controller.summonning.selection").removeClass("show")
-            this.hideAllSummoningDice()
-        },
         showDiceSummoning(index){
             $(".controller.summonning.selection .cube").eq(index).addClass("show")
         },
@@ -694,9 +752,6 @@ define(["ddm", "jquery", "view/views", "view/boardview", "view/highlightview", "
         hideAllSummoningDice(){
             $(".controller.summonning.selection .cube").removeClass("show")
             $(".controller.summonning.selection .cube").removeClass("highlight")
-        },
-        isDicePoolPopupDisplay() {
-            return $('.popup-controller').hasClass("open")
         },
         selectedDicePoolAt(index) {
             $('.popup-controller .popup-grid .item-grid').eq(index).addClass("selected")
@@ -727,12 +782,16 @@ define(["ddm", "jquery", "view/views", "view/boardview", "view/highlightview", "
          * 
          * @param {PoolItemView[]} datas 
          */
-        async updatePlayerPoolViewAsync(datas) {
+        async updatePlayerPoolViewAsync(data) {
             /**@type {PoolItemView[]} */
 
             var self = this
-
-            _.each(datas, function (data,i) {
+            if(!data){
+                console.log("[ERROR]View data is empty")
+                return
+            }
+            var items = data.items
+            _.each(items, function (data,i) {
                 var name = data.name
                 var unavailable  =    !_.property("available")(data)
                 var selected     =    _.property("selected")(data)
@@ -760,18 +819,23 @@ define(["ddm", "jquery", "view/views", "view/boardview", "view/highlightview", "
             }.bind(this))
         },
 
-        async updateRollingDice(datas){
+        async updateRollingDice(data){
             var self = this
-            _.each(datas, function(data,i){
+            if(!data){
+                console.log("[ERROR]View data is empty")
+                return
+            }
+            var items = data.items
+            _.each(items, function(data,i){
                 var faces = _.property("faces")(data)
                 _.each(faces,function(face,iFace){
                     self.updateDiceFace(i,iFace,face)
                 })
             }.bind(this))
-            if(datas[0].value != -1 && datas[1].value != -1 && datas[2].value != -1){
+            if(items[0].value != -1 && items[1].value != -1 && items[2].value != -1){
                 var promise = new Promise(function(r){
                     console.log("request rolling dice animation")
-                    Tsh.Ddm.View.rollDiceAnimation([datas[0].value, datas[1].value, datas[2].value],function(){
+                    Tsh.Ddm.View.rollDiceAnimation([items[0].value, items[1].value, items[2].value],function(){
                         console.log("on roll dice animation done")
                         r("done")
                     })
@@ -780,10 +844,14 @@ define(["ddm", "jquery", "view/views", "view/boardview", "view/highlightview", "
             }
         },
 
-        async updateSummoningDice(datas,ignoreshow){
+        async updateSummoningDice(data,ignoreshow){
             var self = this
-            console.log("view data = ",datas)
-            _.each(datas,function(data,i){
+            if(!data){
+                console.log("[ERROR]View data is empty")
+                return
+            }
+            var items = data.items
+            _.each(items,function(data,i){
                 var src             = data.srcImg
                 var summonselection = data.summon.selected
                 var isSummon        = data.summon.active
@@ -808,32 +876,66 @@ define(["ddm", "jquery", "view/views", "view/boardview", "view/highlightview", "
                 }
             })
         },
+        async updatePieceInputMode(data){
+            var self = this
+            if(!data){
+                console.log("[ERROR]View data is empty")
+                return
+            }
 
+        },
+        async updateMainMode(data){
+            var self = this
+            if(!data){
+                console.log("[ERROR]View data is empty")
+                return
+            }
+            var btns = data.buttons
+            _.each(btns,function(item){
+                var query = item.query
+                if(query){
+                    if(item.active){
+                        query.addClass("active")
+                    }else{
+                        query.removeClass("active")
+                    }
+
+                    if(item.visible){
+                        query.addClass("show")
+                    }else{
+                        query.removeClass("show")
+                    }
+                }
+            })
+        },
         /**
          * View Data Pool
          */
          viewdataPool() {
-            var viewdata = _.map(Tsh.Ddm.Player.getPool(), function (item, i) {
+            var viewdata = {} 
+            viewdata.items = _.map(Tsh.Ddm.Player.getPool(), function (item, i) {
                return item
             })
             return viewdata
          },
    
          viewdataRolling() {
-            var viewdata = _.map(Tsh.Ddm.Player.getSelectionPool(), function (item, i) {
-               var itemsviewdata = {}
-   
-               itemsviewdata.faces  = item.dice.faces
-               itemsviewdata.value  = item.roll.value
-               itemsviewdata.result = item.roll.result
-
-               return itemsviewdata;
+            var viewdata = {}
+            viewdata.items = _.map(Tsh.Ddm.Player.getSelectionPool(), function (item, i) {
+                var itemsviewdata = {}
+    
+                itemsviewdata.faces  = item.dice.faces
+                itemsviewdata.value  = item.roll.value
+                itemsviewdata.result = item.roll.result
+ 
+                return itemsviewdata;
             })
             return viewdata
          },
    
          viewdataSummoning() {
-            var viewdata = _.map(Tsh.Ddm.Player.getSelectionPool(), function (item, i) {
+            var viewdata = {}
+            viewdata.items = _.map(Tsh.Ddm.Player.getSelectionPool(), function (item, i) {
    
                var dice = {}
                dice.srcImg = "client/img/piece/" + item.pieceimg
@@ -845,8 +947,37 @@ define(["ddm", "jquery", "view/views", "view/boardview", "view/highlightview", "
             })
             return viewdata
          },
-   
-
+         viewdataMainMode(){
+            var viewdata = {}
+            viewdata.display = this.isMainModeScreen()
+            viewdata.buttons = {
+                btnRoll : {
+                    query : this.getDOMItems().btnPlayer.btnroll,
+                    active:Tsh.Ddm.Player.allowedActionRoll(),
+                    visible:this.isMainModeScreen()
+                },
+                btnEndPhase : {
+                    query : this.getDOMItems().btnPlayer.btnendphase,
+                    active:true,
+                    visible:this.isMainModeScreen()
+                },
+                btnStorage : {
+                    query : this.getDOMItems().btnPlayer.btnstorage,
+                    active:true,
+                    visible:this.isMainModeScreen()
+                },
+                btnInformation : {
+                    query : this.getDOMItems().btnPlayer.btninformation,
+                    active:true,
+                    visible:this.isMainModeScreen()
+                }
+            }
+            return viewdata
+         },
+         viewdataInputMode(){
+            var viewdata = {}
+            return viewdata
+         },
         //////////////////////////////////////// SPECIFY
         generateView(kind, config) {
             if (isViewKind(kind)) {

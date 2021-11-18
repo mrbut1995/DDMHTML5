@@ -1,9 +1,9 @@
 
-  .popup-controller.open .outside{
+  .popup-controller.show .outside{
     visibility: visible;
     opacity: 0.25;
    }
-  .popup-controller.open .popup{
+  .popup-controller.show .popup{
     visibility: visible;
     opacity: 1;
     transform: translate(-50%, -50%) scale(1);

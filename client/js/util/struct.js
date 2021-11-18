@@ -1,29 +1,49 @@
-
-//Define Struct
-var Coord = function (x, y) {
-    this.x = x;
-    this.y = y;
-
-    this.add = function (point) {
-        return new Point(point.x + this.x, this.y + point.y)
+class Coord {
+    constructor(){
+        var self = this
+        var vardiac
+        if(Array.isArray(arguments[0])){
+            vardiac = [...arguments[0]]
+         }else{
+            vardiac = [...arguments]
+         } 
+        self[0] = vardiac[0]
+        self[1] = vardiac[1]  
     }
-    this.toString = function(){
+    set x(value) {this[0] = value}
+    set y(value) {this[1] = value}
+
+    get x() {return this[0]}
+    get y() {return this[1]}
+
+    add(point){
+        return new Point(point.x + this.x,point.y + this.y)
+    }
+    toString(){
         return "("+this.x+","+this.y+")"
     }
-};
-Coord.fromString = function(str){
-    var x = parseFloat(str.match(/[+-]?\d+(\.\d+)?/g)[0]);
-    var y = parseFloat(str.match(/[+-]?\d+(\.\d+)?/g)[1]);
-    return new Coord(x,y)
-}
-Coord.zero = function(){
-    return new Coord(0,0)
-}
 
-var Size = function(w,h){
-    this.w      = w
-    this.h      = h
-};
+    static zero(){
+        return new Coord(0,0)
+    }
+    static fromString(str){
+        var x = parseFloat(str.match(/[+-]?\d+(\.\d+)?/g)[0]);
+        var y = parseFloat(str.match(/[+-]?\d+(\.\d+)?/g)[1]);
+        return new Coord(x,y)
+    }
+}
+class Size{
+    constructor(w,h){
+        this[0] = w
+        this[1] = h
+    }
+    set w(value) {this[0] = value}
+    set h(value) {this[1] = value}
+    
+    get w()     {return this[0]}
+    get h()     {return this[1]}
+
+}
 var Rect = function (coord, width, height) {
     this.w = width
     this.h = height
@@ -75,16 +95,22 @@ Point.fromString = function(str){
     return new Point(col,row)
 }
 
-function Region(list){
-    this.array =  _.uniq(_.filter(list, p => isPoint(p)))
-  
-    this.toArray = function(){
-        return this.array
+
+
+class Region{
+    constructor(array){
+        var self = this
+        var lst = _.uniq(_.filter(array, p => isPoint(p)), p => p.col +","+ p.row)
+        _.each(lst,function(item,i){
+            if(isPoint(item)){
+                self[i] = item
+            }
+        })
     }
-    this.nearby = function(distance){
+    nearby(distance){
         var self = this
         var list = []
-        _.each(this.array,function(p){
+        _.each(this,function(p){
             if(isPoint(p)){
                 var startRow = p.row - distance
                 var endRow = p.row + distance
@@ -99,25 +125,41 @@ function Region(list){
         })
         list = _.uniq(list, p => p.col +","+ p.row)
         list = _.filter(list,function(item1){
-            return _.find(self.array,function(item2){
+            return _.find(self,function(item2){
                 return (item1.col == item2.col && item1.row == item2.row)
             }) == undefined
         },)
         return list
     }
-    this.forEachNearby = function(distance,callback){
+    forEachNearby(distance,callback){
         var lst = this.nearby(distance)
         _.each(lst,callback)        
     }
-    this.forEachPoint  = function(callback){
-        _.each(this.array,callback)
-    }
-    this.toString         = function(){
+    forEachPoint(callback){
+        _.each(this,callback)
     }
 }
-Region.fromStringArray = function(array){
 
-}
-Region.fromString = function(array){
-    
+function phase(p){
+    return {
+        startphase: p,
+        phase : p,
+        onTransitioning: function(callback){
+            this._onTransitioning = callback;
+            return this
+        },
+        onCompleted: function(callback){
+            this._onCompleted = callback;
+            return this
+        },
+        to: async function(_to){
+            if(this._onTransitioning){
+                await this._onTransitioning(this.phase,to)
+            }
+            if(this._onCompleted){
+                this._onCompleted(_to)
+            }
+            return this
+        }
+    }
 }

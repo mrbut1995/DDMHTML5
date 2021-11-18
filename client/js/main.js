@@ -62,5 +62,21 @@ window.onload = function () {
     Tsh.Ddm.Game.init()
     Tsh.Ddm.Game.run()
 
+    class A{
+      constructor(){
+        var vardiac
+        if(Array.isArray(arguments[0])){
+           vardiac = [...arguments[0]]
+        }else{
+           vardiac = [...arguments]
+        }
+        this[0] = vardiac[0]
+        this[1] = vardiac[1]  
+      }
+      init(...param){
+        console.log("param = ",param[1])
+      }
+    }
+
   })
 }

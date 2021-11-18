@@ -1,0 +1,77 @@
+.controller.input.main.current-self{
+    visibility: hidden;
+  }
+  .controller.input.main.current-self.show{
+    visibility: visible; 
+  }
+  .player-ui {
+    text-align: center;
+    margin: 20px;
+    position: relative;
+    width: 100%;
+  }
+  
+  .player-ui .player-btns-container{
+    padding: 0 10px;
+    position: relative;
+  }
+  .player-ui:before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    transform: translateY(-50%);
+  }
+  .player-ui .player-btns-container .player-btn{
+    width: min(15%,120px);
+    /* width: 120px; */
+    height: 100px;
+    margin-left:1%;
+    margin-right:1%;
+    background-color:rgba(237, 249, 255, 0.705);
+    border: 3px solid rgba(237, 249, 255, 0.705);
+      box-shadow: 0px 0px 10px rgb(173, 192, 233);
+    font-size:20px;
+    color:rgba(173, 192, 233, 0.705);
+    visibility: hidden;
+    transition: visibility 0s linear 0.33s, opacity 0.33s linear;
+
+  }
+  .player-ui .player-btns-container .player-btn.show{
+    visibility: visible;
+    transition-delay: 0s;
+  }
+  
+  .player-ui .player-btns-container .player-btn.active{
+    background-color:rgba(253, 232, 109, 0.7);
+  }
+  
+  .player-ui .player-btns-container .left-side .player-btn{
+    float:left
+  }
+  
+  .player-ui .player-btns-container .right-side .player-btn{
+    float:right
+  }
+  
+  .player-ui .player-btns-container .player-btn.highlight-btn{
+    width: min(17%,160px);
+    height: 100px;
+  }
+  
+  .player-ui .player-btns-container .player-btn.highlight-btn.active{
+    background-color:rgba(212, 75, 51, 0.7);
+  }
+  
+  .player1{
+    position: absolute;
+    bottom: 0%;
+    right: 0%;
+  }
+  .player2{
+    position: absolute;
+    top: 0%;
+    left: 0%;
+  }
+  

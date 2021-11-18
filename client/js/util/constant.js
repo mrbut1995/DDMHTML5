@@ -61,6 +61,18 @@ var Constants = new function () {
     TYPE_10:["(-1, 0)", "(0, -1)", "(1, 0)",  "(1, 1)",  "(2, 1)"],
   }
 
+  this.PHASE = {
+    STANDBY   :"standby_phase",
+    MAIN      :"main_phase",
+    SELECTING :"selecting_phase",
+    ROLLING   :"rolling_phase",
+    PLACING   :"placing_phase",
+    SUMMON    :"summon_phase",
+    ACTION    :"action_phase",
+    RESOLVE   :"resolve_phase",
+    END       :"end_phase",
+    UNKNOWN   :"unknow_phase"
+  }
   this.MAX_DICES_SELECTION = 3
 
   this.MAX_DICES_POOL = 15

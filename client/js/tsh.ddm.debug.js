@@ -130,6 +130,17 @@ define(["ddm","jquery"],function(Tsh,$){
                 .appendTo('#devActions')
 
             $('<div></div>').addClass('action')
+                .append(
+                    $('<select id="inputMode"></select>').attr("size","3")
+                        .append($('<option value="val1">Rolling</option>'))
+                        .append($('<option value="val2">Summoning</option>'))
+                        .append($('<option value="val3">Dice Selecting</option>'))
+                        .append($('<option value="val4">Piece</option>'))
+                        .append($('<option value="val5">Main Mode</option>'))
+                )
+                .appendTo('#devActions')
+
+            $('<div></div>').addClass('action')
                 .append('<input id= "higlightchecked" type="checkbox">Highlight on Move</button>')
                 .appendTo('#devActions')
 
@@ -137,6 +148,7 @@ define(["ddm","jquery"],function(Tsh,$){
         this.init = function (app) {
             this.CreateDebugDOM()
     
+            var self = this
             $("#dbCreateLand").click(this.createViewLand.bind(this))
             $("#dbCreatePiece").click(this.createViewMonster.bind(this))
             $("#pieceHighlight").click(this.onSelectedPieceHighlightChanged.bind(this))
@@ -149,7 +161,45 @@ define(["ddm","jquery"],function(Tsh,$){
             $("#dbAttack").click(this.btnSelectedPieceAttack.bind(this))
             $("#btnRollDice").click(this.btnRoll.bind(this))
             $("#dbDisplayPool").click(this.btnDisplayPool.bind(this))
-            
+            $("#inputMode").change(function(ev){
+                var val = $(this).val()
+                if(val == "val1"){
+                    Tsh.Ddm.Game.endSummoningMode()
+                    Tsh.Ddm.Game.startRollingMode()
+                    Tsh.Ddm.Game.endPieceInputMode()
+                    Tsh.Ddm.Game.endDiceSelectingMode()
+                    Tsh.Ddm.Game.endMainMode()
+                }else if(val == "val2"){
+                    Tsh.Ddm.Game.startSummoningMode()
+                    Tsh.Ddm.Game.endRollingMode()
+                    Tsh.Ddm.Game.endPieceInputMode()
+                    Tsh.Ddm.Game.endDiceSelectingMode()
+                    Tsh.Ddm.Game.endMainMode()
+                }else if(val == "val3"){
+                    Tsh.Ddm.Game.endSummoningMode()
+                    Tsh.Ddm.Game.endRollingMode()
+                    Tsh.Ddm.Game.endPieceInputMode()
+                    Tsh.Ddm.Game.startDiceSelectingMode()
+                    Tsh.Ddm.Game.endMainMode()
+                }else if(val == "val4"){
+                    Tsh.Ddm.Game.endSummoningMode()
+                    Tsh.Ddm.Game.endRollingMode()
+                    Tsh.Ddm.Game.startPieceInputMode()
+                    Tsh.Ddm.Game.endDiceSelectingMode()
+                    Tsh.Ddm.Game.endMainMode()
+                }else if(val == "val5"){
+                    Tsh.Ddm.Game.endSummoningMode()
+                    Tsh.Ddm.Game.endRollingMode()
+                    Tsh.Ddm.Game.endPieceInputMode()
+                    Tsh.Ddm.Game.endDiceSelectingMode()
+                    Tsh.Ddm.Game.startMainMode()
+                }
+                Tsh.Ddm.Game.updateRollingDiceScreen()
+                Tsh.Ddm.Game.updateSummoningScreen() 
+                Tsh.Ddm.Game.updateDiceSelectingScreen()
+                Tsh.Ddm.Game.updatePieceInputModeScreen()
+                Tsh.Ddm.Game.updateMainModeScreen()                          
+            })
         }
         this.debugConnection = function(){
             Tsh.Ddm.Client.enable()

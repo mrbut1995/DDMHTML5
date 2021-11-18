@@ -196,6 +196,12 @@ define(["ddm", "jquery", "entity/entity"], function (Tsh, $, Entity) {
         getNearbyAbsoluteList() {
             return this.nearby.absolute;
         },
+        getNearbyAll(){
+            return this.nearby.all
+        },
+        getHovering(){
+            return this.hovering
+        },
         //Member of class
         getCanvasCoord(e) {
             var x, y;

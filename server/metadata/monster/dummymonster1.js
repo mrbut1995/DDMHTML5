@@ -10,7 +10,7 @@ define(function(){
         movement: "normal",
 
         dice : {
-            faces: ["attack", "attack", "defend", "summon", "summon","movement"],
+            faces: ["summon", "summon", "summon", "summon", "summon","summon"],
         },
         pieceimg: "MBB_014003.png",
         portraitimg:"MBB_014003.png",
