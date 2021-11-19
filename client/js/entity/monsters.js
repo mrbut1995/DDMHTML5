@@ -1,5 +1,16 @@
 define(["entity/monster"], function (Monster) {
-    var Monsters = {};
+    var Monsters = {
+        dummymonster1   : null,
+        dummymonster2   : null,
+        dummymonster3   : null,
+        dummymonster4   : null,
+        dummymonster5   : null,
+        dummymonster6   : null,
+        dummymonster7   : null,
+        dummymonster8   : null,
+        dummymonster9   : null,
+        dummymonster10  : null,
+    };
     Monsters.requestMonsterMetadata = async function (kind) {
         if (kind in Monster) {
             console.log("Already Registered")

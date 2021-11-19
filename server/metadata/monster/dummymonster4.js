@@ -15,11 +15,6 @@ define(function(){
         pieceimg: "MBB_014010.png",
         portraitimg:"MBB_014010.png",
         
-        init(id) {
-            this.hp = 10
-            this._super(id)
-        },
-
         
         beforeSummon(){
 

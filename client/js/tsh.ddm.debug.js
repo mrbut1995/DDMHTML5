@@ -48,7 +48,10 @@ var player1debug = {
     pool :           ["dummymonster1","dummymonster2","dummymonster4","dummymonster6","dummymonster8","dummymonster10"],
     unavailablepool :["dummymonster2","dummymonster4"]
 }
-
+var player2debug = {
+    id:"player2",
+    name:"Player 2",
+}
 var isLoaded = false;
 
 define(["ddm","jquery"],function(Tsh,$){    
@@ -122,11 +125,11 @@ define(["ddm","jquery"],function(Tsh,$){
 
                 
             $('<div></div>').addClass('action')
-                .append('<button class="button" id="dbSendAllData">Send All Data</button>')
+                .append('<button class="button" id="dbSendFakeData">Send Fake Data</button>')
                 .appendTo('#devActions')
 
              $('<div></div>').addClass('action')
-                .append('<button class="button" id="dbDisplayPool">Display Pool</button>')
+                .append('<button class="button" id="dbSendCurrentData">Send Current Data</button>')
                 .appendTo('#devActions')
 
             $('<div></div>').addClass('action')
@@ -157,10 +160,10 @@ define(["ddm","jquery"],function(Tsh,$){
             $("#dbPieceChangePosition").click(this.btnPositionChange.bind(this))
             $("#dbPieceDestroy").click(this.btnDestroySelectedPiece.bind(this))
             $("#dbDisplayAction").click(this.btnDisplayActionPopup.bind(this))
-            $("#dbSendAllData").click(this.sendList.bind(this))
+            $("#dbSendFakeData").click(this.sendList.bind(this))
+            $("#dbSendCurrentData").click(this.sendCurrentList.bind(this))
             $("#dbAttack").click(this.btnSelectedPieceAttack.bind(this))
             $("#btnRollDice").click(this.btnRoll.bind(this))
-            $("#dbDisplayPool").click(this.btnDisplayPool.bind(this))
             $("#inputMode").change(function(ev){
                 var val = $(this).val()
                 if(val == "val1"){
@@ -261,40 +264,15 @@ define(["ddm","jquery"],function(Tsh,$){
             data[4] = roll3
             this.connection.send(JSON.stringify(data))
         },
-        this.sendCreateMonster = function(id,lCol,lRow){
-            console.log("createViewMonster")
-            var data = []
-            data[0] = Messages.SPAWN
-            data[1] = "dummymonster1"
-            data[2] = id
-            data[3] = lCol
-            data[4] = lRow
-            data[5] = ""
-            data[6] = "player1"
-            data[7] = "player2"
-            this.connection.send(JSON.stringify(data))
-        },
-        this.sendCreateLand    = function(id,pCol,pRow){
-            var data = []
-            data[0] = Messages.SPAWN
-            data[1] = "NormalLand"
-            data[2] = id
-            data[3] = pCol
-            data[4] = pRow
-            data[5] = ""
-            data[6] = "player1"
-            data[7] = "player2"
-            this.connection.send(JSON.stringify(data))
-        },
-        this.sendCreateEntity   = function(id,kind,col,row){
+        this.sendCreateEntity   = function(id,kind,col,row,name,controller){
             var data = []
             data[0] = Messages.SPAWN
             data[1] = kind
             data[2] = id
             data[3] = col
             data[4] = row
-            data[5] = ""
-            data[6] = "player1"
+            data[5] = name
+            data[6] = controller
             data[7] = "player2"
             this.connection.send(JSON.stringify(data))
         }
@@ -328,8 +306,18 @@ define(["ddm","jquery"],function(Tsh,$){
             for(var i in Object.keys(this.entityData)){
                 data.push(this.entityData[Object.keys(this.entityData)[i]].id)
             }
+            console.log("send fake data ",data)
             this.connection.send(JSON.stringify(data))
         }
+        this.sendCurrentList = function(){
+            var data = []
+            data[0] = Messages.LIST
+            for(var i in Object.keys(this.entityData)){
+                data.push(this.entityData[Object.keys(this.entityData)[i]].id)
+            }
+            console.log("send fake data ",data)
+            this.connection.send(JSON.stringify(data))
+        },
         this.receiveMessage = function(msg){
             var data = JSON.parse(msg)
             var id = data[0]
@@ -355,9 +343,10 @@ define(["ddm","jquery"],function(Tsh,$){
                     type : kind,
                     col  : col,
                     row  : row,
+                    name : "Receive Message Monster "+id,
                     controllerid : controllerid
                 }
-                this.sendCreateEntity(eId,kind,col,row)
+                this.sendCreateEntity(eId,kind,col,row,this.entityData[eId].name,controllerid)
                 console.log("Add to Database = ",this.entityData[eId])
             }
         },
@@ -369,8 +358,10 @@ define(["ddm","jquery"],function(Tsh,$){
                     var kind = e.type,
                         id   = e.id,
                         col  = e.col,
-                        row  = e.row
-                    this.sendCreateEntity(id,kind,col,row)
+                        row  = e.row,
+                        controllerid = e.controllerid,
+                        name = e.name
+                    this.sendCreateEntity(id,kind,col,row,name,controllerid)
                 }
             }
         },
@@ -388,6 +379,8 @@ define(["ddm","jquery"],function(Tsh,$){
                                         type: "NormalLand",
                                         col : j,
                                         row : i,
+                                        name: "Debug Prefab Land "+eId, 
+                                        controllerid : (i + j) % 2 == 0 ? player1debug.id : player2debug.id
                                     }
                     }
                     if(monsterDebugData[i][j] == 1){
@@ -397,6 +390,8 @@ define(["ddm","jquery"],function(Tsh,$){
                                         type: "dummymonster1",
                                         col : j,
                                         row : i,
+                                        name: "Debug Prefab Monster "+eId, 
+                                        controllerid : (i + j) % 2 == 0 ? player1debug.id : player2debug.id
                                     }
                     }
                 }
@@ -408,7 +403,8 @@ define(["ddm","jquery"],function(Tsh,$){
             var lRow = document.getElementById("pieceRowId").value
             lCol = Math.max(lCol, 0)
             lRow = Math.max(lRow, 0)
-            this.sendCreateMonster(entityId(),lCol,lRow)
+            var id = entityId()
+            this.sendCreateEntity(id,"dummymonster1",lCol,lRow,"Debug Spawning Monster"+id,player1debug.id)
         }
         this.createViewLand = function () {
             console.log("createViewLand")
@@ -417,7 +413,7 @@ define(["ddm","jquery"],function(Tsh,$){
             pCol = Math.max(pCol, 0)
             pRow = Math.max(pRow, 0)
 
-            this.sendCreateLand(entityId(),pCol,pRow)
+            this.sendCreateEntity(entityId(),"NormalLand",pCol,pRow,"Debug Spawning Land"+id,player1debug.id)
         }
 
         this.btnDestroySelectedPiece = function () {
@@ -451,10 +447,6 @@ define(["ddm","jquery"],function(Tsh,$){
         }
         this.btnRoll = function () {
             Tsh.Ddm.Game.roll()
-        }
-        this.btnDisplayPool = function(){
-            this.sendPool(player1debug.id,player1debug.pool,player1debug.unavailablepool)
-            $('.popup-controller').addClass('open');
         }
         
         this.checkBoxHighlight = function () {

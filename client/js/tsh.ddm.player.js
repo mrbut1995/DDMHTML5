@@ -12,7 +12,7 @@
 
 
 
-define(["ddm"], function (Tsh) {
+define(["ddm","entity/monster","entity/land"], function (Tsh,Monster,Land) {
    Tsh = Tsh || {}
    Tsh.Ddm = Tsh.Ddm || {}
 
@@ -52,6 +52,7 @@ define(["ddm"], function (Tsh) {
          this.selectedMonster = null
          this.selectedEntityGroup = null
 
+         this.controlentity = {}
          this.controlmonster = {}
          this.controlland = {}
 
@@ -131,32 +132,75 @@ define(["ddm"], function (Tsh) {
          }
       },
       selected(monster) {
-
+         if(monster instanceof Monster)
+            this.selectedMonster = monster
+      },
+      getSelectedMonster(){
+         return this.selectedMonster;
+      },
+      isControlEntity(entity){
+         return entity && entity.id in this.controlentity
+      },
+      assignEntity(entity){
+         if(!entity){
+            console.log("[ERROR] entity = null")
+            return
+         }
+         if(!entity.id in this.controlentity){
+            console.log("[INFO] Assign ",entity.id," to player controller")
+            this.controlentity[entity.id] = entity
+         }
+         if(entity instanceof Monster){
+            this.assignMonster(entity)
+         }
+         if(entity instanceof Land){
+            this.assignLand(entity)
+         }
+      },
+      resignEntity(entity){
+         if(!entity){
+            console.log("[ERROR] entity = null")
+            return
+         }
+         if(entity.id in this.controlentity){
+            console.log("[INFO] Resign ",entity.id," to player controller")
+            this.controlentity[entity.id] = null
+            delete this.controlentity[entity.id]
+         }
+         if(entity instanceof Monster){
+            this.resignMonster(entity)
+         }
+         if(entity instanceof Land){
+            this.resignLand(entity)
+         }
       },
       assignMonster(monster) {
-
+         if(!monster.id in this.controlmonster){
+            this.controlmonster[entity.id] = monster
+         }
       },
       resignMonster(monster) {
-
+         if(monster.id in this.controlmonster){
+            this.controlmonster[entity.id] = null
+            delete this.controlmonster[entity.id]
+         }
       },
       assignLand(land) {
-
+         if(!land.id in this.controlland){
+            this.controlland[land.id] = land
+         }
       },
       resignLand(land) {
-
+         if(land.id in this.controlland){
+            this.controlland[land.id] = null
+            delete this.controlland[land.id]
+         }
       },
       getControlMonsters() {
          return this.controlmonster
       },
       getControlLands() {
          return this.controlland
-      },
-
-      displayAvatar() {
-
-      },
-      displayCrestInfo() {
-
       },
 
       allowedActionRoll() {

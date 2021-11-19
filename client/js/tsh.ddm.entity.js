@@ -221,10 +221,9 @@ define(["ddm","jquery","entity/entityfactory","entity/monster","entity/land","en
                 newIds  = this.notContainIds(lst),
                 ids     = this.entityIds()
             this.obsoleteEntities = []
-
             //Find obsolete Entity
-            this.obsoleteEntities = _.reject(this.entities,function(e){
-                return _.include(knowIds,e.id)
+            this.obsoleteEntities = _.reject(ids,function(id){
+                return _.include(knowIds,id)
             })
 
             //Remove all the obsolete
@@ -274,13 +273,19 @@ define(["ddm","jquery","entity/entityfactory","entity/monster","entity/land","en
 
         //Creating Entity
         async requestSpawnEntityAsync(kind,id,x,y,name,controllerid,target){
+            console.log("spawn ",kind," ",id," ",name," ",controllerid," ",target)
             console.log("spawnEntity")
             if(this.entityIdExists(id)){
                 console.log("ALREADY CREATED ",id)
                 return
             }
 
-            var entity = await EntityFactory.createRequestEntityAsync(kind,id,name)
+            var entity = await EntityFactory.createRequestEntityAsync(kind,id,name,controllerid)
+            if(entity == null){
+                console.log("[ERROR] Cannot spawn entity ",id,)
+                return;
+            }
+            
             console.log("Request get entity")
                 if(isLandKind(kind)){
                     if(this._onSpawnLand)
@@ -307,32 +312,17 @@ define(["ddm","jquery","entity/entityfactory","entity/monster","entity/land","en
             }
         },
 
-        //Handle When Adding Specify Monster to list
-        addMonster(entity,x,y,target){
-            if(!this.entityIdExists(entity.id)){
-                return true;
-            }else{
-                return false
-            }
-        },
-        addLand(entity,x,y,target){
-            return true;
-        },
-        addItem(entity,x,y){
-            return true;
-        },
-
         //Callback
-        onAddEntity     (callback){ this._onAddEntity    = callback},
-        onRemoveEntity  (callback){ this._onRemoveEntity = callback},
+        onAddEntity              (callback){ this._onAddEntity    = callback},
+        onRemoveEntity          (callback){ this._onRemoveEntity = callback},
         
-        onRequestEntities   (callback){ this._onRequestEntities = callback},
+        onRequestEntities       (callback){ this._onRequestEntities = callback},
 
-        onSpawnMonster            (callback){this._onSpawnMonster = callback},
+        onSpawnMonster          (callback){this._onSpawnMonster = callback},
         onSpawnMonsterLord      (callback){this._onSpawnMonsterLord = callback},
         onSpawnLand             (callback){this._onSpawnLand = callback},
-        onSpawnItem(callback){this._onSpawItem = callback},
-        onDespawnEntity(callback){this._onDespawnEntity = callback},
+        onSpawnItem             (callback){this._onSpawItem = callback},
+        onDespawnEntity         (callback){this._onDespawnEntity = callback},
 
         onSelectedEntity(callback){this._onSelectedEntity = callback},
 

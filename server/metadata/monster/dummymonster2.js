@@ -16,12 +16,6 @@ define(function(){
         portraitimg :"MBB_014004.png",
 
         
-        init(id) {
-            this.hp = 10
-            this._super(id)
-        },
-
-        
         beforeSummon(){
 
         },

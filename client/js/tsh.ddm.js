@@ -61,7 +61,7 @@ define(function (Entity) {
                 rolling: false,
                 summoning: false,
                 diceselecting: false,
-                piece:true,
+                piece:false,
                 main:true
             }
             this.inputvalue = {
@@ -116,6 +116,9 @@ define(function (Entity) {
                 })
                 var player = Tsh.Ddm.Player
                 var client = Tsh.Ddm.Client
+                
+                self.haveGameStartedMainPhase()
+
                 //Connecting Player Handle
                 player.onActive(function () {
 
@@ -241,58 +244,66 @@ define(function (Entity) {
             })
             Tsh.Ddm.Entity.onInitialized(function () {
 
-
                 this.onAddEntity(function (entity) {
-                    Tsh.Ddm.Entity.registerToEntityGrid(entity, entity.point.col, entity.point.row)
-                    Tsh.Ddm.Path.registerToPathingGrid(entity, entity.point.col, entity.point.row)
+                    Tsh.Ddm.Entity  .registerToEntityGrid(entity, entity.point.col, entity.point.row)
+                    Tsh.Ddm.Path    .registerToPathingGrid(entity, entity.point.col, entity.point.row)
                     Tsh.Ddm.Animator.registerEntityAnimator(entity)
-                    Tsh.Ddm.View.registerEntityView(entity)
-                    Tsh.Ddm.Input.registerEntityInput(entity)
-                }.bind(this))
+                    Tsh.Ddm.View    .registerEntityView(entity)
+                    Tsh.Ddm.Input   .registerEntityInput(entity)
+                    if(entity.controllerid == Tsh.Ddm.Player.id){
+                        Tsh.Ddm.Player.assignEntity(entity)
+                    }
+                })
 
                 this.onRemoveEntity(function (entity) {
-                    Tsh.Ddm.Entity.removeFromEntityGrid(entity, entity.point.col, entity.point.row)
-                    Tsh.Ddm.Path.removeFromPathingGrid(entity, entity.point.col, entity.point.row)
+                    Tsh.Ddm.Entity  .removeFromEntityGrid(entity, entity.point.col, entity.point.row)
+                    Tsh.Ddm.Path    .removeFromPathingGrid(entity, entity.point.col, entity.point.row)
                     Tsh.Ddm.Animator.unregisterEntityAnimator(entity)
-                    Tsh.Ddm.View.unregisterEntityView(entity)
-                    Tsh.Ddm.Input.unregisterEntityInput(entity)
-                }.bind(this))
-
+                    Tsh.Ddm.View    .unregisterEntityView(entity)
+                    Tsh.Ddm.Input   .unregisterEntityInput(entity)
+                    if(entity.controllerid == Tsh.Ddm.Player.id){
+                        Tsh.Ddm.Player.resignMonster(entity)
+                    }
+                })
 
                 this.onRequestEntities(function (entitieIds) {
-                    console.log("request data from list", entitieIds)
                     Tsh.Ddm.Client.sendWho(entitieIds)
                 })
+
                 this.onSpawnMonster(function (entity, col, row, controllerid, target) {
                     var _view = Tsh.Ddm.View.generateView(entity.view)
                     entity.setView(_view)
                     entity.setGridPosition(col, row)
-
+                    
                     Tsh.Ddm.Entity.addEntity(entity)
 
                     entity.idle()
-                    if (controllerid == Tsh.Ddm.Player.playerid) {
-                    }
-                    entity.onDamageTarget(function (target, points) {
+                    /**
+                     * Connect Signal for Entity 
+                     */
+                    entity.onSolidChanged(function(){
+                    })
+                    entity.onGridPositionChanged(function(){
+                    })
 
+                    /**
+                     * Connect Signal for Monster
+                     */
+                    entity.onSolidChanged(function(){
+                    })
+                    entity.onDamageTarget(function (target, points) {
                     })
                     entity.onDamageMultiTarget(function (targets, point) {
-
                     })
                     entity.onKillTarget(function (target) {
-
                     })
                     entity.onChangeStat(function (stat, val) {
-
                     })
                     entity.onChangeHealth(function (points, reason) {
-
                     })
                     entity.onKilled(function (reason) {
-
                     })
                     entity.onHasMoved(function (reason) {
-
                     })
                     entity.onRequestPath(function (point) {
                         var path = self.findPath(entity, point.col, point.row)
@@ -380,29 +391,35 @@ define(function (Entity) {
             Tsh.Ddm.Input.onInitialized(function () {
                 this.onCanvasClicked(function (ev) {
                     console.log("onCanvasClicked")
-                    let entites = Tsh.Ddm.Input.getHovering()
-                    let nearby  = Tsh.Ddm.Input.getNearbyAll()
+                    let entities = Tsh.Ddm.Input.getHovering()
                     if(self.isSummoningMode()){
                         self.playerInputPlayerSummoning()
-                    }
-                    if(self.isPieceInputMode()){
-                        if (entites.monster) {
-                            Tsh.Ddm.Debug.onMonsterClickedDebug(entites.monster)
-                        } else {
-    
+                    }else if(self.isMainMode()){
+                        if(self.inputvalue.piece.target == null){
+                            self.playerInputSelectedMonster()
+                        }
+                    }else if(self.isPieceInputMode()){
+                        if(self.inputvalue.piece.target != entities.monster){
+                            self.playerInputSwitchSelectedMonster()
+                        }else{
+                            self.playerInputCancelSelectedMonster()
                         }
                     }
                 })
                 this.onCanvasPressed(function (ev) {
                     let entites = Tsh.Ddm.Input.getHovering()
+                    if(self.isMainMode()){
+
+                    }
                 })
                 this.onCanvasReleased(function (ev) {
 
                 })
                 this.onCanvasHover(function (ev) {
                     if (self.isSummoningMode()) {
+                        console.log("hovering summoning Mode")
                         self.updatePlayerSummoningInput()
-                        self.highlighPlaceableInRegion()
+                        self.updateSummoningScreen()
                     }
                 })
                 this.onCanvasOut(function (ev) {
@@ -534,6 +551,13 @@ define(function (Entity) {
                 console.log("[ERROR] Currently does not summoning")
             }
         },
+        async playerInputCancelSelectingSummoningMonster(){
+            if(this.isSummoningMode()){ 
+                Tsh.Ddm.Game.haveGameCancelSummoning()
+            }else{
+                console.log("[ERROR] Currently does not summoning")
+            }
+        },
         async playerInputRollingDice() {
             if (Tsh.Ddm.Player.checkDiceSelecting()) {
                 if (Tsh.Ddm.Player.allowedActionRoll()) {
@@ -574,6 +598,32 @@ define(function (Entity) {
                 console.log("[WARNING] Cannot be spawn in highlight")
             }
             //Request Server to spawning Monster
+        },
+        async playerInputSelectedMonster(){
+            let entities = Tsh.Ddm.Input.getHovering()
+            if(entities.monster){
+                console.log("Contain Monster => Selected")
+                this.inputvalue.piece.target = entities.monster
+                this.haveGameSelectedPiece()
+            }else{
+                console.log("Does not contain Monster")
+            }
+        },
+
+        async playerInputSwitchSelectedMonster(){
+            let entities = Tsh.Ddm.Input.getHovering()
+            if(entities.monster){
+                console.log("Contain Monster => Selected")
+                this.inputvalue.piece.target = entities.monster
+                this.haveGameSelectedPiece()
+            }else{
+                console.log("Does not contain Monster")
+            }
+        },
+
+        async playerInputCancelSelectedMonster(){
+            this.inputvalue.piece.target = null
+            this.haveGameCancelSelectedPiece()
         },
 
 
@@ -637,11 +687,20 @@ define(function (Entity) {
                 }
                 var viewdata = Tsh.Ddm.View.viewdataSummoning()
                 Tsh.Ddm.View.updateSummoningDice(viewdata)    
+
+                //Update Canvas 
+                this.highlighPlaceableInRegion()
             }else{
                 if(Tsh.Ddm.View.isDiceSummoningScreen()){
+                    //Update DOM case Ending Summoning Screen
                     Tsh.Ddm.View.hideDiceSummoningController()
+
+                    //Update Canvas case Ending Summoning Screen
+                    this.clearHighlightPlaceableInRegion()
+
                     Tsh.Ddm.View.setIsDiceSummoningScreen(false)
                 }
+
             }
         },
 
@@ -734,8 +793,14 @@ define(function (Entity) {
                 }
             }
         },
-
+        async haveGameStartedMainPhase(){
+            console.log("Move To Main Mode")
+            this.startMainMode()
+            this.updateMainModeScreen()            
+        },
         async haveGameSuccessPlayerRolled(){
+            console.log("haveGameSuccessPlayerRolled")
+
             console.log("Ending Rolling Mode")
             this.endRollingMode()
             this.updateRollingDiceScreen()
@@ -746,6 +811,8 @@ define(function (Entity) {
             this.updateSummoningScreen()                            
         },
         async haveGameFailedPlayerRolled(){
+            console.log("haveGameSuccessPlayerRolled")
+
             console.log("Ending Rolling Mode")
             this.endRollingMode()
             this.updateRollingDiceScreen()
@@ -947,7 +1014,11 @@ define(function (Entity) {
             this.highlightPlaceableInList()
             this.highlightNonPlaceableInList()
         },
-        
+        clearHighlightPlaceableInRegion(){
+            Tsh.Ddm.View.clearAllHighlight()
+            this.inputvalue.placeable = []
+            this.inputvalue.unplaceable = []
+        },
         highlightMoveableInRegion(region) {
             Tsh.Ddm.View.clearAllHighlight()
             var groups = Tsh.Ddm.Entity.getEntityGroupsAtRegion(region)
@@ -1143,7 +1214,7 @@ define(function (Entity) {
             }).length > 0
 
             if(result == false){//If not contain
-                self.inputvalue.summoning.unplaceable.concat(self.inputvalue.summoning.placeable)
+                self.inputvalue.summoning.unplaceable = self.inputvalue.summoning.unplaceable.concat(self.inputvalue.summoning.placeable)
                 self.inputvalue.summoning.placeable = []
             }
         },

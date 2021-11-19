@@ -1,10 +1,10 @@
-define(["entity/entity","view/itemview"],function(Entity,ItemView){
+define(["entity/piece","view/itemview"],function(Piece,ItemView){
     console.log("LOAD ENTITY ITEM")
 
-    var Item = Entity.extend({
-        init(id,kind) {
+    var Item = Piece.extend({
+        init(id,name,playerid,kind) {
             this.view = ItemView
-            this._super(id,kind)
+            this._super(id,name,playerid,kind)
         },
         destroy(){
 

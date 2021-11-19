@@ -91,7 +91,9 @@ define(["ddm", "jquery", "entity/entity"], function (Tsh, $, Entity) {
             $dom.btnPlayer.btnroll.on("click",function(){
                 Tsh.Ddm.Game.playerInputDisplayDicePool()
             })
-
+            $dom.summoning.buttons.cancel.on("click",function(){
+                Tsh.Ddm.Game.playerInputCancelSelectingSummoningMonster()
+            })
             $dom.summoning.cubes.one.on("click",function(){
                 Tsh.Ddm.Game.playerInputSelectingSummoningMonster(0)
             })

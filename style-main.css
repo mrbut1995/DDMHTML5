@@ -1,14 +1,19 @@
 .controller.input.main.current-self{
-    visibility: hidden;
-  }
+    /* visibility: hidden; */
+    visibility: hidden; 
+    transition: visibility 0.5s linear
+ }
   .controller.input.main.current-self.show{
+    /* opacity: 1; */
     visibility: visible; 
   }
   .player-ui {
     text-align: center;
     margin: 20px;
-    position: relative;
     width: 100%;
+    position: absolute;
+    bottom: 0%;
+    right: 0%;
   }
   
   .player-ui .player-btns-container{
@@ -31,18 +36,24 @@
     margin-right:1%;
     background-color:rgba(237, 249, 255, 0.705);
     border: 3px solid rgba(237, 249, 255, 0.705);
-      box-shadow: 0px 0px 10px rgb(173, 192, 233);
+    box-shadow: 0px 0px 10px rgb(173, 192, 233);
     font-size:20px;
     color:rgba(173, 192, 233, 0.705);
-    visibility: hidden;
-    transition: visibility 0s linear 0.33s, opacity 0.33s linear;
-
+    bottom:170px;
+    /* animation on show/hide */
   }
   .player-ui .player-btns-container .player-btn.show{
-    visibility: visible;
-    transition-delay: 0s;
+     visibility: visible;
   }
-  
+
+  .controller.input.main.current-self  .player-ui{
+    opacity: 0;
+    -webkit-animation: Hidden-Bottom-Button 0.3s linear ;  
+  }
+  .controller.input.main.current-self.show  .player-ui {
+     opacity: 1;
+    -webkit-animation: Show-Bottom-Button 0.3s linear ;  
+  }
   .player-ui .player-btns-container .player-btn.active{
     background-color:rgba(253, 232, 109, 0.7);
   }
@@ -64,14 +75,29 @@
     background-color:rgba(212, 75, 51, 0.7);
   }
   
-  .player1{
-    position: absolute;
-    bottom: 0%;
-    right: 0%;
-  }
   .player2{
     position: absolute;
     top: 0%;
     left: 0%;
   }
   
+  @-webkit-keyframes Hidden-Bottom-Button{
+    from{
+      opacity: 1;
+      bottom: 0px;
+    }
+    to{
+      opacity: 0;
+      bottom:-170px;
+    }
+  }
+  @-webkit-keyframes Show-Bottom-Button{
+    from{
+      opacity: 0;
+      bottom:-170px;
+    }
+    to{
+      opacity: 1;
+      bottom: 0px;
+    }
+  }

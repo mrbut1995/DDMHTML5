@@ -6,18 +6,21 @@ define(["jquery"],function($){
          * @param {number} id 
          * @param {string} kind 
          */
-        init(id,kind){
+        init(id,name,playerid,kind){
             var def = {
-                id           : id,
-                kind         : kind,
-                view         : null,
-                isLoaded     : false,
-                point        : new Point(0,0),
-                animations   : {},
-                solid        : true,
-                currentAnimation: null
+                id                  : id,
+                name                : name,
+                view                : null,
+                isLoaded            : false,
+                point               : new Point(0,0),
+                animations          : {},
+                solid               : true,
+                currentAnimation    : null,
+                controllerid        : playerid,
+                kind                : kind,
+                controlable         : false
             }
-            
+            console.log("create entity ",id," - ",name," - ",playerid," - ",kind)
             var otps = $.extend({},def,this)
             $.extend(this,otps)
 
@@ -42,14 +45,17 @@ define(["jquery"],function($){
             }
             this.currentAnimation = null
         },
-
-        animate(name,interval,onStart,onRunning,onCompleted){
-        },
         setName : function(name){
             this.name = name;
         },
         getView(){
             return this._viewInstance;
+        },
+        setControllable(value){
+            this.controlable = value
+        },
+        getControllable(){
+            return this.controlable
         },
         setView(view){
             this._viewInstance = view
@@ -58,7 +64,23 @@ define(["jquery"],function($){
             return this.solid
         },
         setSolid(value){
-            this.solid = value;
+            if(this.solid != value){
+                this.solid = value;
+                if(this._onSolidChanged){
+                    this._onSolidChanged()
+                }
+            }
+        },
+        getControllerId(){
+            return this.controllerid;
+        },
+        setControllerId(id){
+            if(this.controllerid != id){
+                this.controllerid = id;
+                if(this._onControllerIdChanged){
+                    this._onControllerIdChanged()
+                }
+            }
         },
         getAnimations(){
             return this.animations
@@ -109,12 +131,14 @@ define(["jquery"],function($){
             }
             return animation
         },
-
+        getGridPosition(){
+            return this.point
+        },
         setGridPosition: function(col,row){
             this.point.col = col
             this.point.row = row
-            if(this.getView() != null){
-                this.getView().relocatingToPoint(this.point)
+            if(this._onGridPositionChanged){
+                this._onGridPositionChanged()
             }
         },
         getDistanceToEntity: function(entity){
@@ -160,11 +184,17 @@ define(["jquery"],function($){
             this._onReady = f
         },
         update(delta){
+
         },
+
+        /**
+         * Signal
+         */
+        onSolidChanged          (callback){this._onSolidChanged         = callback},
+        onControllerIdChanged   (callback){this._onControllerIdChanged  = callback},
+        onGridPositionChanged   (callback){this._onGridPositionChanged  = callback}
     })
     //Construct Proto DAta
     Entity.onCreated = function(callback)           {this._onCreated            = callback}.bind(Entity)
-    Entity.onConstructView = function(callback)     {this._onConstructView      = callback}.bind(Entity)
-    Entity.onConstructAnimation = function(callback){this._onConstructAnimation = callback}.bind(Entity)
     return Entity
 })

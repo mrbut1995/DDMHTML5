@@ -1,6 +1,6 @@
 define(["entity/piece", "view/monsterview", "animation/animations"], function (Piece, MonsterView, Animations) {
     var Monster = Piece.extend({
-        init(id, kind) {
+        init(id,name,playerid,kind) {
 
             var self = this
 
@@ -46,8 +46,8 @@ define(["entity/piece", "view/monsterview", "animation/animations"], function (P
             //Animating
             this.isMovingAnimation = false
 
-            
-            this._super(id, kind)
+            console.log("Create Monster = ",id," - ",name," - ",playerid)
+            this._super(id,name,playerid,kind)
         },
 
         /**

@@ -129,11 +129,13 @@ define(["ddm", "jquery", "view/views", "view/boardview", "view/highlightview", "
                 this.dom.jquery.popup.pool.btnRoll = $(".popup-controller   #btnRollSelected")
                 this.dom.jquery.popup.pool.btnCancel = $(".popup-controller   #btnCancelSelected")
 
-                this.dom.jquery.summoning       = this.dom.jquery.summoning || {}
-                this.dom.jquery.summoning.cubes = this.dom.jquery.summoning.cubes || {}
-                this.dom.jquery.summoning.cubes.one   = $(".controller.summonning.selection .cube.one")
-                this.dom.jquery.summoning.cubes.two   = $(".controller.summonning.selection .cube.two")
-                this.dom.jquery.summoning.cubes.three = $(".controller.summonning.selection .cube.three")
+                this.dom.jquery.summoning                   = this.dom.jquery.summoning || {}
+                this.dom.jquery.summoning.buttons           = this.dom.jquery.summoning.buttons || {}
+                this.dom.jquery.summoning.buttons.cancel    = $("#btnCancelSummoning")
+                this.dom.jquery.summoning.cubes             = this.dom.jquery.summoning.cubes || {}
+                this.dom.jquery.summoning.cubes.one         = $(".controller.summonning.selection .cube.one")
+                this.dom.jquery.summoning.cubes.two         = $(".controller.summonning.selection .cube.two")
+                this.dom.jquery.summoning.cubes.three       = $(".controller.summonning.selection .cube.three")
 
                 this.dom.element = this.dom.element || {}
                 this.dom.element.board = document.getElementById("board")
@@ -716,11 +718,13 @@ define(["ddm", "jquery", "view/views", "view/boardview", "view/highlightview", "
         },
 
         showMainModeController(){
-            if(this.isMainModeControllerDisplay())
+            console.log("show Main Mode")
+            if(!this.isMainModeControllerDisplay())
                 $(".controller.input.main.current-self").addClass("show")
         },
         hideMainModeController(){
-            if(!this.isMainModeControllerDisplay())
+            console.log("Hide Main Mode")
+            if(this.isMainModeControllerDisplay())
                 $(".controller.input.main.current-self").removeClass("show")
         },
         isMainModeControllerDisplay(){
